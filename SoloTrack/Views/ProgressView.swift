@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct ProgressView: View {
+struct PPLProgressView: View {
     @Query(sort: \FlightLog.date, order: .reverse) private var flights: [FlightLog]
 
     private let progressTracker = ProgressTracker()
@@ -48,10 +48,12 @@ struct ProgressView: View {
                     Text("\(Int(overall * 100))%")
                         .font(.system(.largeTitle, design: .rounded, weight: .bold))
                         .foregroundStyle(Color.skyBlue)
+                        .contentTransition(.numericText())
 
                     Text("\(met) of \(total) met")
                         .font(.system(.caption, design: .rounded))
                         .foregroundStyle(.secondary)
+                        .contentTransition(.numericText())
                 }
             }
             .frame(width: 160, height: 160)
@@ -73,7 +75,7 @@ struct ProgressView: View {
     }
 }
 
-// MARK: - Requirement Row
+// MARK: - Requirement Row (B5: milestones and remaining hours)
 
 struct RequirementRow: View {
     let requirement: PPLRequirement
@@ -96,14 +98,16 @@ struct RequirementRow: View {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(Color.currencyGreen)
                         .font(.title3)
+                        .symbolEffect(.bounce, value: requirement.isMet)
                 } else {
                     Text("\(requirement.percentComplete)%")
                         .font(.system(.subheadline, design: .rounded, weight: .bold))
                         .foregroundStyle(progressColor)
+                        .contentTransition(.numericText())
                 }
             }
 
-            // Progress bar
+            // B5: Progress bar with milestone tick marks
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 6)
@@ -113,13 +117,30 @@ struct RequirementRow: View {
                         .fill(progressColor)
                         .frame(width: geometry.size.width * requirement.progress)
                         .animation(.easeInOut(duration: 0.6), value: requirement.progress)
+
+                    // Milestone tick marks at 25%, 50%, 75%
+                    ForEach([0.25, 0.5, 0.75], id: \.self) { milestone in
+                        Rectangle()
+                            .fill(Color.primary.opacity(0.15))
+                            .frame(width: 1.5, height: 10)
+                            .offset(x: geometry.size.width * milestone)
+                    }
                 }
             }
             .frame(height: 10)
 
-            Text(requirement.formattedProgress)
-                .font(.system(.caption, design: .rounded))
-                .foregroundStyle(.secondary)
+            // B5: Remaining hours text
+            HStack {
+                Text(requirement.formattedProgress)
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                Text(requirement.formattedRemaining)
+                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .foregroundStyle(requirement.isMet ? Color.currencyGreen : progressColor)
+            }
         }
         .cardStyle()
     }
@@ -136,6 +157,6 @@ struct RequirementRow: View {
 }
 
 #Preview {
-    ProgressView()
+    PPLProgressView()
         .modelContainer(for: FlightLog.self, inMemory: true)
 }

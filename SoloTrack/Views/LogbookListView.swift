@@ -9,6 +9,12 @@ struct LogbookListView: View {
     @State private var showingExportSheet = false
     @State private var exportedCSV = ""
 
+    // A3: Save confirmation toast
+    @State private var showSavedToast = false
+
+    // A6: Delete-locked alert
+    @State private var showLockedDeleteAlert = false
+
     var body: some View {
         NavigationStack {
             Group {
@@ -39,12 +45,35 @@ struct LogbookListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingAddFlight) {
+            .sheet(isPresented: $showingAddFlight, onDismiss: {
+                // A3: Show toast after sheet dismisses (flight was saved)
+                showSavedToast = true
+            }) {
                 AddFlightView()
             }
             .sheet(isPresented: $showingExportSheet) {
                 ExportView(csvContent: exportedCSV)
             }
+            .alert("Cannot Delete", isPresented: $showLockedDeleteAlert) {
+                Button("OK") {}
+            } message: {
+                Text("This flight has a locked CFI signature and cannot be deleted. Void the signature first to enable deletion.")
+            }
+            // A3: Save confirmation overlay
+            .overlay(alignment: .top) {
+                if showSavedToast {
+                    SavedToastView()
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                withAnimation(.easeOut(duration: 0.3)) {
+                                    showSavedToast = false
+                                }
+                            }
+                        }
+                }
+            }
+            .animation(.spring(duration: 0.4), value: showSavedToast)
         }
     }
 
@@ -63,29 +92,90 @@ struct LogbookListView: View {
         }
     }
 
-    // MARK: - Flight List
+    // MARK: - Flight List (B3: monthly section headers)
 
     private var flightList: some View {
-        List {
-            ForEach(flights) { flight in
-                NavigationLink {
-                    FlightDetailView(flight: flight)
-                } label: {
-                    FlightRow(flight: flight)
+        let grouped = groupedByMonth(flights)
+
+        return List {
+            ForEach(grouped, id: \.key) { section in
+                Section {
+                    ForEach(section.flights) { flight in
+                        NavigationLink {
+                            FlightDetailView(flight: flight)
+                        } label: {
+                            FlightRow(flight: flight)
+                        }
+                    }
+                    .onDelete { offsets in
+                        deleteFlights(from: section.flights, at: offsets)
+                    }
+                } header: {
+                    Text(section.key)
+                        .font(.system(.subheadline, design: .rounded, weight: .semibold))
                 }
             }
-            .onDelete(perform: deleteFlights)
         }
         .listStyle(.insetGrouped)
     }
 
-    private func deleteFlights(at offsets: IndexSet) {
+    // MARK: - Grouping
+
+    private struct MonthSection {
+        let key: String
+        let flights: [FlightLog]
+    }
+
+    private func groupedByMonth(_ flights: [FlightLog]) -> [MonthSection] {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+
+        let grouped = Dictionary(grouping: flights) { flight in
+            formatter.string(from: flight.date)
+        }
+
+        // Maintain reverse-chronological order
+        return grouped
+            .map { MonthSection(key: $0.key, flights: $0.value) }
+            .sorted { section1, section2 in
+                guard let d1 = section1.flights.first?.date,
+                      let d2 = section2.flights.first?.date else { return false }
+                return d1 > d2
+            }
+    }
+
+    // MARK: - Delete (A6: locked feedback)
+
+    private func deleteFlights(from sectionFlights: [FlightLog], at offsets: IndexSet) {
         for index in offsets {
-            let flight = flights[index]
-            if !flight.isSignatureLocked {
+            let flight = sectionFlights[index]
+            if flight.isSignatureLocked {
+                showLockedDeleteAlert = true
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
+            } else {
                 modelContext.delete(flight)
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
             }
         }
+    }
+}
+
+// MARK: - Saved Toast (A3)
+
+private struct SavedToastView: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(Color.currencyGreen)
+            Text("Flight saved")
+                .font(.system(.subheadline, design: .rounded, weight: .semibold))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial)
+        .clipShape(Capsule())
+        .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
+        .padding(.top, 8)
     }
 }
 
@@ -129,10 +219,17 @@ struct FlightRow: View {
                 Text("\(flight.formattedDuration)h")
                     .font(.system(.subheadline, design: .rounded, weight: .bold))
 
-                if flight.hasValidSignature {
-                    Image(systemName: "signature")
-                        .font(.caption)
-                        .foregroundStyle(Color.currencyGreen)
+                HStack(spacing: 4) {
+                    if flight.hasValidSignature {
+                        Image(systemName: "signature")
+                            .font(.caption)
+                            .foregroundStyle(Color.currencyGreen)
+                    }
+                    if flight.isSignatureLocked {
+                        Image(systemName: "lock.fill")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         }
@@ -140,10 +237,13 @@ struct FlightRow: View {
     }
 }
 
-// MARK: - Flight Detail View
+// MARK: - Flight Detail View (B6: Edit support)
 
 struct FlightDetailView: View {
     let flight: FlightLog
+
+    @State private var showingEditSheet = false
+    @State private var showingVoidAlert = false
 
     var body: some View {
         ScrollView {
@@ -174,15 +274,17 @@ struct FlightDetailView: View {
                 .cardStyle()
 
                 // Categories
-                HStack(spacing: 8) {
-                    ForEach(flight.categoryTags, id: \.self) { tag in
-                        Text(tag)
-                            .font(.system(.caption, design: .rounded, weight: .semibold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.skyBlue.opacity(0.15))
-                            .foregroundStyle(Color.skyBlue)
-                            .clipShape(Capsule())
+                if !flight.categoryTags.isEmpty {
+                    HStack(spacing: 8) {
+                        ForEach(flight.categoryTags, id: \.self) { tag in
+                            Text(tag)
+                                .font(.system(.caption, design: .rounded, weight: .semibold))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.skyBlue.opacity(0.15))
+                                .foregroundStyle(Color.skyBlue)
+                                .clipShape(Capsule())
+                        }
                     }
                 }
 
@@ -218,6 +320,20 @@ struct FlightDetailView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
+
+                        // Void signature button
+                        if flight.isSignatureLocked {
+                            Button(role: .destructive) {
+                                showingVoidAlert = true
+                            } label: {
+                                HStack {
+                                    Image(systemName: "xmark.shield")
+                                    Text("Void Signature")
+                                }
+                                .font(.system(.caption, design: .rounded, weight: .medium))
+                            }
+                            .padding(.top, 4)
+                        }
                     }
                     .cardStyle()
                 }
@@ -239,6 +355,28 @@ struct FlightDetailView: View {
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Flight Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            // B6: Edit button for unsigned flights
+            if flight.isEditable {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Edit") {
+                        showingEditSheet = true
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showingEditSheet) {
+            AddFlightView(editingFlight: flight)
+        }
+        .alert("Void Signature?", isPresented: $showingVoidAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Void", role: .destructive) {
+                flight.voidSignature()
+                UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            }
+        } message: {
+            Text("This will remove the CFI endorsement and unlock the flight for editing. The instructor will need to re-sign.")
+        }
     }
 }
 

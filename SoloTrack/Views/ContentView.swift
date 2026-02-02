@@ -8,7 +8,7 @@ struct ContentView: View {
             }
 
             Tab("Progress", systemImage: "chart.bar.fill") {
-                ProgressView()
+                PPLProgressView()
             }
 
             Tab("Logbook", systemImage: "book.closed.fill") {

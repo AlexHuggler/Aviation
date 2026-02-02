@@ -103,10 +103,12 @@ struct SignatureCaptureView: View {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundStyle(Color.currencyGreen)
+                            .symbolEffect(.bounce, value: signatureData != nil)
                         Text("Signature captured")
                             .font(.system(.caption, design: .rounded))
                             .foregroundStyle(Color.currencyGreen)
                     }
+                    .transition(.scale.combined(with: .opacity))
                 }
             }
         }
@@ -119,5 +121,6 @@ struct SignatureCaptureView: View {
         )
         signatureData = image.pngData()
         hasDrawn = true
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 }

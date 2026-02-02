@@ -3,7 +3,9 @@ import SwiftUI
 struct ExportView: View {
     let csvContent: String
     @Environment(\.dismiss) private var dismiss
-    @State private var showingShareSheet = false
+
+    // A8: Copy confirmation state
+    @State private var copied = false
 
     var body: some View {
         NavigationStack {
@@ -54,19 +56,32 @@ struct ExportView: View {
                 }
                 .padding(.horizontal)
 
-                // Copy button
+                // A8: Copy button with confirmation feedback
                 Button {
                     UIPasteboard.general.string = csvContent
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    withAnimation(.spring(duration: 0.3)) {
+                        copied = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            copied = false
+                        }
+                    }
                 } label: {
                     HStack {
-                        Image(systemName: "doc.on.doc")
-                        Text("Copy to Clipboard")
+                        Image(systemName: copied ? "checkmark" : "doc.on.doc")
+                            .contentTransition(.symbolEffect(.replace))
+                        Text(copied ? "Copied!" : "Copy to Clipboard")
+                            .contentTransition(.numericText())
                     }
                     .font(.system(.body, design: .rounded, weight: .medium))
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(.ultraThinMaterial)
+                    .background(copied ? Color.currencyGreen.opacity(0.15) : Color(.tertiarySystemFill))
+                    .foregroundStyle(copied ? Color.currencyGreen : .primary)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .animation(.smooth(duration: 0.3), value: copied)
                 }
                 .padding(.horizontal)
             }

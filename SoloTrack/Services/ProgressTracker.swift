@@ -21,16 +21,24 @@ struct PPLRequirement: Identifiable {
         loggedHours >= goalHours
     }
 
+    var remainingHours: Double {
+        max(goalHours - loggedHours, 0)
+    }
+
     var formattedProgress: String {
         String(format: "%.1f / %.1f hours", loggedHours, goalHours)
+    }
+
+    var formattedRemaining: String {
+        if isMet { return "Complete" }
+        return String(format: "%.1f hrs to go", remainingHours)
     }
 }
 
 // MARK: - Progress Tracker
 
 /// Tracks progress against FAR 61.109 PPL requirements.
-@Observable
-final class ProgressTracker {
+struct ProgressTracker {
 
     func computeRequirements(from flights: [FlightLog]) -> [PPLRequirement] {
         let totalTime = flights.reduce(0.0) { $0 + $1.durationHobbs }
