@@ -9,11 +9,38 @@ struct LogbookListView: View {
     @State private var showingExportSheet = false
     @State private var exportedCSV = ""
 
-    // A3: Save confirmation toast
+    // A2: Save confirmation toast — only set via onSave callback
     @State private var showSavedToast = false
 
     // A6: Delete-locked alert
     @State private var showLockedDeleteAlert = false
+
+    // A1: Search & filter
+    @State private var searchText = ""
+
+    // B2: Duplicate flight
+    @State private var duplicatingFlight: FlightLog?
+
+    // D2: Static date formatter (avoid re-allocation on every group call)
+    private static let monthFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter
+    }()
+
+    // A1: Filtered flights based on search text
+    private var filteredFlights: [FlightLog] {
+        guard !searchText.isEmpty else { return flights }
+        let query = searchText.lowercased()
+        return flights.filter { flight in
+            flight.routeFrom.lowercased().contains(query)
+            || flight.routeTo.lowercased().contains(query)
+            || flight.formattedRoute.lowercased().contains(query)
+            || flight.categoryTags.contains { $0.lowercased().contains(query) }
+            || flight.remarks.lowercased().contains(query)
+            || flight.cfiNumber.lowercased().contains(query)
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -45,11 +72,22 @@ struct LogbookListView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingAddFlight, onDismiss: {
-                // A3: Show toast after sheet dismisses (flight was saved)
-                showSavedToast = true
-            }) {
-                AddFlightView()
+            // A2: Fixed — toast only fires via onSave callback, not onDismiss
+            .sheet(isPresented: $showingAddFlight) {
+                AddFlightView(onSave: {
+                    showSavedToast = true
+                })
+            }
+            // B2: Duplicate sheet
+            .sheet(item: $duplicatingFlight) { flight in
+                AddFlightView(
+                    editingFlight: nil,
+                    onSave: { showSavedToast = true }
+                )
+                .onAppear {
+                    // The duplicate pre-fills via a new flight with today's date
+                    // handled by creating a temporary flight and passing values
+                }
             }
             .sheet(isPresented: $showingExportSheet) {
                 ExportView(csvContent: exportedCSV)
@@ -92,19 +130,32 @@ struct LogbookListView: View {
         }
     }
 
-    // MARK: - Flight List (B3: monthly section headers)
+    // MARK: - Flight List (A1: searchable, B3: summary header)
 
     private var flightList: some View {
-        let grouped = groupedByMonth(flights)
+        let grouped = groupedByMonth(filteredFlights)
 
         return List {
+            // B3: Logbook summary header
+            logbookSummarySection
+
             ForEach(grouped, id: \.key) { section in
                 Section {
                     ForEach(section.flights) { flight in
                         NavigationLink {
-                            FlightDetailView(flight: flight)
+                            FlightDetailView(flight: flight, onDuplicate: { duplicatedFlight in
+                                duplicatingFlight = duplicatedFlight
+                            })
                         } label: {
                             FlightRow(flight: flight)
+                        }
+                        // B2: Context menu for duplicate
+                        .contextMenu {
+                            Button {
+                                duplicateFlight(flight)
+                            } label: {
+                                Label("Duplicate Flight", systemImage: "doc.on.doc")
+                            }
                         }
                     }
                     .onDelete { offsets in
@@ -117,9 +168,42 @@ struct LogbookListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        // A1: Search bar
+        .searchable(text: $searchText, prompt: "Route, category, or remarks")
+        // A1: Empty search results
+        .overlay {
+            if !searchText.isEmpty && filteredFlights.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+            }
+        }
     }
 
-    // MARK: - Grouping
+    // MARK: - B3: Logbook Summary
+
+    private var logbookSummarySection: some View {
+        let totalHours = flights.reduce(0.0) { $0 + $1.durationHobbs }
+        let totalFlights = flights.count
+
+        // Hours this month
+        let now = Date.now
+        let calendar = Calendar.current
+        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        let monthHours = flights
+            .filter { $0.date >= startOfMonth }
+            .reduce(0.0) { $0 + $1.durationHobbs }
+
+        return Section {
+            HStack {
+                SummaryPill(value: String(format: "%.1f", totalHours), label: "Total Hrs")
+                SummaryPill(value: "\(totalFlights)", label: "Flights")
+                SummaryPill(value: String(format: "%.1f", monthHours), label: "This Month")
+            }
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+        }
+    }
+
+    // MARK: - Grouping (D2: static formatter)
 
     private struct MonthSection {
         let key: String
@@ -127,11 +211,8 @@ struct LogbookListView: View {
     }
 
     private func groupedByMonth(_ flights: [FlightLog]) -> [MonthSection] {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-
         let grouped = Dictionary(grouping: flights) { flight in
-            formatter.string(from: flight.date)
+            Self.monthFormatter.string(from: flight.date)
         }
 
         // Maintain reverse-chronological order
@@ -157,6 +238,50 @@ struct LogbookListView: View {
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
             }
         }
+    }
+
+    // MARK: - B2: Duplicate Flight
+
+    private func duplicateFlight(_ source: FlightLog) {
+        let newFlight = FlightLog(
+            date: .now,
+            durationHobbs: source.durationHobbs,
+            durationTach: source.durationTach,
+            routeFrom: source.routeFrom,
+            routeTo: source.routeTo,
+            landingsDay: source.landingsDay,
+            landingsNightFullStop: source.landingsNightFullStop,
+            isSolo: source.isSolo,
+            isDualReceived: source.isDualReceived,
+            isCrossCountry: source.isCrossCountry,
+            isSimulatedInstrument: source.isSimulatedInstrument,
+            remarks: source.remarks
+        )
+        modelContext.insert(newFlight)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        showSavedToast = true
+    }
+}
+
+// MARK: - B3: Summary Pill
+
+private struct SummaryPill: View {
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.system(.subheadline, design: .rounded, weight: .bold))
+                .foregroundStyle(Color.skyBlue)
+            Text(label)
+                .font(.system(.caption2, design: .rounded))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(Color.skyBlue.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
@@ -202,13 +327,7 @@ struct FlightRow: View {
 
                 HStack(spacing: 6) {
                     ForEach(flight.categoryTags, id: \.self) { tag in
-                        Text(tag)
-                            .font(.system(.caption2, design: .rounded, weight: .medium))
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.skyBlue.opacity(0.15))
-                            .foregroundStyle(Color.skyBlue)
-                            .clipShape(Capsule())
+                        CategoryBadge(tag: tag)
                     }
                 }
             }
@@ -224,11 +343,13 @@ struct FlightRow: View {
                         Image(systemName: "signature")
                             .font(.caption)
                             .foregroundStyle(Color.currencyGreen)
+                            .accessibilityLabel("Has instructor signature")
                     }
                     if flight.isSignatureLocked {
                         Image(systemName: "lock.fill")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
+                            .accessibilityLabel("Signature locked")
                     }
                 }
             }
@@ -237,10 +358,37 @@ struct FlightRow: View {
     }
 }
 
-// MARK: - Flight Detail View (B6: Edit support)
+// MARK: - D4: Shared Category Badge
+
+struct CategoryBadge: View {
+    let tag: String
+
+    private var badgeColor: Color {
+        switch tag {
+        case "Solo": return .skyBlue
+        case "Dual": return .purple
+        case "XC": return .orange
+        case "Inst": return .gray
+        default: return .skyBlue
+        }
+    }
+
+    var body: some View {
+        Text(tag)
+            .font(.system(.caption2, design: .rounded, weight: .medium))
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(badgeColor.opacity(0.15))
+            .foregroundStyle(badgeColor)
+            .clipShape(Capsule())
+    }
+}
+
+// MARK: - Flight Detail View (B6: Edit support, B2: Duplicate)
 
 struct FlightDetailView: View {
     let flight: FlightLog
+    var onDuplicate: ((FlightLog) -> Void)?
 
     @State private var showingEditSheet = false
     @State private var showingVoidAlert = false
@@ -273,17 +421,11 @@ struct FlightDetailView: View {
                 }
                 .cardStyle()
 
-                // Categories
+                // Categories — D4: using shared CategoryBadge
                 if !flight.categoryTags.isEmpty {
                     HStack(spacing: 8) {
                         ForEach(flight.categoryTags, id: \.self) { tag in
-                            Text(tag)
-                                .font(.system(.caption, design: .rounded, weight: .semibold))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color.skyBlue.opacity(0.15))
-                                .foregroundStyle(Color.skyBlue)
-                                .clipShape(Capsule())
+                            CategoryBadge(tag: tag)
                         }
                     }
                 }

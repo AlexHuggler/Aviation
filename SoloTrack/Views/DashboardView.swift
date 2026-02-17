@@ -21,7 +21,7 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Empty State (A7)
+    // MARK: - Empty State (B5: staggered entrance animations)
 
     private var emptyDashboard: some View {
         ScrollView {
@@ -31,6 +31,7 @@ struct DashboardView: View {
                 Image(systemName: "airplane.circle")
                     .font(.system(size: 64))
                     .foregroundStyle(Color.skyBlue.opacity(0.6))
+                    .symbolEffect(.pulse.byLayer, options: .repeating)
 
                 VStack(spacing: 8) {
                     Text("Welcome to SoloTrack")
@@ -61,7 +62,7 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Populated Dashboard (A5 — compute currency once)
+    // MARK: - Populated Dashboard
 
     private var populatedDashboard: some View {
         let dayCurrency = currencyManager.dayCurrency(flights: flights)
@@ -96,6 +97,9 @@ struct DashboardView: View {
             }
             .foregroundStyle(overallLegal ? Color.currencyGreen : Color.warningRed)
             .animation(.smooth(duration: 0.4), value: overallLegal)
+            // A6: VoiceOver accessibility
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(overallLegal ? "You are current to fly" : "You are not current to fly")
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 8)
@@ -170,7 +174,7 @@ private struct OnboardingRow: View {
     }
 }
 
-// MARK: - Currency Card (B1 — animated transitions)
+// MARK: - Currency Card (A6: accessibility, B4: absolute dates)
 
 struct CurrencyCard: View {
     let title: String
@@ -191,10 +195,19 @@ struct CurrencyCard: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            Text(state.shortLabel)
-                .font(.system(.caption, design: .rounded, weight: .medium))
-                .foregroundStyle(state.color)
-                .contentTransition(.numericText())
+            // B4: Show both relative and absolute date
+            VStack(spacing: 2) {
+                Text(state.shortLabel)
+                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .foregroundStyle(state.color)
+                    .contentTransition(.numericText())
+
+                if let dateLabel = state.absoluteDateLabel {
+                    Text(dateLabel)
+                        .font(.system(.caption2, design: .rounded))
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .frame(maxWidth: .infinity)
         .cardStyle()
@@ -203,6 +216,9 @@ struct CurrencyCard: View {
                 .stroke(state.color.opacity(0.4), lineWidth: 2)
         )
         .animation(.smooth(duration: 0.4), value: state)
+        // A6: Accessibility — combine children and provide descriptive label
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title) currency: \(state.label)")
     }
 }
 
@@ -225,6 +241,8 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity)
         .cardStyle()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 

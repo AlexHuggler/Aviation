@@ -11,6 +11,9 @@ struct AddFlightView: View {
     /// Optional flight to edit (B6). When nil, we create a new entry.
     var editingFlight: FlightLog?
 
+    /// Callback fired only on successful save (A2: prevents false-positive toast).
+    var onSave: (() -> Void)?
+
     // MARK: - Focus State (A4)
 
     enum Field: Hashable {
@@ -26,7 +29,7 @@ struct AddFlightView: View {
     @State private var durationTach = ""
     @State private var routeFrom = ""
     @State private var routeTo = ""
-    @State private var landingsDay = 0
+    @State private var landingsDay = 1   // A5: Default to 1 — every flight has at least one landing
     @State private var landingsNightFullStop = 0
     @State private var isSolo = false
     @State private var isDualReceived = false
@@ -43,8 +46,29 @@ struct AddFlightView: View {
     @State private var validationMessage = ""
     @State private var showAdvanced = false
     @State private var hasAppliedDefaults = false
+    @State private var showDiscardAlert = false   // B1: Unsaved changes warning
+
+    // A4: Route swap animation
+    @State private var routeSwapRotation: Double = 0
 
     var isEditing: Bool { editingFlight != nil }
+
+    // B1: Track whether the form has been modified
+    private var isFormDirty: Bool {
+        if isEditing { return true } // Editing always counts as potentially dirty
+        return !durationHobbs.isEmpty
+            || !durationTach.isEmpty
+            || !routeFrom.isEmpty
+            || !routeTo.isEmpty
+            || landingsDay != 1
+            || landingsNightFullStop != 0
+            || isSolo
+            || isDualReceived
+            || isCrossCountry
+            || isSimulatedInstrument
+            || !remarks.isEmpty
+            || signatureData != nil
+    }
 
     var body: some View {
         NavigationStack {
@@ -65,14 +89,25 @@ struct AddFlightView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        // B1: Warn if form has unsaved data
+                        if isFormDirty {
+                            showDiscardAlert = true
+                        } else {
+                            dismiss()
+                        }
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { saveFlight() }
                         .fontWeight(.semibold)
                 }
-                // A4: Done button for keyboard
+                // A7: Next/Done keyboard toolbar for field advancement
                 ToolbarItemGroup(placement: .keyboard) {
+                    Button("Previous") { advanceFocus(forward: false) }
+                        .disabled(focusedField == .routeFrom)
+                    Button("Next") { advanceFocus(forward: true) }
+                        .disabled(focusedField == .cfiNumber || focusedField == .remarks)
                     Spacer()
                     Button("Done") {
                         focusedField = nil
@@ -84,9 +119,18 @@ struct AddFlightView: View {
             } message: {
                 Text(validationMessage)
             }
+            // B1: Discard changes confirmation
+            .alert("Discard Flight?", isPresented: $showDiscardAlert) {
+                Button("Keep Editing", role: .cancel) {}
+                Button("Discard", role: .destructive) { dismiss() }
+            } message: {
+                Text("You have unsaved changes that will be lost.")
+            }
             .onAppear {
                 applyDefaults()
             }
+            // B1: Swipe-to-dismiss interception
+            .interactiveDismissDisabled(isFormDirty)
         }
     }
 
@@ -127,11 +171,24 @@ struct AddFlightView: View {
         }
     }
 
+    // MARK: - A7: Keyboard Focus Advancement
+
+    private func advanceFocus(forward: Bool) {
+        let order: [Field] = [.routeFrom, .routeTo, .hobbs, .tach, .remarks, .cfiNumber]
+        guard let current = focusedField,
+              let index = order.firstIndex(of: current) else { return }
+
+        let nextIndex = forward ? index + 1 : index - 1
+        if order.indices.contains(nextIndex) {
+            focusedField = order[nextIndex]
+        }
+    }
+
     // MARK: - Date & Route
 
     private var dateAndRouteSection: some View {
         Section {
-            DatePicker("Date", selection: $date, displayedComponents: .date)
+            DatePicker("Date", selection: $date, in: ...Date.now, displayedComponents: .date) // A3: Prevent future dates
 
             HStack {
                 VStack(alignment: .leading) {
@@ -147,8 +204,26 @@ struct AddFlightView: View {
                         .onSubmit { focusedField = .routeTo }
                 }
 
-                Image(systemName: "arrow.right")
-                    .foregroundStyle(.secondary)
+                // A4: Tap to swap From/To route
+                Button {
+                    let temp = routeFrom
+                    routeFrom = routeTo
+                    routeTo = temp
+                    withAnimation(.spring(duration: 0.3)) {
+                        routeSwapRotation += 180
+                    }
+                    UISelectionFeedbackGenerator().selectionChanged()
+                } label: {
+                    Image(systemName: "arrow.left.arrow.right")
+                        .font(.caption)
+                        .foregroundStyle(Color.skyBlue)
+                        .padding(6)
+                        .background(Color.skyBlue.opacity(0.1))
+                        .clipShape(Circle())
+                        .rotationEffect(.degrees(routeSwapRotation))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Swap departure and arrival")
 
                 VStack(alignment: .leading) {
                     Text("To")
@@ -265,11 +340,28 @@ struct AddFlightView: View {
         }
     }
 
-    // MARK: - Save (A2 haptics, A3 confirmation)
+    // MARK: - Save (A2 haptics, A3 validation)
 
     private func saveFlight() {
+        // A3: Validate Hobbs
         guard let hobbs = Double(durationHobbs), hobbs > 0 else {
             validationMessage = "Please enter a valid Hobbs time."
+            showingValidationAlert = true
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            return
+        }
+
+        // A3: Warn on unusually long flights
+        if hobbs > 12 {
+            validationMessage = "Hobbs time exceeds 12 hours. Please verify this is correct."
+            showingValidationAlert = true
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            return
+        }
+
+        // A3: Ensure at least one landing for any flight
+        if landingsDay == 0 && landingsNightFullStop == 0 {
+            validationMessage = "Every flight needs at least one landing. Please add your landing count."
             showingValidationAlert = true
             UINotificationFeedbackGenerator().notificationOccurred(.error)
             return
@@ -320,8 +412,9 @@ struct AddFlightView: View {
             modelContext.insert(flight)
         }
 
-        // A2: Success haptic
+        // A2: Success haptic + callback
         UINotificationFeedbackGenerator().notificationOccurred(.success)
+        onSave?()
         dismiss()
     }
 }
