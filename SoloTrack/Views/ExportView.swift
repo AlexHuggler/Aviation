@@ -30,7 +30,7 @@ struct ExportView: View {
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxHeight: 200)
+                .frame(maxHeight: .infinity) // M-3: fills available space between header and buttons
                 .background(Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)
@@ -59,7 +59,7 @@ struct ExportView: View {
                 // A8: Copy button with confirmation feedback
                 Button {
                     UIPasteboard.general.string = csvContent
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    Haptic.success()
                     withAnimation(.spring(duration: 0.3)) {
                         copied = true
                     }

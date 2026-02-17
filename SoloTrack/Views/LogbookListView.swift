@@ -171,7 +171,7 @@ struct LogbookListView: View {
         // Hours this month
         let now = Date.now
         let calendar = Calendar.current
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) ?? now
         let monthHours = flights
             .filter { $0.date >= startOfMonth }
             .reduce(0.0) { $0 + $1.durationHobbs }
@@ -216,24 +216,31 @@ struct LogbookListView: View {
             let flight = sectionFlights[index]
             if flight.isSignatureLocked {
                 showLockedDeleteAlert = true
-                UINotificationFeedbackGenerator().notificationOccurred(.error)
+                Haptic.error()
             } else {
                 modelContext.delete(flight)
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                Haptic.success()
             }
         }
     }
 
-    // MARK: - B2: Duplicate Flight
+    // MARK: - B2: Duplicate Flight (M-6: validates before insert)
 
     private func duplicateFlight(_ source: FlightLog) {
+        // M-6: Ensure duplicated data passes the same validation as AddFlightView
+        guard source.durationHobbs > 0, source.durationHobbs <= 12 else {
+            Haptic.error()
+            return
+        }
+        let landings = max(source.landingsDay, 1) // Guarantee at least 1 landing
+
         let newFlight = FlightLog(
             date: .now,
             durationHobbs: source.durationHobbs,
             durationTach: source.durationTach,
             routeFrom: source.routeFrom,
             routeTo: source.routeTo,
-            landingsDay: source.landingsDay,
+            landingsDay: landings,
             landingsNightFullStop: source.landingsNightFullStop,
             isSolo: source.isSolo,
             isDualReceived: source.isDualReceived,
@@ -242,7 +249,7 @@ struct LogbookListView: View {
             remarks: source.remarks
         )
         modelContext.insert(newFlight)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        Haptic.success()
         showSavedToast = true
     }
 }
@@ -303,7 +310,7 @@ struct FlightRow: View {
                     .font(.system(.caption2, design: .rounded))
                     .foregroundStyle(.secondary)
             }
-            .frame(width: 44)
+            .frame(minWidth: 36, idealWidth: 44) // H-5: Dynamic Type safe
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(flight.formattedRoute)
@@ -497,7 +504,7 @@ struct FlightDetailView: View {
             Button("Cancel", role: .cancel) {}
             Button("Void", role: .destructive) {
                 flight.voidSignature()
-                UINotificationFeedbackGenerator().notificationOccurred(.warning)
+                Haptic.warning()
             }
         } message: {
             Text("This will remove the CFI endorsement and unlock the flight for editing. The instructor will need to re-sign.")

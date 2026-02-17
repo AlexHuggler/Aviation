@@ -129,7 +129,7 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Quick Stats
+    // MARK: - Quick Stats (H-2: compute requirements once)
 
     private var quickStatsSection: some View {
         VStack(spacing: 12) {
@@ -139,8 +139,9 @@ struct DashboardView: View {
 
             let totalHours = flights.reduce(0.0) { $0 + $1.durationHobbs }
             let totalFlights = flights.count
-            let met = progressTracker.requirementsMet(from: flights)
-            let total = progressTracker.totalRequirements()
+            let requirements = progressTracker.computeRequirements(from: flights)
+            let met = requirements.filter { $0.isMet }.count
+            let total = requirements.count
 
             LazyVGrid(columns: [
                 GridItem(.flexible()),

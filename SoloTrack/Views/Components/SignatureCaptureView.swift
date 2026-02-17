@@ -1,20 +1,36 @@
 import SwiftUI
 import PencilKit
 
-// MARK: - PencilKit Canvas Wrapper
+// MARK: - PencilKit Canvas Wrapper (H-4: coordinator-managed lifecycle)
 
 struct SignatureCanvasView: UIViewRepresentable {
-    @Binding var canvasView: PKCanvasView
+    @Binding var signatureData: Data?
+    @Binding var hasDrawn: Bool
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
 
     func makeUIView(context: Context) -> PKCanvasView {
-        canvasView.drawingPolicy = .anyInput
-        canvasView.tool = PKInkingTool(.pen, color: .label, width: 3)
-        canvasView.backgroundColor = .clear
-        canvasView.isOpaque = false
-        return canvasView
+        let canvas = context.coordinator.canvasView
+        canvas.drawingPolicy = .anyInput
+        canvas.tool = PKInkingTool(.pen, color: .label, width: 3)
+        canvas.backgroundColor = .clear
+        canvas.isOpaque = false
+        canvas.delegate = context.coordinator
+        return canvas
     }
 
     func updateUIView(_ uiView: PKCanvasView, context: Context) {}
+
+    // H-4: Coordinator owns the PKCanvasView instance, surviving SwiftUI state resets
+    class Coordinator: NSObject, PKCanvasViewDelegate {
+        let canvasView = PKCanvasView()
+
+        func canvasViewDrawingDidChange(_ canvasView: PKCanvasView) {
+            // No-op for now — drawing state tracked via capture button
+        }
+    }
 }
 
 // MARK: - Signature Capture View
@@ -23,7 +39,9 @@ struct SignatureCaptureView: View {
     @Binding var signatureData: Data?
     @Binding var cfiNumber: String
 
-    @State private var canvasView = PKCanvasView()
+    // H-1: Use environment displayScale instead of deprecated UIScreen.main.scale
+    @Environment(\.displayScale) private var displayScale
+
     @State private var hasDrawn = false
 
     var body: some View {
@@ -52,7 +70,7 @@ struct SignatureCaptureView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 ZStack(alignment: .bottomTrailing) {
-                    SignatureCanvasView(canvasView: $canvasView)
+                    SignatureCanvasView(signatureData: $signatureData, hasDrawn: $hasDrawn)
                         .frame(height: 120)
                         .background(Color(.secondarySystemBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -70,9 +88,7 @@ struct SignatureCaptureView: View {
                         }
 
                     Button {
-                        canvasView.drawing = PKDrawing()
-                        hasDrawn = false
-                        signatureData = nil
+                        clearCanvas()
                     } label: {
                         Image(systemName: "eraser.fill")
                             .font(.caption)
@@ -114,13 +130,49 @@ struct SignatureCaptureView: View {
         }
     }
 
+    // H-1: Uses @Environment(\.displayScale) instead of deprecated UIScreen.main.scale
     private func captureSignature() {
+        // Access the canvas through the view hierarchy — find PKCanvasView in the responder chain
+        // For UIViewRepresentable, we need to get the canvas from the coordinator
+        // Since we can't directly access the coordinator here, we use a workaround:
+        // The PKCanvasView is the first responder's ancestor — use UIApplication to find it
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let canvasView = window.findView(ofType: PKCanvasView.self) else {
+            return
+        }
+
         let image = canvasView.drawing.image(
             from: canvasView.bounds,
-            scale: UIScreen.main.scale
+            scale: displayScale
         )
         signatureData = image.pngData()
         hasDrawn = true
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        Haptic.success()
+    }
+
+    private func clearCanvas() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let canvasView = window.findView(ofType: PKCanvasView.self) else {
+            return
+        }
+        canvasView.drawing = PKDrawing()
+        hasDrawn = false
+        signatureData = nil
+    }
+}
+
+// MARK: - UIView Helper
+
+private extension UIView {
+    func findView<T: UIView>(ofType type: T.Type) -> T? {
+        if let match = self as? T { return match }
+        for subview in subviews {
+            if let found = subview.findView(ofType: type) {
+                return found
+            }
+        }
+        return nil
     }
 }

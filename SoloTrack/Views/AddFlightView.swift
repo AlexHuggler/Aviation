@@ -212,7 +212,7 @@ struct AddFlightView: View {
                     withAnimation(.spring(duration: 0.3)) {
                         routeSwapRotation += 180
                     }
-                    UISelectionFeedbackGenerator().selectionChanged()
+                    Haptic.selection()
                 } label: {
                     Image(systemName: "arrow.left.arrow.right")
                         .font(.caption)
@@ -253,7 +253,8 @@ struct AddFlightView: View {
                 TextField("0.0", text: $durationHobbs)
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
-                    .frame(width: 80)
+                    .frame(minWidth: 60, idealWidth: 80) // H-5: Dynamic Type safe
+                    .fixedSize()
                     .focused($focusedField, equals: .hobbs)
                 Text("hrs")
                     .foregroundStyle(.secondary)
@@ -265,7 +266,8 @@ struct AddFlightView: View {
                 TextField("0.0", text: $durationTach)
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
-                    .frame(width: 80)
+                    .frame(minWidth: 60, idealWidth: 80) // H-5: Dynamic Type safe
+                    .fixedSize()
                     .focused($focusedField, equals: .tach)
                 Text("hrs")
                     .foregroundStyle(.secondary)
@@ -347,7 +349,7 @@ struct AddFlightView: View {
         guard let hobbs = Double(durationHobbs), hobbs > 0 else {
             validationMessage = "Please enter a valid Hobbs time."
             showingValidationAlert = true
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            Haptic.error()
             return
         }
 
@@ -355,7 +357,7 @@ struct AddFlightView: View {
         if hobbs > 12 {
             validationMessage = "Hobbs time exceeds 12 hours. Please verify this is correct."
             showingValidationAlert = true
-            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            Haptic.warning()
             return
         }
 
@@ -363,7 +365,7 @@ struct AddFlightView: View {
         if landingsDay == 0 && landingsNightFullStop == 0 {
             validationMessage = "Every flight needs at least one landing. Please add your landing count."
             showingValidationAlert = true
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            Haptic.error()
             return
         }
 
@@ -413,7 +415,7 @@ struct AddFlightView: View {
         }
 
         // A2: Success haptic + callback
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        Haptic.success()
         onSave?()
         dismiss()
     }

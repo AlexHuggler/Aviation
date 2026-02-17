@@ -2,7 +2,9 @@ import Foundation
 
 // MARK: - Currency Status
 
-enum CurrencyState: Comparable, Hashable {
+// M-2: Removed Comparable — synthesized ordering (.valid < .caution < .expired)
+// was semantically backwards and error-prone if used for sorting.
+enum CurrencyState: Hashable {
     case valid(daysRemaining: Int)
     case caution(daysRemaining: Int)
     case expired(daysSince: Int)
@@ -62,7 +64,7 @@ enum CurrencyState: Comparable, Hashable {
 /// Handles FAR 61.57 currency calculations.
 /// - Day Currency: 3 takeoffs & landings in the preceding 90 days.
 /// - Night Currency: 3 full-stop night takeoffs & landings in the preceding 90 days.
-struct CurrencyManager {
+struct CurrencyManager: Sendable {
     private let calendar = Calendar.current
     private let requiredLandings = 3
     private let lookbackDays = 90

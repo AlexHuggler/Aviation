@@ -39,7 +39,7 @@ struct PPLRequirement: Identifiable {
 // MARK: - Progress Tracker
 
 /// Tracks progress against FAR 61.109 PPL requirements.
-struct ProgressTracker {
+struct ProgressTracker: Sendable {
 
     func computeRequirements(from flights: [FlightLog]) -> [PPLRequirement] {
         let totalTime = flights.reduce(0.0) { $0 + $1.durationHobbs }
