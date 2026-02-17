@@ -35,6 +35,21 @@ enum CurrencyState: Comparable, Hashable {
             return "Expired \(days)d ago"
         }
     }
+
+    // B4: Absolute date label for currency cards
+    var absoluteDateLabel: String? {
+        let calendar = Calendar.current
+        let now = Date.now
+        switch self {
+        case .valid(let days), .caution(let days):
+            guard let date = calendar.date(byAdding: .day, value: days, to: now) else { return nil }
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM d"
+            return formatter.string(from: date)
+        case .expired:
+            return nil
+        }
+    }
 }
 
 // MARK: - Currency Manager

@@ -8,15 +8,37 @@ struct PPLProgressView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    overallProgressCard
-                    requirementsList
+            Group {
+                if flights.isEmpty {
+                    emptyProgressState
+                } else {
+                    progressContent
                 }
-                .padding()
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("PPL Progress")
+        }
+    }
+
+    // MARK: - A8: Empty State
+
+    private var emptyProgressState: some View {
+        ContentUnavailableView {
+            Label("No Progress Yet", systemImage: "chart.bar.fill")
+        } description: {
+            Text("Log your first flight to start tracking progress toward your Private Pilot License requirements under FAR 61.109.")
+        }
+    }
+
+    // MARK: - Progress Content
+
+    private var progressContent: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                overallProgressCard
+                requirementsList
+            }
+            .padding()
         }
     }
 
@@ -57,6 +79,8 @@ struct PPLProgressView: View {
                 }
             }
             .frame(width: 160, height: 160)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(Int(overall * 100)) percent complete. \(met) of \(total) requirements met.")
         }
         .frame(maxWidth: .infinity)
         .cardStyle()
@@ -143,6 +167,8 @@ struct RequirementRow: View {
             }
         }
         .cardStyle()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(requirement.title): \(requirement.formattedProgress). \(requirement.formattedRemaining).")
     }
 
     private var progressColor: Color {
