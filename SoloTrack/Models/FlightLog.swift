@@ -1,6 +1,26 @@
 import Foundation
 import SwiftData
 
+// MARK: - Schema Versioning (C-1: prevents data loss on schema evolution)
+
+enum FlightLogSchemaV1: VersionedSchema {
+    static var versionIdentifier = Schema.Version(1, 0, 0)
+
+    static var models: [any PersistentModel.Type] {
+        [FlightLog.self]
+    }
+}
+
+enum FlightLogMigrationPlan: SchemaMigrationPlan {
+    static var schemas: [any VersionedSchema.Type] {
+        [FlightLogSchemaV1.self]
+    }
+
+    static var stages: [MigrationStage] {
+        []  // No migrations yet — V1 is the initial schema
+    }
+}
+
 @Model
 final class FlightLog {
     // MARK: - Core Flight Data
@@ -37,7 +57,7 @@ final class FlightLog {
         durationTach: Double = 0.0,
         routeFrom: String = "",
         routeTo: String = "",
-        landingsDay: Int = 0,
+        landingsDay: Int = 1,  // M-5: aligned with UI default — every flight has at least one landing
         landingsNightFullStop: Int = 0,
         isSolo: Bool = false,
         isDualReceived: Bool = false,

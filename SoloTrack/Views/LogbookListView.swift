@@ -18,9 +18,6 @@ struct LogbookListView: View {
     // A1: Search & filter
     @State private var searchText = ""
 
-    // B2: Duplicate flight
-    @State private var duplicatingFlight: FlightLog?
-
     // D2: Static date formatter (avoid re-allocation on every group call)
     private static let monthFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -78,17 +75,6 @@ struct LogbookListView: View {
                     showSavedToast = true
                 })
             }
-            // B2: Duplicate sheet
-            .sheet(item: $duplicatingFlight) { flight in
-                AddFlightView(
-                    editingFlight: nil,
-                    onSave: { showSavedToast = true }
-                )
-                .onAppear {
-                    // The duplicate pre-fills via a new flight with today's date
-                    // handled by creating a temporary flight and passing values
-                }
-            }
             .sheet(isPresented: $showingExportSheet) {
                 ExportView(csvContent: exportedCSV)
             }
@@ -143,9 +129,7 @@ struct LogbookListView: View {
                 Section {
                     ForEach(section.flights) { flight in
                         NavigationLink {
-                            FlightDetailView(flight: flight, onDuplicate: { duplicatedFlight in
-                                duplicatingFlight = duplicatedFlight
-                            })
+                            FlightDetailView(flight: flight)
                         } label: {
                             FlightRow(flight: flight)
                         }
@@ -384,11 +368,10 @@ struct CategoryBadge: View {
     }
 }
 
-// MARK: - Flight Detail View (B6: Edit support, B2: Duplicate)
+// MARK: - Flight Detail View (B6: Edit support)
 
 struct FlightDetailView: View {
     let flight: FlightLog
-    var onDuplicate: ((FlightLog) -> Void)?
 
     @State private var showingEditSheet = false
     @State private var showingVoidAlert = false

@@ -7,6 +7,9 @@ struct SoloTrackApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: FlightLog.self)
+        .modelContainer(
+            for: FlightLog.self,
+            migrationPlan: FlightLogMigrationPlan.self
+        )
     }
 }

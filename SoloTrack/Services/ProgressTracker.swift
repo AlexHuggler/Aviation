@@ -3,7 +3,8 @@ import Foundation
 // MARK: - PPL Requirement
 
 struct PPLRequirement: Identifiable {
-    let id = UUID()
+    // C-3 fix: stable ID based on FAR reference (not UUID) so SwiftUI can diff correctly
+    var id: String { farReference }
     let title: String
     let farReference: String
     let goalHours: Double
