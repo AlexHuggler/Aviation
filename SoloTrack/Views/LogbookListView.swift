@@ -103,7 +103,7 @@ struct LogbookListView: View {
                     SavedToastView()
                         .transition(.move(edge: .top).combined(with: .opacity))
                         .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + AppTokens.Duration.toast) {
                                 withAnimation(.easeOut(duration: 0.3)) {
                                     showSavedToast = false
                                 }
@@ -111,7 +111,7 @@ struct LogbookListView: View {
                         }
                 }
             }
-            .animation(.spring(duration: 0.4), value: showSavedToast)
+            .motionAwareAnimation(.spring(duration: 0.4), value: showSavedToast)
         }
     }
 
@@ -149,7 +149,29 @@ struct LogbookListView: View {
                         } label: {
                             FlightRow(flight: flight)
                         }
-                        // B2: Context menu for duplicate
+                        // PX-2: Swipe actions for quick access
+                        .swipeActions(edge: .leading) {
+                            Button {
+                                duplicateFlight(flight)
+                            } label: {
+                                Label("Duplicate", systemImage: "doc.on.doc")
+                            }
+                            .tint(Color.skyBlue)
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                if flight.isSignatureLocked {
+                                    showLockedDeleteAlert = true
+                                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                                } else {
+                                    modelContext.delete(flight)
+                                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                        // B2: Context menu kept for discoverability
                         .contextMenu {
                             Button {
                                 duplicateFlight(flight)
@@ -157,9 +179,6 @@ struct LogbookListView: View {
                                 Label("Duplicate Flight", systemImage: "doc.on.doc")
                             }
                         }
-                    }
-                    .onDelete { offsets in
-                        deleteFlights(from: section.flights, at: offsets)
                     }
                 } header: {
                     Text(section.key)
@@ -280,7 +299,7 @@ private struct SummaryPill: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
-        .background(Color.skyBlue.opacity(0.08))
+        .background(Color.skyBlue.opacity(AppTokens.Opacity.subtle))
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
@@ -319,7 +338,7 @@ struct FlightRow: View {
                     .font(.system(.caption2, design: .rounded))
                     .foregroundStyle(.secondary)
             }
-            .frame(width: 44)
+            .frame(width: AppTokens.Size.dateCircle)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(flight.formattedRoute)
@@ -378,7 +397,7 @@ struct CategoryBadge: View {
             .font(.system(.caption2, design: .rounded, weight: .medium))
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .background(badgeColor.opacity(0.15))
+            .background(badgeColor.opacity(AppTokens.Opacity.light))
             .foregroundStyle(badgeColor)
             .clipShape(Capsule())
     }
@@ -453,7 +472,7 @@ struct FlightDetailView: View {
                             Image(uiImage: uiImage)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: 80)
+                                .frame(height: AppTokens.Size.signatureHeight)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
 

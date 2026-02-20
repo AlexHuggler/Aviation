@@ -51,6 +51,11 @@ struct AddFlightView: View {
     // A4: Route swap animation
     @State private var routeSwapRotation: Double = 0
 
+    // FR-2: Hobbs start/end calculator
+    @State private var useHobbsCalculator = false
+    @State private var hobbsStart = ""
+    @State private var hobbsEnd = ""
+
     var isEditing: Bool { editingFlight != nil }
 
     // B1: Track whether the form has been modified
@@ -58,6 +63,8 @@ struct AddFlightView: View {
         if isEditing { return true } // Editing always counts as potentially dirty
         return !durationHobbs.isEmpty
             || !durationTach.isEmpty
+            || !hobbsStart.isEmpty
+            || !hobbsEnd.isEmpty
             || !routeFrom.isEmpty
             || !routeTo.isEmpty
             || landingsDay != 1
@@ -168,6 +175,10 @@ struct AddFlightView: View {
             if !lastFlight.cfiNumber.isEmpty {
                 cfiNumber = lastFlight.cfiNumber
             }
+            // FR-5: Auto-focus the first required empty field
+            focusedField = .hobbs
+        } else {
+            focusedField = .routeFrom
         }
     }
 
@@ -184,17 +195,70 @@ struct AddFlightView: View {
         }
     }
 
+    // MARK: - FR-1: Recent Routes
+
+    private var recentRoutes: [(from: String, to: String)] {
+        var seen = Set<String>()
+        var routes: [(from: String, to: String)] = []
+        for flight in recentFlights {
+            let key = "\(flight.routeFrom.uppercased())-\(flight.routeTo.uppercased())"
+            guard !key.isEmpty, key != "-", !seen.contains(key) else { continue }
+            seen.insert(key)
+            routes.append((from: flight.routeFrom, to: flight.routeTo))
+            if routes.count >= 5 { break }
+        }
+        return routes
+    }
+
     // MARK: - Date & Route
 
     private var dateAndRouteSection: some View {
         Section {
             DatePicker("Date", selection: $date, in: ...Date.now, displayedComponents: .date) // A3: Prevent future dates
 
+            // FR-1: Quick-pick recent routes
+            if !isEditing && recentRoutes.count > 1 {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(recentRoutes, id: \.from) { route in
+                            Button {
+                                routeFrom = route.from
+                                routeTo = route.to
+                                focusedField = .hobbs
+                                UISelectionFeedbackGenerator().selectionChanged()
+                            } label: {
+                                Text("\(route.from.uppercased()) → \(route.to.uppercased())")
+                                    .font(.system(.caption, design: .monospaced, weight: .medium))
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        routeFrom == route.from && routeTo == route.to
+                                            ? Color.skyBlue.opacity(0.2)
+                                            : Color.skyBlue.opacity(0.08)
+                                    )
+                                    .foregroundStyle(Color.skyBlue)
+                                    .clipShape(Capsule())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+            }
+
             HStack {
                 VStack(alignment: .leading) {
-                    Text("From")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    // FR-8: ICAO confidence indicator
+                    HStack(spacing: 4) {
+                        Text("From")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if routeFrom.trimmingCharacters(in: .whitespaces).count == 4 {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.currencyGreen)
+                        }
+                    }
                     TextField("ICAO", text: $routeFrom)
                         .textInputAutocapitalization(.characters)
                         .autocorrectionDisabled()
@@ -226,9 +290,17 @@ struct AddFlightView: View {
                 .accessibilityLabel("Swap departure and arrival")
 
                 VStack(alignment: .leading) {
-                    Text("To")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    // FR-8: ICAO confidence indicator
+                    HStack(spacing: 4) {
+                        Text("To")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if routeTo.trimmingCharacters(in: .whitespaces).count == 4 {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 10))
+                                .foregroundStyle(Color.currencyGreen)
+                        }
+                    }
                     TextField("ICAO", text: $routeTo)
                         .textInputAutocapitalization(.characters)
                         .autocorrectionDisabled()
@@ -243,20 +315,56 @@ struct AddFlightView: View {
         }
     }
 
-    // MARK: - Duration
+    // MARK: - Duration (FR-2: Optional start/end calculator)
 
     private var durationSection: some View {
         Section {
-            HStack {
-                Text("Hobbs")
-                Spacer()
-                TextField("0.0", text: $durationHobbs)
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .frame(width: 80)
-                    .focused($focusedField, equals: .hobbs)
-                Text("hrs")
-                    .foregroundStyle(.secondary)
+            if useHobbsCalculator {
+                // FR-2: Start/End Hobbs entry with auto-calculation
+                HStack {
+                    Text("Hobbs Start")
+                    Spacer()
+                    TextField("0.0", text: $hobbsStart)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 80)
+                        .focused($focusedField, equals: .hobbs)
+                }
+
+                HStack {
+                    Text("Hobbs End")
+                    Spacer()
+                    TextField("0.0", text: $hobbsEnd)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 80)
+                        .focused($focusedField, equals: .tach)
+                }
+
+                // Computed result
+                if let start = Double(hobbsStart), let end = Double(hobbsEnd), end > start {
+                    HStack {
+                        Text("Duration")
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text(String(format: "%.1f hrs", end - start))
+                            .foregroundStyle(Color.skyBlue)
+                            .fontWeight(.semibold)
+                            .contentTransition(.numericText())
+                    }
+                }
+            } else {
+                HStack {
+                    Text("Hobbs")
+                    Spacer()
+                    TextField("0.0", text: $durationHobbs)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 80)
+                        .focused($focusedField, equals: .hobbs)
+                    Text("hrs")
+                        .foregroundStyle(.secondary)
+                }
             }
 
             HStack {
@@ -271,7 +379,26 @@ struct AddFlightView: View {
                     .foregroundStyle(.secondary)
             }
         } header: {
-            Text("Duration")
+            HStack {
+                Text("Duration")
+                Spacer()
+                // FR-2: Toggle between direct entry and calculator
+                Button {
+                    withAnimation(.smooth(duration: 0.3)) {
+                        useHobbsCalculator.toggle()
+                    }
+                    if !useHobbsCalculator {
+                        // Sync calculated value back to durationHobbs
+                        if let start = Double(hobbsStart), let end = Double(hobbsEnd), end > start {
+                            durationHobbs = String(format: "%.1f", end - start)
+                        }
+                    }
+                } label: {
+                    Text(useHobbsCalculator ? "Direct Entry" : "Calculator")
+                        .font(.system(.caption2, design: .rounded))
+                        .foregroundStyle(Color.skyBlue)
+                }
+            }
         }
     }
 
@@ -343,6 +470,13 @@ struct AddFlightView: View {
     // MARK: - Save (A2 haptics, A3 validation)
 
     private func saveFlight() {
+        // FR-2: Sync calculator value before validation
+        if useHobbsCalculator {
+            if let start = Double(hobbsStart), let end = Double(hobbsEnd), end > start {
+                durationHobbs = String(format: "%.1f", end - start)
+            }
+        }
+
         // A3: Validate Hobbs
         guard let hobbs = Double(durationHobbs), hobbs > 0 else {
             validationMessage = "Please enter a valid Hobbs time."

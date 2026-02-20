@@ -36,6 +36,13 @@ enum CurrencyState: Comparable, Hashable {
         }
     }
 
+    // FR-7: Static formatter (avoid re-allocation on every render)
+    private static let shortDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter
+    }()
+
     // B4: Absolute date label for currency cards
     var absoluteDateLabel: String? {
         let calendar = Calendar.current
@@ -43,9 +50,7 @@ enum CurrencyState: Comparable, Hashable {
         switch self {
         case .valid(let days), .caution(let days):
             guard let date = calendar.date(byAdding: .day, value: days, to: now) else { return nil }
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d"
-            return formatter.string(from: date)
+            return Self.shortDateFormatter.string(from: date)
         case .expired:
             return nil
         }

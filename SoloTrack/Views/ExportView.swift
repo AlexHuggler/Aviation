@@ -63,7 +63,7 @@ struct ExportView: View {
                     withAnimation(.spring(duration: 0.3)) {
                         copied = true
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + AppTokens.Duration.toast) {
                         withAnimation(.easeOut(duration: 0.3)) {
                             copied = false
                         }
@@ -78,7 +78,7 @@ struct ExportView: View {
                     .font(.system(.body, design: .rounded, weight: .medium))
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(copied ? Color.currencyGreen.opacity(0.15) : Color(.tertiarySystemFill))
+                    .background(copied ? Color.currencyGreen.opacity(AppTokens.Opacity.light) : Color(.tertiarySystemFill))
                     .foregroundStyle(copied ? Color.currencyGreen : .primary)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                     .animation(.smooth(duration: 0.3), value: copied)
