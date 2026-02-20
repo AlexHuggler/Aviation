@@ -3,6 +3,7 @@ import SwiftData
 
 struct DashboardView: View {
     @Query(sort: \FlightLog.date, order: .reverse) private var flights: [FlightLog]
+    @Environment(OnboardingManager.self) private var onboarding
 
     // FR-3: Add Flight directly from Dashboard
     @State private var showingAddFlight = false
@@ -37,12 +38,39 @@ struct DashboardView: View {
             .sheet(isPresented: $showingAddFlight) {
                 AddFlightView()
             }
+            // Auto-open AddFlightView when onboarding intent is log/backfill
+            .onAppear {
+                if onboarding.shouldOpenAddFlight {
+                    onboarding.shouldOpenAddFlight = false
+                    // Small delay so the sheet presentation doesn't conflict
+                    // with the onboarding sheet dismissal
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        showingAddFlight = true
+                    }
+                }
+            }
         }
     }
 
-    // MARK: - Empty State (B5: staggered entrance animations)
+    // MARK: - Empty State
 
     private var emptyDashboard: some View {
+        Group {
+            if onboarding.hasCompletedOnboarding {
+                // Personalized empty state (post-onboarding)
+                PersonalizedEmptyDashboard {
+                    showingAddFlight = true
+                }
+            } else {
+                // Original empty state (pre-onboarding fallback)
+                genericEmptyDashboard
+            }
+        }
+    }
+
+    // MARK: - Generic Empty State (pre-onboarding fallback)
+
+    private var genericEmptyDashboard: some View {
         ScrollView {
             VStack(spacing: 24) {
                 Spacer(minLength: 40)
@@ -315,4 +343,5 @@ struct StatCard: View {
 #Preview {
     DashboardView()
         .modelContainer(for: FlightLog.self, inMemory: true)
+        .environment(OnboardingManager())
 }

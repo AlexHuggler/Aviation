@@ -48,6 +48,16 @@ enum AppTokens {
         static let strokeWidth: CGFloat = 12
         static let signatureHeight: CGFloat = 80
         static let inputWidth: CGFloat = 80
+        static let onboardingIcon: CGFloat = 56
+        static let coachMarkMaxWidth: CGFloat = 340
+    }
+
+    // Onboarding-specific
+    enum Onboarding {
+        static let sheetDetent: CGFloat = 0.92
+        static let cardInset: CGFloat = 24
+        static let stepTransitionDuration: Double = 0.5
+        static let autoOpenDelay: Double = 0.5
     }
 }
 
