@@ -4,6 +4,9 @@ import SwiftData
 struct PPLProgressView: View {
     @Query(sort: \FlightLog.date, order: .reverse) private var flights: [FlightLog]
 
+    // FR-4: Actionable empty state
+    @State private var showingAddFlight = false
+
     private let progressTracker = ProgressTracker()
 
     var body: some View {
@@ -20,13 +23,22 @@ struct PPLProgressView: View {
         }
     }
 
-    // MARK: - A8: Empty State
+    // MARK: - A8: Empty State (FR-4: Actionable CTA)
 
     private var emptyProgressState: some View {
         ContentUnavailableView {
             Label("No Progress Yet", systemImage: "chart.bar.fill")
         } description: {
             Text("Log your first flight to start tracking progress toward your Private Pilot License requirements under FAR 61.109.")
+        } actions: {
+            Button("Log Your First Flight") {
+                showingAddFlight = true
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Color.skyBlue)
+        }
+        .sheet(isPresented: $showingAddFlight) {
+            AddFlightView()
         }
     }
 
@@ -55,16 +67,16 @@ struct PPLProgressView: View {
 
             ZStack {
                 Circle()
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 12)
+                    .stroke(Color.gray.opacity(0.2), lineWidth: AppTokens.Size.strokeWidth)
 
                 Circle()
                     .trim(from: 0, to: overall)
                     .stroke(
                         Color.skyBlue,
-                        style: StrokeStyle(lineWidth: 12, lineCap: .round)
+                        style: StrokeStyle(lineWidth: AppTokens.Size.strokeWidth, lineCap: .round)
                     )
                     .rotationEffect(.degrees(-90))
-                    .animation(.easeInOut(duration: 0.8), value: overall)
+                    .motionAwareAnimation(.easeInOut(duration: 0.8), value: overall)
 
                 VStack(spacing: 4) {
                     Text("\(Int(overall * 100))%")
@@ -78,7 +90,7 @@ struct PPLProgressView: View {
                         .contentTransition(.numericText())
                 }
             }
-            .frame(width: 160, height: 160)
+            .frame(width: AppTokens.Size.progressRing, height: AppTokens.Size.progressRing)
             .accessibilityElement(children: .combine)
             .accessibilityLabel("\(Int(overall * 100)) percent complete. \(met) of \(total) requirements met.")
         }
@@ -135,17 +147,17 @@ struct RequirementRow: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.gray.opacity(0.15))
+                        .fill(Color.gray.opacity(AppTokens.Opacity.light))
 
                     RoundedRectangle(cornerRadius: 6)
                         .fill(progressColor)
                         .frame(width: geometry.size.width * requirement.progress)
-                        .animation(.easeInOut(duration: 0.6), value: requirement.progress)
+                        .motionAwareAnimation(.easeInOut(duration: 0.6), value: requirement.progress)
 
                     // Milestone tick marks at 25%, 50%, 75%
                     ForEach([0.25, 0.5, 0.75], id: \.self) { milestone in
                         Rectangle()
-                            .fill(Color.primary.opacity(0.15))
+                            .fill(Color.primary.opacity(AppTokens.Opacity.light))
                             .frame(width: 1.5, height: 10)
                             .offset(x: geometry.size.width * milestone)
                     }

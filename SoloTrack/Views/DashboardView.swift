@@ -4,6 +4,9 @@ import SwiftData
 struct DashboardView: View {
     @Query(sort: \FlightLog.date, order: .reverse) private var flights: [FlightLog]
 
+    // FR-3: Add Flight directly from Dashboard
+    @State private var showingAddFlight = false
+
     private let currencyManager = CurrencyManager()
     private let progressTracker = ProgressTracker()
 
@@ -18,6 +21,22 @@ struct DashboardView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("SoloTrack")
+            // FR-3: Toolbar button to add flight from Dashboard
+            .toolbar {
+                if !flights.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showingAddFlight = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.title3)
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddFlight) {
+                AddFlightView()
+            }
         }
     }
 
@@ -52,9 +71,18 @@ struct DashboardView: View {
                 .padding()
                 .cardStyle()
 
-                Text("Tap the Logbook tab to get started")
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(.tertiary)
+                // FR-3: Actionable CTA instead of passive text
+                Button {
+                    showingAddFlight = true
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Log Your First Flight")
+                    }
+                    .font(.system(.body, design: .rounded, weight: .semibold))
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color.skyBlue)
 
                 Spacer()
             }
@@ -73,8 +101,46 @@ struct DashboardView: View {
                 headerSection(dayCurrency: dayCurrency)
                 currencySection(dayCurrency: dayCurrency, nightCurrency: nightCurrency)
                 quickStatsSection
+                progressNudgeSection
             }
             .padding()
+        }
+    }
+
+    // MARK: - PX-1: Motivational Progress Nudge
+
+    private var progressNudgeSection: some View {
+        let requirements = progressTracker.computeRequirements(from: flights)
+        let nextGoal = requirements
+            .filter { !$0.isMet }
+            .min { $0.remainingHours < $1.remainingHours }
+
+        return Group {
+            if let goal = nextGoal {
+                HStack(spacing: AppTokens.Spacing.lg) {
+                    Image(systemName: "target")
+                        .font(.title2)
+                        .foregroundStyle(Color.skyBlue)
+
+                    VStack(alignment: .leading, spacing: AppTokens.Spacing.xxs) {
+                        Text("NEXT MILESTONE")
+                            .sectionHeaderStyle()
+                        Text("\(String(format: "%.1f", goal.remainingHours)) hrs to \(goal.title)")
+                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                        Text(goal.farReference)
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    Text("\(goal.percentComplete)%")
+                        .font(.system(.title3, design: .rounded, weight: .bold))
+                        .foregroundStyle(Color.skyBlue)
+                        .contentTransition(.numericText())
+                }
+                .cardStyle()
+            }
         }
     }
 
@@ -96,7 +162,7 @@ struct DashboardView: View {
                     .contentTransition(.numericText())
             }
             .foregroundStyle(overallLegal ? Color.currencyGreen : Color.warningRed)
-            .animation(.smooth(duration: 0.4), value: overallLegal)
+            .motionAwareAnimation(.smooth(duration: 0.4), value: overallLegal)
             // A6: VoiceOver accessibility
             .accessibilityElement(children: .combine)
             .accessibilityLabel(overallLegal ? "You are current to fly" : "You are not current to fly")
@@ -215,7 +281,7 @@ struct CurrencyCard: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(state.color.opacity(0.4), lineWidth: 2)
         )
-        .animation(.smooth(duration: 0.4), value: state)
+        .motionAwareAnimation(.smooth(duration: 0.4), value: state)
         // A6: Accessibility — combine children and provide descriptive label
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title) currency: \(state.label)")
