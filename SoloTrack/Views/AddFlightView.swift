@@ -57,6 +57,13 @@ struct AddFlightView: View {
     @State private var hobbsStart = ""
     @State private var hobbsEnd = ""
 
+    // C-2 fix: Track initial defaults so isFormDirty compares against them, not hardcoded false
+    @State private var initialIsSolo = false
+    @State private var initialIsDualReceived = false
+    @State private var initialRouteFrom = ""
+    @State private var initialRouteTo = ""
+    @State private var initialCfiNumber = ""
+
     var isEditing: Bool { editingFlight != nil }
 
     // B1: Track whether the form has been modified
@@ -66,12 +73,12 @@ struct AddFlightView: View {
             || !durationTach.isEmpty
             || !hobbsStart.isEmpty
             || !hobbsEnd.isEmpty
-            || !routeFrom.isEmpty
-            || !routeTo.isEmpty
+            || routeFrom != initialRouteFrom
+            || routeTo != initialRouteTo
             || landingsDay != 1
             || landingsNightFullStop != 0
-            || isSolo
-            || isDualReceived
+            || isSolo != initialIsSolo
+            || isDualReceived != initialIsDualReceived
             || isCrossCountry
             || isSimulatedInstrument
             || !remarks.isEmpty
@@ -184,6 +191,13 @@ struct AddFlightView: View {
             isDualReceived = onboarding.trainingStage.defaultIsDualReceived
             focusedField = .routeFrom
         }
+
+        // C-2 fix: Snapshot initial state so isFormDirty compares against applied defaults
+        initialIsSolo = isSolo
+        initialIsDualReceived = isDualReceived
+        initialRouteFrom = routeFrom
+        initialRouteTo = routeTo
+        initialCfiNumber = cfiNumber
     }
 
     // MARK: - A7: Keyboard Focus Advancement
@@ -201,14 +215,14 @@ struct AddFlightView: View {
 
     // MARK: - FR-1: Recent Routes
 
-    private var recentRoutes: [(from: String, to: String)] {
+    private var recentRoutes: [(id: String, from: String, to: String)] {
         var seen = Set<String>()
-        var routes: [(from: String, to: String)] = []
+        var routes: [(id: String, from: String, to: String)] = []
         for flight in recentFlights {
             let key = "\(flight.routeFrom.uppercased())-\(flight.routeTo.uppercased())"
             guard !key.isEmpty, key != "-", !seen.contains(key) else { continue }
             seen.insert(key)
-            routes.append((from: flight.routeFrom, to: flight.routeTo))
+            routes.append((id: key, from: flight.routeFrom, to: flight.routeTo))
             if routes.count >= 5 { break }
         }
         return routes
@@ -224,7 +238,7 @@ struct AddFlightView: View {
             if !isEditing && recentRoutes.count > 1 {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
-                        ForEach(recentRoutes, id: \.from) { route in
+                        ForEach(recentRoutes, id: \.id) { route in
                             Button {
                                 routeFrom = route.from
                                 routeTo = route.to

@@ -123,13 +123,15 @@ struct DashboardView: View {
     private var populatedDashboard: some View {
         let dayCurrency = currencyManager.dayCurrency(flights: flights)
         let nightCurrency = currencyManager.nightCurrency(flights: flights)
+        // H-2 fix: Compute requirements once and pass through
+        let requirements = progressTracker.computeRequirements(from: flights)
 
         return ScrollView {
             VStack(spacing: 20) {
                 headerSection(dayCurrency: dayCurrency)
                 currencySection(dayCurrency: dayCurrency, nightCurrency: nightCurrency)
-                quickStatsSection
-                progressNudgeSection
+                quickStatsSection(requirements: requirements)
+                progressNudgeSection(requirements: requirements)
             }
             .padding()
         }
@@ -137,8 +139,7 @@ struct DashboardView: View {
 
     // MARK: - PX-1: Motivational Progress Nudge
 
-    private var progressNudgeSection: some View {
-        let requirements = progressTracker.computeRequirements(from: flights)
+    private func progressNudgeSection(requirements: [PPLRequirement]) -> some View {
         let nextGoal = requirements
             .filter { !$0.isMet }
             .min { $0.remainingHours < $1.remainingHours }
@@ -225,7 +226,7 @@ struct DashboardView: View {
 
     // MARK: - Quick Stats
 
-    private var quickStatsSection: some View {
+    private func quickStatsSection(requirements: [PPLRequirement]) -> some View {
         VStack(spacing: 12) {
             Text("QUICK STATS")
                 .sectionHeaderStyle()
@@ -233,8 +234,8 @@ struct DashboardView: View {
 
             let totalHours = flights.reduce(0.0) { $0 + $1.durationHobbs }
             let totalFlights = flights.count
-            let met = progressTracker.requirementsMet(from: flights)
-            let total = progressTracker.totalRequirements()
+            let met = requirements.filter(\.isMet).count
+            let total = requirements.count
 
             LazyVGrid(columns: [
                 GridItem(.flexible()),

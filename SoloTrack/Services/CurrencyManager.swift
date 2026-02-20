@@ -71,7 +71,9 @@ struct CurrencyManager {
     // MARK: - Day Currency (FAR 61.57(a))
 
     func dayCurrency(flights: [FlightLog], asOf referenceDate: Date = .now) -> CurrencyState {
-        let windowStart = calendar.date(byAdding: .day, value: -lookbackDays, to: referenceDate)!
+        guard let windowStart = calendar.date(byAdding: .day, value: -lookbackDays, to: referenceDate) else {
+            return .expired(daysSince: 0)
+        }
 
         let recentFlights = flights
             .filter { $0.date >= windowStart && $0.date <= referenceDate }
@@ -99,7 +101,9 @@ struct CurrencyManager {
     // MARK: - Night Currency (FAR 61.57(b))
 
     func nightCurrency(flights: [FlightLog], asOf referenceDate: Date = .now) -> CurrencyState {
-        let windowStart = calendar.date(byAdding: .day, value: -lookbackDays, to: referenceDate)!
+        guard let windowStart = calendar.date(byAdding: .day, value: -lookbackDays, to: referenceDate) else {
+            return .expired(daysSince: 0)
+        }
 
         let recentFlights = flights
             .filter { $0.date >= windowStart && $0.date <= referenceDate }
@@ -142,7 +146,7 @@ struct CurrencyManager {
             }
         }
 
-        return calendar.date(byAdding: .day, value: lookbackDays, to: oldestNeededDate)!
+        return calendar.date(byAdding: .day, value: lookbackDays, to: oldestNeededDate) ?? referenceDate
     }
 
     // MARK: - Expired State
@@ -155,7 +159,9 @@ struct CurrencyManager {
             return .expired(daysSince: 0)
         }
 
-        let lastPossibleExpiry = calendar.date(byAdding: .day, value: lookbackDays, to: lastFlight.date)!
+        guard let lastPossibleExpiry = calendar.date(byAdding: .day, value: lookbackDays, to: lastFlight.date) else {
+            return .expired(daysSince: 0)
+        }
         if lastPossibleExpiry < referenceDate {
             let daysSince = calendar.dateComponents([.day], from: lastPossibleExpiry, to: referenceDate).day ?? 0
             return .expired(daysSince: daysSince)
