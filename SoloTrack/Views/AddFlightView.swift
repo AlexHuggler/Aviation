@@ -4,6 +4,7 @@ import SwiftData
 struct AddFlightView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(OnboardingManager.self) private var onboarding
 
     // Smart defaults: read most recent flight for pre-population (A1)
     @Query(sort: \FlightLog.date, order: .reverse, animation: .none) private var recentFlights: [FlightLog]
@@ -178,6 +179,9 @@ struct AddFlightView: View {
             // FR-5: Auto-focus the first required empty field
             focusedField = .hobbs
         } else {
+            // Persona-based defaults for first-ever flight
+            isSolo = onboarding.trainingStage.defaultIsSolo
+            isDualReceived = onboarding.trainingStage.defaultIsDualReceived
             focusedField = .routeFrom
         }
     }
@@ -556,4 +560,5 @@ struct AddFlightView: View {
 #Preview {
     AddFlightView()
         .modelContainer(for: FlightLog.self, inMemory: true)
+        .environment(OnboardingManager())
 }
