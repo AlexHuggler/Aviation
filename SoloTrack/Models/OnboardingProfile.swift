@@ -188,42 +188,31 @@ enum CoachMarkStep: Int, CaseIterable, Codable, Comparable {
 
 // MARK: - Onboarding State Manager
 
-/// Centralized onboarding state using @AppStorage for persistence.
-/// Injected as an @Observable class so all views react to changes.
-@Observable
+/// Centralized onboarding state with @Observable tracking.
+/// Stored properties are tracked by the @Observable macro; UserDefaults is used
+/// for persistence only (synced in didSet, restored in init).
+@MainActor @Observable
 final class OnboardingManager {
-    // MARK: - Persisted State
+    // MARK: - Persisted State (backed by stored properties for @Observable tracking)
 
     /// Whether the user has completed the initial questionnaire.
     var hasCompletedOnboarding: Bool {
-        get { UserDefaults.standard.bool(forKey: "onboarding_completed") }
-        set { UserDefaults.standard.set(newValue, forKey: "onboarding_completed") }
+        didSet { UserDefaults.standard.set(hasCompletedOnboarding, forKey: Keys.onboardingCompleted) }
     }
 
     /// Whether the interactive tour has been completed or dismissed.
     var hasCompletedTour: Bool {
-        get { UserDefaults.standard.bool(forKey: "tour_completed") }
-        set { UserDefaults.standard.set(newValue, forKey: "tour_completed") }
+        didSet { UserDefaults.standard.set(hasCompletedTour, forKey: Keys.tourCompleted) }
     }
 
     /// The user's selected training stage.
     var trainingStage: TrainingStage {
-        get {
-            guard let raw = UserDefaults.standard.string(forKey: "training_stage"),
-                  let stage = TrainingStage(rawValue: raw) else { return .preSolo }
-            return stage
-        }
-        set { UserDefaults.standard.set(newValue.rawValue, forKey: "training_stage") }
+        didSet { UserDefaults.standard.set(trainingStage.rawValue, forKey: Keys.trainingStage) }
     }
 
     /// What the user chose to do after onboarding.
     var gettingStartedIntent: GettingStartedIntent {
-        get {
-            guard let raw = UserDefaults.standard.string(forKey: "getting_started_intent"),
-                  let intent = GettingStartedIntent(rawValue: raw) else { return .explore }
-            return intent
-        }
-        set { UserDefaults.standard.set(newValue.rawValue, forKey: "getting_started_intent") }
+        didSet { UserDefaults.standard.set(gettingStartedIntent.rawValue, forKey: Keys.gettingStartedIntent) }
     }
 
     // MARK: - Transient Tour State
@@ -237,12 +226,44 @@ final class OnboardingManager {
     /// Whether we should auto-open AddFlightView after onboarding.
     var shouldOpenAddFlight: Bool = false
 
+    // MARK: - UserDefaults Keys
+
+    private enum Keys {
+        static let onboardingCompleted = "onboarding_completed"
+        static let tourCompleted = "tour_completed"
+        static let trainingStage = "training_stage"
+        static let gettingStartedIntent = "getting_started_intent"
+    }
+
+    // MARK: - Init (restore from UserDefaults)
+
+    init() {
+        let defaults = UserDefaults.standard
+        self.hasCompletedOnboarding = defaults.bool(forKey: Keys.onboardingCompleted)
+        self.hasCompletedTour = defaults.bool(forKey: Keys.tourCompleted)
+
+        if let raw = defaults.string(forKey: Keys.trainingStage),
+           let stage = TrainingStage(rawValue: raw) {
+            self.trainingStage = stage
+        } else {
+            self.trainingStage = .preSolo
+        }
+
+        if let raw = defaults.string(forKey: Keys.gettingStartedIntent),
+           let intent = GettingStartedIntent(rawValue: raw) {
+            self.gettingStartedIntent = intent
+        } else {
+            self.gettingStartedIntent = .explore
+        }
+    }
+
     // MARK: - Actions
 
     func completeOnboarding(stage: TrainingStage, intent: GettingStartedIntent) {
         trainingStage = stage
         gettingStartedIntent = intent
         hasCompletedOnboarding = true
+        showOnboardingSheet = false
 
         switch intent {
         case .logFresh, .backfill:
@@ -277,7 +298,7 @@ final class OnboardingManager {
         currentCoachStep = nil
         showOnboardingSheet = false
         shouldOpenAddFlight = false
-        UserDefaults.standard.removeObject(forKey: "training_stage")
-        UserDefaults.standard.removeObject(forKey: "getting_started_intent")
+        trainingStage = .preSolo
+        gettingStartedIntent = .explore
     }
 }

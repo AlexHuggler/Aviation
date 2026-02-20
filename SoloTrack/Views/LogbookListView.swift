@@ -206,7 +206,7 @@ struct LogbookListView: View {
         // Hours this month
         let now = Date.now
         let calendar = Calendar.current
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now))!
+        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) ?? now
         let monthHours = flights
             .filter { $0.date >= startOfMonth }
             .reduce(0.0) { $0 + $1.durationHobbs }
@@ -560,4 +560,5 @@ struct DetailItem: View {
 #Preview {
     LogbookListView()
         .modelContainer(for: FlightLog.self, inMemory: true)
+        .environment(OnboardingManager())
 }

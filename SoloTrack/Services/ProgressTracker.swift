@@ -3,7 +3,8 @@ import Foundation
 // MARK: - PPL Requirement
 
 struct PPLRequirement: Identifiable {
-    let id = UUID()
+    /// Stable identity based on FAR reference — prevents ForEach from recreating views on every query update.
+    var id: String { farReference }
     let title: String
     let farReference: String
     let goalHours: Double
