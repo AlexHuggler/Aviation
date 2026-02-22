@@ -9,6 +9,7 @@ struct SoloTrackApp: App {
         WindowGroup {
             ContentView()
                 .environment(onboarding)
+                .notificationCoordinator()
         }
         .modelContainer(for: FlightLog.self)
     }
