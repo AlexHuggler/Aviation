@@ -8,6 +8,9 @@ struct DashboardView: View {
     // FR-3: Add Flight directly from Dashboard
     @State private var showingAddFlight = false
 
+    // Save confirmation toast
+    @State private var showSavedToast = false
+
     private let currencyManager = CurrencyManager()
     private let progressTracker = ProgressTracker()
 
@@ -32,22 +35,48 @@ struct DashboardView: View {
                             Image(systemName: "plus")
                                 .font(.title3)
                         }
+                        .keyboardShortcut("n", modifiers: .command)
                     }
                 }
             }
             .sheet(isPresented: $showingAddFlight) {
-                AddFlightView()
+                AddFlightView(onSave: {
+                    showSavedToast = true
+                })
+            }
+            // Save confirmation overlay
+            .overlay(alignment: .top) {
+                if showSavedToast {
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(Color.currencyGreen)
+                        Text("Flight saved")
+                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
+                    .padding(.top, 8)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            .motionAwareAnimation(.spring(duration: 0.4), value: showSavedToast)
+            .sensoryFeedback(.success, trigger: showSavedToast)
+            .task(id: showSavedToast) {
+                guard showSavedToast else { return }
+                try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
+                withAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
             }
             // Auto-open AddFlightView when onboarding intent is log/backfill
-            .onAppear {
-                if onboarding.shouldOpenAddFlight {
-                    onboarding.shouldOpenAddFlight = false
-                    // Small delay so the sheet presentation doesn't conflict
-                    // with the onboarding sheet dismissal
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        showingAddFlight = true
-                    }
-                }
+            .task {
+                guard onboarding.shouldOpenAddFlight else { return }
+                onboarding.shouldOpenAddFlight = false
+                // Small delay so the sheet presentation doesn't conflict
+                // with the onboarding sheet dismissal
+                try? await Task.sleep(for: .seconds(AppTokens.Onboarding.autoOpenDelay))
+                showingAddFlight = true
             }
         }
     }
@@ -276,6 +305,20 @@ struct CurrencyCard: View {
     let icon: String
     let state: CurrencyState
 
+    /// Ambient urgency gradient: green→green when safe, green→yellow when approaching, yellow→red when critical
+    private var urgencyGradient: LinearGradient {
+        switch state {
+        case .valid(let days) where days > 60:
+            return LinearGradient(colors: [.currencyGreen.opacity(0.4), .currencyGreen.opacity(0.4)], startPoint: .top, endPoint: .bottom)
+        case .valid(let days) where days > 30:
+            return LinearGradient(colors: [.currencyGreen.opacity(0.4), .cautionYellow.opacity(0.4)], startPoint: .top, endPoint: .bottom)
+        case .valid, .caution:
+            return LinearGradient(colors: [.cautionYellow.opacity(0.4), .warningRed.opacity(0.4)], startPoint: .top, endPoint: .bottom)
+        case .expired:
+            return LinearGradient(colors: [.warningRed.opacity(0.4), .warningRed.opacity(0.4)], startPoint: .top, endPoint: .bottom)
+        }
+    }
+
     var body: some View {
         VStack(spacing: 10) {
             Image(systemName: state.iconName)
@@ -307,8 +350,8 @@ struct CurrencyCard: View {
         .frame(maxWidth: .infinity)
         .cardStyle()
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(state.color.opacity(0.4), lineWidth: 2)
+            RoundedRectangle(cornerRadius: AppTokens.Radius.card)
+                .stroke(urgencyGradient, lineWidth: 2)
         )
         .motionAwareAnimation(.smooth(duration: 0.4), value: state)
         // A6: Accessibility — combine children and provide descriptive label

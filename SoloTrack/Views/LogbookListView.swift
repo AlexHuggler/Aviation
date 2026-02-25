@@ -18,8 +18,6 @@ struct LogbookListView: View {
     // A1: Search & filter
     @State private var searchText = ""
 
-    // B2: Duplicate flight
-    @State private var duplicatingFlight: FlightLog?
 
     // D2: Static date formatter (avoid re-allocation on every group call)
     private static let monthFormatter: DateFormatter = {
@@ -61,6 +59,7 @@ struct LogbookListView: View {
                         Image(systemName: "square.and.arrow.up")
                     }
                     .disabled(flights.isEmpty)
+                    .keyboardShortcut("e", modifiers: .command)
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
@@ -70,6 +69,7 @@ struct LogbookListView: View {
                         Image(systemName: "plus")
                             .font(.title3)
                     }
+                    .keyboardShortcut("n", modifiers: .command)
                 }
             }
             // A2: Fixed — toast only fires via onSave callback, not onDismiss
@@ -77,17 +77,6 @@ struct LogbookListView: View {
                 AddFlightView(onSave: {
                     showSavedToast = true
                 })
-            }
-            // B2: Duplicate sheet
-            .sheet(item: $duplicatingFlight) { flight in
-                AddFlightView(
-                    editingFlight: nil,
-                    onSave: { showSavedToast = true }
-                )
-                .onAppear {
-                    // The duplicate pre-fills via a new flight with today's date
-                    // handled by creating a temporary flight and passing values
-                }
             }
             .sheet(isPresented: $showingExportSheet) {
                 ExportView(csvContent: exportedCSV)
@@ -102,16 +91,15 @@ struct LogbookListView: View {
                 if showSavedToast {
                     SavedToastView()
                         .transition(.move(edge: .top).combined(with: .opacity))
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + AppTokens.Duration.toast) {
-                                withAnimation(.easeOut(duration: 0.3)) {
-                                    showSavedToast = false
-                                }
-                            }
-                        }
                 }
             }
             .motionAwareAnimation(.spring(duration: 0.4), value: showSavedToast)
+            // H-5 fix: Structured concurrency auto-cancels on view dismissal
+            .task(id: showSavedToast) {
+                guard showSavedToast else { return }
+                try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
+                withAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
+            }
         }
     }
 
@@ -143,8 +131,8 @@ struct LogbookListView: View {
                 Section {
                     ForEach(section.flights) { flight in
                         NavigationLink {
-                            FlightDetailView(flight: flight, onDuplicate: { duplicatedFlight in
-                                duplicatingFlight = duplicatedFlight
+                            FlightDetailView(flight: flight, onDuplicate: { source in
+                                duplicateFlight(source)
                             })
                         } label: {
                             FlightRow(flight: flight)
@@ -162,10 +150,10 @@ struct LogbookListView: View {
                             Button(role: .destructive) {
                                 if flight.isSignatureLocked {
                                     showLockedDeleteAlert = true
-                                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                                    HapticService.error()
                                 } else {
                                     modelContext.delete(flight)
-                                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                    HapticService.success()
                                 }
                             } label: {
                                 Label("Delete", systemImage: "trash")
@@ -251,10 +239,10 @@ struct LogbookListView: View {
             let flight = sectionFlights[index]
             if flight.isSignatureLocked {
                 showLockedDeleteAlert = true
-                UINotificationFeedbackGenerator().notificationOccurred(.error)
+                HapticService.error()
             } else {
                 modelContext.delete(flight)
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                HapticService.success()
             }
         }
     }
@@ -277,7 +265,7 @@ struct LogbookListView: View {
             remarks: source.remarks
         )
         modelContext.insert(newFlight)
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        HapticService.success()
         showSavedToast = true
     }
 }
@@ -517,9 +505,18 @@ struct FlightDetailView: View {
         .navigationTitle("Flight Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            // B6: Edit button for unsigned flights
-            if flight.isEditable {
-                ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                // B2: Duplicate button
+                if let onDuplicate {
+                    Button {
+                        onDuplicate(flight)
+                        HapticService.success()
+                    } label: {
+                        Image(systemName: "doc.on.doc")
+                    }
+                }
+                // B6: Edit button for unsigned flights
+                if flight.isEditable {
                     Button("Edit") {
                         showingEditSheet = true
                     }
@@ -533,7 +530,7 @@ struct FlightDetailView: View {
             Button("Cancel", role: .cancel) {}
             Button("Void", role: .destructive) {
                 flight.voidSignature()
-                UINotificationFeedbackGenerator().notificationOccurred(.warning)
+                HapticService.warning()
             }
         } message: {
             Text("This will remove the CFI endorsement and unlock the flight for editing. The instructor will need to re-sign.")

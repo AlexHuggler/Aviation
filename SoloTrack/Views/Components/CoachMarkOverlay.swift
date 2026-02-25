@@ -109,7 +109,7 @@ struct CoachMarkOverlay: View {
     }
 
     private func advanceOrDismiss() {
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        HapticService.lightImpact()
         if step == .tourComplete {
             onboarding.completeTour()
         } else {

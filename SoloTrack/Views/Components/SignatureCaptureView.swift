@@ -117,10 +117,10 @@ struct SignatureCaptureView: View {
     private func captureSignature() {
         let image = canvasView.drawing.image(
             from: canvasView.bounds,
-            scale: UIScreen.main.scale
+            scale: UITraitCollection.current.displayScale
         )
         signatureData = image.pngData()
         hasDrawn = true
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        HapticService.success()
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - PX-4: Design Tokens
 
@@ -91,6 +92,20 @@ extension CurrencyState {
         case .expired: return "xmark.shield.fill"
         }
     }
+}
+
+// MARK: - Haptic Service (M-8 fix: centralized, pre-allocated generators)
+
+enum HapticService {
+    private static let notification = UINotificationFeedbackGenerator()
+    private static let selection = UISelectionFeedbackGenerator()
+    private static let impact = UIImpactFeedbackGenerator(style: .light)
+
+    static func success() { notification.notificationOccurred(.success) }
+    static func error() { notification.notificationOccurred(.error) }
+    static func warning() { notification.notificationOccurred(.warning) }
+    static func selectionChanged() { selection.selectionChanged() }
+    static func lightImpact() { impact.impactOccurred() }
 }
 
 // MARK: - View Modifiers

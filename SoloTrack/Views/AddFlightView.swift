@@ -57,6 +57,11 @@ struct AddFlightView: View {
     @State private var hobbsStart = ""
     @State private var hobbsEnd = ""
 
+    // Quick-Entry mode: keep form open after save for rapid backfill
+    @State private var quickEntryMode = false
+    @State private var quickEntrySaved = false
+    @State private var quickEntryCount = 0
+
     // C-2 fix: Track initial defaults so isFormDirty compares against them, not hardcoded false
     @State private var initialIsSolo = false
     @State private var initialIsDualReceived = false
@@ -65,6 +70,35 @@ struct AddFlightView: View {
     @State private var initialCfiNumber = ""
 
     var isEditing: Bool { editingFlight != nil }
+
+    // MARK: - Inline Validation
+
+    /// Parsed Hobbs value (nil if empty or unparseable)
+    private var parsedHobbs: Double? {
+        if useHobbsCalculator {
+            guard let start = Double(hobbsStart), let end = Double(hobbsEnd), end > start else { return nil }
+            return end - start
+        }
+        return Double(durationHobbs)
+    }
+
+    /// True when the Hobbs field has user input that doesn't parse to a valid number
+    private var hobbsHasError: Bool {
+        let input = useHobbsCalculator ? hobbsStart : durationHobbs
+        guard !input.isEmpty else { return false }
+        return parsedHobbs == nil || parsedHobbs == 0
+    }
+
+    /// True when user has zeroed out both landing fields
+    private var landingsHaveError: Bool {
+        landingsDay == 0 && landingsNightFullStop == 0
+    }
+
+    /// Core save requirements met (inline — excludes soft warnings like >12h)
+    private var saveEnabled: Bool {
+        guard let hobbs = parsedHobbs, hobbs > 0 else { return false }
+        return !landingsHaveError
+    }
 
     // B1: Track whether the form has been modified
     private var isFormDirty: Bool {
@@ -102,6 +136,28 @@ struct AddFlightView: View {
             }
             .navigationTitle(isEditing ? "Edit Flight" : "Log Flight")
             .navigationBarTitleDisplayMode(.inline)
+            // Quick-Entry inline success toast
+            .overlay(alignment: .top) {
+                if quickEntrySaved {
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(Color.currencyGreen)
+                        Text("Saved! (\(quickEntryCount))")
+                            .font(.system(.caption, design: .rounded, weight: .semibold))
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Color.currencyGreen.opacity(AppTokens.Opacity.light))
+                    .clipShape(Capsule())
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            .motionAwareAnimation(.spring(duration: 0.3), value: quickEntrySaved)
+            .task(id: quickEntrySaved) {
+                guard quickEntrySaved else { return }
+                try? await Task.sleep(for: .seconds(1.5))
+                withAnimation(.easeOut(duration: 0.3)) { quickEntrySaved = false }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -114,8 +170,23 @@ struct AddFlightView: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") { saveFlight() }
-                        .fontWeight(.semibold)
+                    HStack(spacing: 12) {
+                        // Quick-Entry toggle (only for new flights)
+                        if !isEditing {
+                            Button {
+                                quickEntryMode.toggle()
+                                HapticService.selectionChanged()
+                            } label: {
+                                Image(systemName: quickEntryMode ? "bolt.fill" : "bolt")
+                                    .font(.caption)
+                                    .foregroundStyle(quickEntryMode ? Color.skyBlue : .secondary)
+                            }
+                            .accessibilityLabel(quickEntryMode ? "Quick entry on" : "Quick entry off")
+                        }
+                        Button("Save") { saveFlight() }
+                            .fontWeight(.semibold)
+                            .disabled(!saveEnabled)
+                    }
                 }
                 // A7: Next/Done keyboard toolbar for field advancement
                 ToolbarItemGroup(placement: .keyboard) {
@@ -243,7 +314,7 @@ struct AddFlightView: View {
                                 routeFrom = route.from
                                 routeTo = route.to
                                 focusedField = .hobbs
-                                UISelectionFeedbackGenerator().selectionChanged()
+                                HapticService.selectionChanged()
                             } label: {
                                 Text("\(route.from.uppercased()) → \(route.to.uppercased())")
                                     .font(.system(.caption, design: .monospaced, weight: .medium))
@@ -294,7 +365,7 @@ struct AddFlightView: View {
                     withAnimation(.spring(duration: 0.3)) {
                         routeSwapRotation += 180
                     }
-                    UISelectionFeedbackGenerator().selectionChanged()
+                    HapticService.selectionChanged()
                 } label: {
                     Image(systemName: "arrow.left.arrow.right")
                         .font(.caption)
@@ -374,6 +445,7 @@ struct AddFlightView: View {
             } else {
                 HStack {
                     Text("Hobbs")
+                        .foregroundStyle(hobbsHasError ? Color.warningRed : .primary)
                     Spacer()
                     TextField("0.0", text: $durationHobbs)
                         .keyboardType(.decimalPad)
@@ -381,7 +453,7 @@ struct AddFlightView: View {
                         .frame(width: 80)
                         .focused($focusedField, equals: .hobbs)
                     Text("hrs")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(hobbsHasError ? Color.warningRed.opacity(0.6) : .secondary)
                 }
             }
 
@@ -428,6 +500,12 @@ struct AddFlightView: View {
                 .sensoryFeedback(.increase, trigger: landingsDay)
             Stepper("Night Full-Stop: \(landingsNightFullStop)", value: $landingsNightFullStop, in: 0...99)
                 .sensoryFeedback(.increase, trigger: landingsNightFullStop)
+
+            if landingsHaveError {
+                Text("Every flight needs at least one landing")
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(Color.warningRed)
+            }
         } header: {
             Text("Landings")
         }
@@ -499,7 +577,7 @@ struct AddFlightView: View {
         guard let hobbs = Double(durationHobbs), hobbs > 0 else {
             validationMessage = "Please enter a valid Hobbs time."
             showingValidationAlert = true
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            HapticService.error()
             return
         }
 
@@ -507,7 +585,7 @@ struct AddFlightView: View {
         if hobbs > 12 {
             validationMessage = "Hobbs time exceeds 12 hours. Please verify this is correct."
             showingValidationAlert = true
-            UINotificationFeedbackGenerator().notificationOccurred(.warning)
+            HapticService.warning()
             return
         }
 
@@ -515,7 +593,7 @@ struct AddFlightView: View {
         if landingsDay == 0 && landingsNightFullStop == 0 {
             validationMessage = "Every flight needs at least one landing. Please add your landing count."
             showingValidationAlert = true
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
+            HapticService.error()
             return
         }
 
@@ -565,9 +643,32 @@ struct AddFlightView: View {
         }
 
         // A2: Success haptic + callback
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        HapticService.success()
         onSave?()
-        dismiss()
+
+        if quickEntryMode && !isEditing {
+            // Quick-Entry: reset for next flight, keep route + categories
+            quickEntryCount += 1
+            withAnimation(.spring(duration: 0.3)) {
+                quickEntrySaved = true
+            }
+            // Advance date by 1 day, clear durations & remarks
+            if let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: date) {
+                date = nextDay
+            }
+            durationHobbs = ""
+            durationTach = ""
+            hobbsStart = ""
+            hobbsEnd = ""
+            landingsDay = 1
+            landingsNightFullStop = 0
+            remarks = ""
+            signatureData = nil
+            // Keep: routeFrom, routeTo, isSolo, isDualReceived, isCrossCountry, isSimulatedInstrument, cfiNumber
+            focusedField = .hobbs
+        } else {
+            dismiss()
+        }
     }
 }
 
