@@ -53,17 +53,6 @@ enum TrainingStage: String, CaseIterable, Codable {
         }
     }
 
-    // MARK: - Branching Logic: Dashboard Emphasis
-
-    /// Which dashboard section should be visually highlighted for this persona.
-    var primaryDashboardFocus: DashboardFocus {
-        switch self {
-        case .preSolo: return .currency
-        case .postSolo: return .progress
-        case .checkridPrep: return .progressGaps
-        }
-    }
-
     /// Motivational greeting shown after onboarding completes.
     var welcomeMessage: String {
         switch self {
@@ -75,14 +64,6 @@ enum TrainingStage: String, CaseIterable, Codable {
             return "The finish line is in sight. Let's make sure every requirement is checked off."
         }
     }
-}
-
-// MARK: - Dashboard Focus
-
-enum DashboardFocus: String, Codable {
-    case currency       // Emphasize Day/Night currency cards
-    case progress       // Emphasize PPL progress ring
-    case progressGaps   // Emphasize unmet requirements
 }
 
 // MARK: - Getting Started Intent

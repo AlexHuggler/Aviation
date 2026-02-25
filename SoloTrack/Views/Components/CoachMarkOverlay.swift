@@ -45,7 +45,7 @@ struct CoachMarkOverlay: View {
                     .foregroundStyle(.white)
 
                 // Body
-                Text(step.body)
+                Text(step.message)
                     .font(.system(.subheadline, design: .rounded))
                     .foregroundStyle(.white.opacity(0.85))
                     .multilineTextAlignment(.center)
@@ -104,7 +104,7 @@ struct CoachMarkOverlay: View {
             }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Tour step: \(step.title). \(step.body)")
+        .accessibilityLabel("Tour step: \(step.title). \(step.message)")
         .accessibilityAddTraits(.isModal)
     }
 

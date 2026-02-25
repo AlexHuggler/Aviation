@@ -362,6 +362,8 @@ struct FlightRow: View {
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(flight.formattedRoute), \(flight.formattedDuration) hours, \(flight.date.formatted(date: .abbreviated, time: .omitted))")
     }
 }
 
@@ -388,6 +390,7 @@ struct CategoryBadge: View {
             .background(badgeColor.opacity(AppTokens.Opacity.light))
             .foregroundStyle(badgeColor)
             .clipShape(Capsule())
+            .accessibilityLabel(tag)
     }
 }
 
