@@ -187,10 +187,12 @@ struct RequirementRow: View {
         .onChange(of: requirement.isMet) { wasMet, isMet in
             if !wasMet && isMet {
                 celebrating = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    celebrating = false
-                }
             }
+        }
+        .task(id: celebrating) {
+            guard celebrating else { return }
+            try? await Task.sleep(for: .seconds(0.6))
+            celebrating = false
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(requirement.title): \(requirement.formattedProgress). \(requirement.formattedRemaining).")

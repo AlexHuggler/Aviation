@@ -416,7 +416,7 @@ struct AddFlightView: View {
                     TextField("0.0", text: $hobbsStart)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
-                        .frame(width: 80)
+                        .frame(minWidth: 60, idealWidth: 80, maxWidth: 100)
                         .focused($focusedField, equals: .hobbs)
                 }
 
@@ -426,7 +426,7 @@ struct AddFlightView: View {
                     TextField("0.0", text: $hobbsEnd)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
-                        .frame(width: 80)
+                        .frame(minWidth: 60, idealWidth: 80, maxWidth: 100)
                         .focused($focusedField, equals: .tach)
                 }
 
@@ -450,7 +450,7 @@ struct AddFlightView: View {
                     TextField("0.0", text: $durationHobbs)
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
-                        .frame(width: 80)
+                        .frame(minWidth: 60, idealWidth: 80, maxWidth: 100)
                         .focused($focusedField, equals: .hobbs)
                     Text("hrs")
                         .foregroundStyle(hobbsHasError ? Color.warningRed.opacity(0.6) : .secondary)
@@ -463,7 +463,7 @@ struct AddFlightView: View {
                 TextField("0.0", text: $durationTach)
                     .keyboardType(.decimalPad)
                     .multilineTextAlignment(.trailing)
-                    .frame(width: 80)
+                    .frame(minWidth: 60, idealWidth: 80, maxWidth: 100)
                     .focused($focusedField, equals: .tach)
                 Text("hrs")
                     .foregroundStyle(.secondary)

@@ -244,7 +244,7 @@ struct NotificationService {
         var sent: [NotificationEvent] = []
         for candidate in ranked {
             guard passesRateLimits(candidate.event, asOf: date) else { continue }
-            await dispatch(candidate)
+            guard await dispatch(candidate) else { continue }
             recordDelivery(candidate.event, at: date)
             sent.append(candidate.event)
         }
@@ -367,7 +367,7 @@ struct NotificationService {
 
     // MARK: - Dispatch
 
-    private func dispatch(_ scored: ScoredEvent) async {
+    private func dispatch(_ scored: ScoredEvent) async -> Bool {
         let content = UNMutableNotificationContent()
         content.title = scored.title
         content.body = scored.body
@@ -380,7 +380,13 @@ struct NotificationService {
             trigger: nil  // Deliver immediately
         )
 
-        try? await center.add(request)
+        do {
+            try await center.add(request)
+            return true
+        } catch {
+            print("[NotificationService] dispatch failed: \(error.localizedDescription)")
+            return false
+        }
     }
 
     // MARK: - Record Keeping

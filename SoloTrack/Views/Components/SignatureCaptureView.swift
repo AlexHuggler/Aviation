@@ -124,3 +124,11 @@ struct SignatureCaptureView: View {
         HapticService.success()
     }
 }
+
+#Preview {
+    @Previewable @State var signatureData: Data? = nil
+    @Previewable @State var cfiNumber = ""
+
+    SignatureCaptureView(signatureData: $signatureData, cfiNumber: $cfiNumber)
+        .padding()
+}
