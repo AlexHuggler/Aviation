@@ -116,6 +116,8 @@ struct PPLProgressView: View {
 struct RequirementRow: View {
     let requirement: PPLRequirement
 
+    @State private var celebrating = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -179,6 +181,17 @@ struct RequirementRow: View {
             }
         }
         .cardStyle()
+        .scaleEffect(celebrating ? 1.03 : 1.0)
+        .motionAwareAnimation(.spring(duration: 0.5, bounce: 0.3), value: celebrating)
+        .sensoryFeedback(.success, trigger: celebrating)
+        .onChange(of: requirement.isMet) { wasMet, isMet in
+            if !wasMet && isMet {
+                celebrating = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    celebrating = false
+                }
+            }
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(requirement.title): \(requirement.formattedProgress). \(requirement.formattedRemaining).")
     }

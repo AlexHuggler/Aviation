@@ -59,14 +59,9 @@ struct ExportView: View {
                 // A8: Copy button with confirmation feedback
                 Button {
                     UIPasteboard.general.string = csvContent
-                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    HapticService.success()
                     withAnimation(.spring(duration: 0.3)) {
                         copied = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + AppTokens.Duration.toast) {
-                        withAnimation(.easeOut(duration: 0.3)) {
-                            copied = false
-                        }
                     }
                 } label: {
                     HStack {
@@ -86,6 +81,12 @@ struct ExportView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical)
+            // H-5 fix: Structured concurrency auto-cancels on view dismissal
+            .task(id: copied) {
+                guard copied else { return }
+                try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
+                withAnimation(.easeOut(duration: 0.3)) { copied = false }
+            }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

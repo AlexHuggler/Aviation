@@ -97,7 +97,7 @@ struct OnboardingView: View {
                         withAnimation(.spring(duration: 0.3)) {
                             selectedStage = stage
                         }
-                        UISelectionFeedbackGenerator().selectionChanged()
+                        HapticService.selectionChanged()
                     }
                 }
             }
@@ -138,7 +138,7 @@ struct OnboardingView: View {
                         withAnimation(.spring(duration: 0.3)) {
                             selectedIntent = intent
                         }
-                        UISelectionFeedbackGenerator().selectionChanged()
+                        HapticService.selectionChanged()
                     }
                 }
             }
@@ -183,7 +183,7 @@ struct OnboardingView: View {
             }
         case 1:
             guard let stage = selectedStage, let intent = selectedIntent else { return }
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            HapticService.success()
             onboarding.completeOnboarding(stage: stage, intent: intent)
         default:
             break
