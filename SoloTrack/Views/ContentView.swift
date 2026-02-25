@@ -44,7 +44,7 @@ struct ContentView: View {
         // Drive tab selection during coach mark tour
         .onChange(of: onboarding.currentCoachStep) { _, newStep in
             if let tab = newStep?.associatedTab {
-                withAnimation(.smooth(duration: 0.3)) {
+                withMotionAwareAnimation(.smooth(duration: 0.3)) {
                     selectedTab = tab
                 }
             }

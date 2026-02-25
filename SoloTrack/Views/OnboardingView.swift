@@ -43,7 +43,7 @@ struct OnboardingView: View {
         }
         .background(Color(.systemGroupedBackground))
         .onAppear {
-            withAnimation(.easeOut(duration: 0.6)) {
+            withMotionAwareAnimation(.easeOut(duration: 0.6)) {
                 appearAnimation = true
             }
         }
@@ -66,7 +66,7 @@ struct OnboardingView: View {
     // MARK: - Step 1: Training Stage
 
     private var trainingStageStep: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: AppTokens.Spacing.xxxl) {
             // Header
             VStack(spacing: 12) {
                 Image(systemName: "airplane.circle")
@@ -94,7 +94,7 @@ struct OnboardingView: View {
                         subtitle: stage.tagline,
                         isSelected: selectedStage == stage
                     ) {
-                        withAnimation(.spring(duration: 0.3)) {
+                        withMotionAwareAnimation(.spring(duration: 0.3)) {
                             selectedStage = stage
                         }
                         HapticService.selectionChanged()
@@ -108,7 +108,7 @@ struct OnboardingView: View {
     // MARK: - Step 2: Getting Started Intent
 
     private var gettingStartedStep: some View {
-        VStack(spacing: 32) {
+        VStack(spacing: AppTokens.Spacing.xxxl) {
             // Header
             VStack(spacing: 12) {
                 if let stage = selectedStage {
@@ -135,7 +135,7 @@ struct OnboardingView: View {
                         subtitle: intent.subtitle,
                         isSelected: selectedIntent == intent
                     ) {
-                        withAnimation(.spring(duration: 0.3)) {
+                        withMotionAwareAnimation(.spring(duration: 0.3)) {
                             selectedIntent = intent
                         }
                         HapticService.selectionChanged()
@@ -178,7 +178,7 @@ struct OnboardingView: View {
     private func handleContinue() {
         switch currentStep {
         case 0:
-            withAnimation(.spring(duration: 0.5)) {
+            withMotionAwareAnimation(.spring(duration: 0.5)) {
                 currentStep = 1
             }
         case 1:

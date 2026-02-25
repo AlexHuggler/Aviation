@@ -14,8 +14,8 @@ struct PersonalizedEmptyDashboard: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                Spacer(minLength: 24)
+            VStack(spacing: AppTokens.Spacing.section) {
+                Spacer(minLength: AppTokens.Spacing.section)
 
                 // Personalized welcome header
                 welcomeHeader
@@ -34,7 +34,7 @@ struct PersonalizedEmptyDashboard: View {
             .padding()
         }
         .onAppear {
-            withAnimation(.easeOut(duration: 0.6).delay(0.2)) {
+            withMotionAwareAnimation(.easeOut(duration: 0.6).delay(0.2)) {
                 staggeredAppear = true
             }
         }

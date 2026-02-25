@@ -14,6 +14,8 @@ enum AppTokens {
         static let xl: CGFloat = 16
         static let xxl: CGFloat = 20
         static let section: CGFloat = 24
+        static let xxxl: CGFloat = 32
+        static let jumbo: CGFloat = 40
     }
 
     // Corner radius scale
@@ -72,6 +74,11 @@ extension Color {
 
     // Aviation theme
     static let skyBlue = Color(red: 0.40, green: 0.73, blue: 0.94)
+
+    // Category badge palette
+    static let badgeDual = Color.purple
+    static let badgeXC = Color.orange
+    static let badgeInst = Color.gray
 }
 
 // MARK: - Currency State Colors
@@ -155,4 +162,15 @@ extension View {
     func motionAwareAnimation<V: Equatable>(_ animation: Animation, value: V) -> some View {
         modifier(ReducedMotionAware(animation: animation, value: AnyHashable(value)))
     }
+}
+
+// MARK: - Motion-Aware withAnimation Wrapper
+
+/// Wraps `withAnimation` to respect the user's Reduce Motion accessibility setting.
+/// Use this instead of `withAnimation(...)` for all imperative animation triggers.
+func withMotionAwareAnimation<Result>(_ animation: Animation = .default, _ body: () throws -> Result) rethrows -> Result {
+    if UIAccessibility.isReduceMotionEnabled {
+        return try body()
+    }
+    return try withAnimation(animation, body)
 }

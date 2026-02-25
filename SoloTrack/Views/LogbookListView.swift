@@ -15,6 +15,9 @@ struct LogbookListView: View {
     // A6: Delete-locked alert
     @State private var showLockedDeleteAlert = false
 
+    // Delete confirmation
+    @State private var flightToDelete: FlightLog?
+
     // A1: Search & filter
     @State private var searchText = ""
 
@@ -86,10 +89,24 @@ struct LogbookListView: View {
             } message: {
                 Text("This flight has a locked CFI signature and cannot be deleted. Void the signature first to enable deletion.")
             }
+            .alert("Delete Flight?", isPresented: .init(
+                get: { flightToDelete != nil },
+                set: { if !$0 { flightToDelete = nil } }
+            )) {
+                Button("Delete", role: .destructive) {
+                    if let flight = flightToDelete {
+                        modelContext.delete(flight)
+                        HapticService.success()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This flight entry will be permanently deleted.")
+            }
             // A3: Save confirmation overlay
             .overlay(alignment: .top) {
                 if showSavedToast {
-                    SavedToastView()
+                    ToastView(icon: "checkmark.circle.fill", message: "Flight saved")
                         .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
@@ -98,7 +115,7 @@ struct LogbookListView: View {
             .task(id: showSavedToast) {
                 guard showSavedToast else { return }
                 try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
-                withAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
+                withMotionAwareAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
             }
         }
     }
@@ -152,8 +169,7 @@ struct LogbookListView: View {
                                     showLockedDeleteAlert = true
                                     HapticService.error()
                                 } else {
-                                    modelContext.delete(flight)
-                                    HapticService.success()
+                                    flightToDelete = flight
                                 }
                             } label: {
                                 Label("Delete", systemImage: "trash")
@@ -292,24 +308,7 @@ private struct SummaryPill: View {
     }
 }
 
-// MARK: - Saved Toast (A3)
 
-private struct SavedToastView: View {
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(Color.currencyGreen)
-            Text("Flight saved")
-                .font(.system(.subheadline, design: .rounded, weight: .semibold))
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(.ultraThinMaterial)
-        .clipShape(Capsule())
-        .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
-        .padding(.top, 8)
-    }
-}
 
 // MARK: - Flight Row
 
@@ -375,9 +374,9 @@ struct CategoryBadge: View {
     private var badgeColor: Color {
         switch tag {
         case "Solo": return .skyBlue
-        case "Dual": return .purple
-        case "XC": return .orange
-        case "Inst": return .gray
+        case "Dual": return .badgeDual
+        case "XC": return .badgeXC
+        case "Inst": return .badgeInst
         default: return .skyBlue
         }
     }
