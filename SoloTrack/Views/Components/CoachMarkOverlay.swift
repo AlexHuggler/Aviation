@@ -23,7 +23,7 @@ struct CoachMarkOverlay: View {
                 }
 
             // Coach mark card
-            VStack(spacing: 20) {
+            VStack(spacing: AppTokens.Spacing.xxl) {
                 // Step indicator
                 HStack(spacing: 6) {
                     ForEach(CoachMarkStep.allCases.filter { $0 != .tourComplete }, id: \.self) { s in
@@ -99,7 +99,7 @@ struct CoachMarkOverlay: View {
         .onChange(of: step) { _, _ in
             // Re-trigger entrance animation on step change
             appeared = false
-            withAnimation(.spring(duration: 0.4, bounce: 0.2)) {
+            withMotionAwareAnimation(.spring(duration: 0.4, bounce: 0.2)) {
                 appeared = true
             }
         }
@@ -113,7 +113,7 @@ struct CoachMarkOverlay: View {
         if step == .tourComplete {
             onboarding.completeTour()
         } else {
-            withAnimation(.spring(duration: 0.4)) {
+            withMotionAwareAnimation(.spring(duration: 0.4)) {
                 onboarding.advanceTour()
             }
         }

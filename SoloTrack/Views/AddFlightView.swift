@@ -156,7 +156,7 @@ struct AddFlightView: View {
             .task(id: quickEntrySaved) {
                 guard quickEntrySaved else { return }
                 try? await Task.sleep(for: .seconds(1.5))
-                withAnimation(.easeOut(duration: 0.3)) { quickEntrySaved = false }
+                withMotionAwareAnimation(.easeOut(duration: 0.3)) { quickEntrySaved = false }
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -327,6 +327,7 @@ struct AddFlightView: View {
                                     )
                                     .foregroundStyle(Color.skyBlue)
                                     .clipShape(Capsule())
+                                    .scaleEffect(routeFrom == route.from && routeTo == route.to ? 0.97 : 1.0)
                             }
                             .buttonStyle(.plain)
                         }
@@ -362,7 +363,7 @@ struct AddFlightView: View {
                     let temp = routeFrom
                     routeFrom = routeTo
                     routeTo = temp
-                    withAnimation(.spring(duration: 0.3)) {
+                    withMotionAwareAnimation(.spring(duration: 0.3)) {
                         routeSwapRotation += 180
                     }
                     HapticService.selectionChanged()
@@ -468,13 +469,19 @@ struct AddFlightView: View {
                 Text("hrs")
                     .foregroundStyle(.secondary)
             }
+            // Auto-fill Tach from Hobbs when Tach is empty
+            .onChange(of: durationHobbs) { _, newValue in
+                if durationTach.isEmpty && !newValue.isEmpty && !useHobbsCalculator {
+                    durationTach = newValue
+                }
+            }
         } header: {
             HStack {
                 Text("Duration")
                 Spacer()
                 // FR-2: Toggle between direct entry and calculator
                 Button {
-                    withAnimation(.smooth(duration: 0.3)) {
+                    withMotionAwareAnimation(.smooth(duration: 0.3)) {
                         useHobbsCalculator.toggle()
                     }
                     if !useHobbsCalculator {
@@ -614,9 +621,9 @@ struct AddFlightView: View {
             flight.isCrossCountry = isCrossCountry
             flight.isSimulatedInstrument = isSimulatedInstrument
             flight.remarks = remarks
-            if shouldLockSignature {
+            if let signature = signatureData, !cfiNumber.isEmpty {
                 flight.lockSignature(
-                    signatureData: signatureData!,
+                    signatureData: signature,
                     cfi: cfiNumber.trimmingCharacters(in: .whitespaces)
                 )
             }
@@ -649,17 +656,20 @@ struct AddFlightView: View {
         if quickEntryMode && !isEditing {
             // Quick-Entry: reset for next flight, keep route + categories
             quickEntryCount += 1
-            withAnimation(.spring(duration: 0.3)) {
+            withMotionAwareAnimation(.spring(duration: 0.3)) {
                 quickEntrySaved = true
             }
             // Advance date by 1 day, clear durations & remarks
             if let nextDay = Calendar.current.date(byAdding: .day, value: 1, to: date) {
                 date = nextDay
             }
-            durationHobbs = ""
+            if useHobbsCalculator && !hobbsEnd.isEmpty {
+                hobbsStart = hobbsEnd
+                hobbsEnd = ""
+            } else {
+                durationHobbs = ""
+            }
             durationTach = ""
-            hobbsStart = ""
-            hobbsEnd = ""
             landingsDay = 1
             landingsNightFullStop = 0
             remarks = ""

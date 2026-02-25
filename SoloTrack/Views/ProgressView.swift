@@ -46,7 +46,7 @@ struct PPLProgressView: View {
 
     private var progressContent: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: AppTokens.Spacing.xxl) {
                 overallProgressCard
                 requirementsList
             }

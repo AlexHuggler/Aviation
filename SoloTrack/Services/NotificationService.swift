@@ -1,5 +1,6 @@
 import Foundation
 import UserNotifications
+import os
 
 // MARK: - High-Value Notification Event
 
@@ -183,6 +184,8 @@ struct NotificationPreferences {
 ///  └─────────────┘
 /// ```
 struct NotificationService {
+
+    private static let logger = Logger(subsystem: "com.solotrack", category: "notifications")
 
     // MARK: - Configuration
 
@@ -384,7 +387,7 @@ struct NotificationService {
             try await center.add(request)
             return true
         } catch {
-            print("[NotificationService] dispatch failed: \(error.localizedDescription)")
+            Self.logger.error("Dispatch failed: \(error.localizedDescription)")
             return false
         }
     }

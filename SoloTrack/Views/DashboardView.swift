@@ -47,19 +47,8 @@ struct DashboardView: View {
             // Save confirmation overlay
             .overlay(alignment: .top) {
                 if showSavedToast {
-                    HStack(spacing: 8) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(Color.currencyGreen)
-                        Text("Flight saved")
-                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(.ultraThinMaterial)
-                    .clipShape(Capsule())
-                    .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
-                    .padding(.top, 8)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                    ToastView(icon: "checkmark.circle.fill", message: "Flight saved")
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
             .motionAwareAnimation(.spring(duration: 0.4), value: showSavedToast)
@@ -67,7 +56,7 @@ struct DashboardView: View {
             .task(id: showSavedToast) {
                 guard showSavedToast else { return }
                 try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
-                withAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
+                withMotionAwareAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
             }
             // Auto-open AddFlightView when onboarding intent is log/backfill
             .task {
@@ -101,12 +90,12 @@ struct DashboardView: View {
 
     private var genericEmptyDashboard: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                Spacer(minLength: 40)
+            VStack(spacing: AppTokens.Spacing.section) {
+                Spacer(minLength: AppTokens.Spacing.jumbo)
 
                 Image(systemName: "airplane.circle")
                     .font(.system(size: 64))
-                    .foregroundStyle(Color.skyBlue.opacity(0.6))
+                    .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.strong))
                     .symbolEffect(.pulse.byLayer, options: .repeating)
 
                 VStack(spacing: 8) {
@@ -156,7 +145,7 @@ struct DashboardView: View {
         let requirements = progressTracker.computeRequirements(from: flights)
 
         return ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: AppTokens.Spacing.xxl) {
                 headerSection(dayCurrency: dayCurrency)
                 currencySection(dayCurrency: dayCurrency, nightCurrency: nightCurrency)
                 quickStatsSection(requirements: requirements)
@@ -354,6 +343,10 @@ struct CurrencyCard: View {
                 .stroke(urgencyGradient, lineWidth: 2)
         )
         .motionAwareAnimation(.smooth(duration: 0.4), value: state)
+        .onChange(of: state.label) { _, _ in
+            if case .expired = state { HapticService.warning() }
+            else if case .caution = state { HapticService.warning() }
+        }
         // A6: Accessibility — combine children and provide descriptive label
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title) currency: \(state.label)")

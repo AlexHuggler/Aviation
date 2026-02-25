@@ -9,7 +9,7 @@ struct ExportView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
+            VStack(spacing: AppTokens.Spacing.xxl) {
                 Image(systemName: "doc.text")
                     .font(.system(size: 48))
                     .foregroundStyle(Color.skyBlue)
@@ -60,7 +60,7 @@ struct ExportView: View {
                 Button {
                     UIPasteboard.general.string = csvContent
                     HapticService.success()
-                    withAnimation(.spring(duration: 0.3)) {
+                    withMotionAwareAnimation(.spring(duration: 0.3)) {
                         copied = true
                     }
                 } label: {
@@ -85,7 +85,7 @@ struct ExportView: View {
             .task(id: copied) {
                 guard copied else { return }
                 try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
-                withAnimation(.easeOut(duration: 0.3)) { copied = false }
+                withMotionAwareAnimation(.easeOut(duration: 0.3)) { copied = false }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
