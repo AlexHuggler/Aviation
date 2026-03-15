@@ -7,6 +7,7 @@ struct LogbookListView: View {
 
     @State private var showingAddFlight = false
     @State private var showingExportSheet = false
+    @State private var appeared = false
     @State private var exportedCSV = ""
 
     // A2: Save confirmation toast — only set via onSave callback
@@ -90,7 +91,7 @@ struct LogbookListView: View {
             .alert("Cannot Delete", isPresented: $showLockedDeleteAlert) {
                 Button("OK") {}
             } message: {
-                Text("This flight has a locked CFI signature and cannot be deleted. Void the signature first to enable deletion.")
+                Text("This flight has a locked CFI signature. Void the signature first to enable deletion.")
             }
             // A3: Save confirmation overlay
             .overlay(alignment: .top) {
@@ -194,6 +195,10 @@ struct LogbookListView: View {
                                 Label("Duplicate Flight", systemImage: "doc.on.doc")
                             }
                         }
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .opacity
+                        ))
                     }
                 } header: {
                     Text(section.key)
@@ -202,12 +207,19 @@ struct LogbookListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .onAppear {
+            withMotionAwareAnimation(.easeOut(duration: 0.5)) { appeared = true }
+        }
         // A1: Search bar
         .searchable(text: $searchText, prompt: "Route, date, category, or remarks")
         // A1: Empty search results
         .overlay {
             if !searchText.isEmpty && filteredFlights.isEmpty {
-                ContentUnavailableView.search(text: searchText)
+                ContentUnavailableView {
+                    Label("No Results", systemImage: "magnifyingglass")
+                } description: {
+                    Text("No flights match \"\(searchText)\".\nTry a route code, date, or category.")
+                }
             }
         }
     }
@@ -325,8 +337,9 @@ private struct SummaryPill: View {
     var body: some View {
         VStack(spacing: 2) {
             Text(value)
-                .font(.system(.subheadline, design: .rounded, weight: .bold))
+                .font(.system(.title3, design: .rounded, weight: .bold))
                 .foregroundStyle(Color.skyBlue)
+                .contentTransition(.numericText())
             Text(label)
                 .font(.system(.caption2, design: .rounded))
                 .foregroundStyle(.secondary)

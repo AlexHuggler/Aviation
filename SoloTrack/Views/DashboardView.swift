@@ -340,51 +340,59 @@ struct CurrencyCard: View {
     }
 
     var body: some View {
-        VStack(spacing: 10) {
-            Image(systemName: state.iconName)
-                .font(.system(size: 32))
-                .foregroundStyle(state.color)
-                .contentTransition(.symbolEffect(.replace))
-
-            Text(title)
-                .font(.system(.headline, design: .rounded, weight: .semibold))
-
-            Image(systemName: icon)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            // B4: Show both relative and absolute date
-            VStack(spacing: 2) {
-                Text(state.shortLabel)
-                    .font(.system(.caption, design: .rounded, weight: .medium))
+        Button {
+            withMotionAwareAnimation(.spring(duration: 0.3)) {
+                showingDetail.toggle()
+            }
+            HapticService.selectionChanged()
+        } label: {
+            VStack(spacing: 10) {
+                Image(systemName: state.iconName)
+                    .font(.system(size: 32))
                     .foregroundStyle(state.color)
-                    .contentTransition(.numericText())
+                    .contentTransition(.symbolEffect(.replace))
 
-                if let dateLabel = state.absoluteDateLabel {
-                    Text(dateLabel)
-                        .font(.system(.caption2, design: .rounded))
-                        .foregroundStyle(.secondary)
+                Text(title)
+                    .font(.system(.headline, design: .rounded, weight: .semibold))
+
+                Image(systemName: icon)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                // B4: Show both relative and absolute date
+                VStack(spacing: 2) {
+                    Text(state.shortLabel)
+                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .foregroundStyle(state.color)
+                        .contentTransition(.numericText())
+
+                    if let dateLabel = state.absoluteDateLabel {
+                        Text(dateLabel)
+                            .font(.system(.caption2, design: .rounded))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                // DL-8: Expandable detail on tap
+                if showingDetail {
+                    VStack(spacing: 4) {
+                        Divider()
+                        Text(state.label)
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }
-
-            // DL-8: Expandable detail on tap
-            if showingDetail {
-                VStack(spacing: 4) {
-                    Divider()
-                    Text(state.label)
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
+            .frame(maxWidth: .infinity)
+            .cardStyle()
+            .overlay(
+                RoundedRectangle(cornerRadius: AppTokens.Radius.card)
+                    .stroke(urgencyGradient, lineWidth: 2)
+            )
         }
-        .frame(maxWidth: .infinity)
-        .cardStyle()
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTokens.Radius.card)
-                .stroke(urgencyGradient, lineWidth: 2)
-        )
+        .buttonStyle(CardPressStyle())
         .motionAwareAnimation(.smooth(duration: 0.4), value: state)
         .onChange(of: state.label) { _, _ in
             if case .expired = state { HapticService.warning() }
@@ -393,12 +401,6 @@ struct CurrencyCard: View {
         // A6: Accessibility — combine children and provide descriptive label
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title) currency: \(state.label)")
-        .onTapGesture {
-            withMotionAwareAnimation(.spring(duration: 0.3)) {
-                showingDetail.toggle()
-            }
-            HapticService.selectionChanged()
-        }
     }
 }
 
@@ -424,6 +426,16 @@ struct StatCard: View {
         .cardStyle()
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label): \(value)")
+    }
+}
+
+// MARK: - DL-5: Card Press Effect
+
+private struct CardPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .motionAwareAnimation(.spring(duration: 0.2), value: configuration.isPressed)
     }
 }
 
