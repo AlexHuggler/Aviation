@@ -59,6 +59,7 @@ struct AddFlightView: View {
     @State private var quickEntryMode = false
     @State private var quickEntrySaved = false
     @State private var quickEntryCount = 0
+    @State private var quickEntryTotalHobbs: Double = 0
 
     // C-2 fix: Track initial defaults so isFormDirty compares against them, not hardcoded false
     @State private var initialIsSolo = false
@@ -143,9 +144,18 @@ struct AddFlightView: View {
                 categoriesSection
 
                 // B2: Collapsed advanced sections
-                DisclosureGroup("More Details", isExpanded: $showAdvanced) {
+                DisclosureGroup(isExpanded: $showAdvanced) {
                     remarksField
                     signatureSection
+                } label: {
+                    HStack {
+                        Text("More Details")
+                        if !showAdvanced && (!remarks.isEmpty || signatureData != nil || !cfiNumber.isEmpty) {
+                            Circle()
+                                .fill(Color.skyBlue)
+                                .frame(width: 6, height: 6)
+                        }
+                    }
                 }
                 .tint(Color.skyBlue)
             }
@@ -157,7 +167,7 @@ struct AddFlightView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundStyle(Color.currencyGreen)
-                        Text("Saved!")
+                        Text(quickEntryCount >= 2 ? "Saved! (\(String(format: "%.1f", quickEntryTotalHobbs))h total)" : "Saved!")
                             .font(.system(.caption, design: .rounded, weight: .semibold))
                         Text("(\(quickEntryCount))")
                             .font(.system(.caption, design: .rounded, weight: .bold))
@@ -221,8 +231,11 @@ struct AddFlightView: View {
                 }
             }
             // B1: Discard changes confirmation
-            .alert("Discard Flight?", isPresented: $showDiscardAlert) {
+            .alert("Unsaved Flight", isPresented: $showDiscardAlert) {
                 Button("Keep Editing", role: .cancel) {}
+                if saveEnabled {
+                    Button("Save & Close") { saveFlight() }
+                }
                 Button("Discard", role: .destructive) { dismiss() }
             } message: {
                 Text("You have unsaved changes that will be lost.")
@@ -391,6 +404,11 @@ struct AddFlightView: View {
                                 .foregroundStyle(ICAODatabase.isKnown(routeFrom) ? Color.currencyGreen : Color.cautionYellow)
                         }
                     }
+                    if routeFrom.trimmingCharacters(in: .whitespaces).count == 4 && !ICAODatabase.isKnown(routeFrom) {
+                        Text("Code not in database — verify before saving")
+                            .font(.system(.caption2, design: .rounded))
+                            .foregroundStyle(Color.cautionYellow)
+                    }
                     TextField("ICAO", text: $routeFrom)
                         .textInputAutocapitalization(.characters)
                         .autocorrectionDisabled()
@@ -432,6 +450,11 @@ struct AddFlightView: View {
                                 .font(.system(size: 10))
                                 .foregroundStyle(ICAODatabase.isKnown(routeTo) ? Color.currencyGreen : Color.cautionYellow)
                         }
+                    }
+                    if routeTo.trimmingCharacters(in: .whitespaces).count == 4 && !ICAODatabase.isKnown(routeTo) {
+                        Text("Code not in database — verify before saving")
+                            .font(.system(.caption2, design: .rounded))
+                            .foregroundStyle(Color.cautionYellow)
                     }
                     TextField("ICAO", text: $routeTo)
                         .textInputAutocapitalization(.characters)
@@ -730,6 +753,7 @@ struct AddFlightView: View {
         if quickEntryMode && !isEditing {
             // Quick-Entry: reset for next flight, keep route + categories
             quickEntryCount += 1
+            quickEntryTotalHobbs += Double(durationHobbs) ?? 0
             withMotionAwareAnimation(.spring(duration: 0.3)) {
                 quickEntrySaved = true
             }

@@ -23,6 +23,19 @@ struct ContentView: View {
                 }
             }
             .tint(Color.skyBlue)
+            .background {
+                // FR-1: Keyboard shortcuts for tab switching
+                Group {
+                    Button("") { selectedTab = 0 }
+                        .keyboardShortcut("1", modifiers: .command)
+                    Button("") { selectedTab = 1 }
+                        .keyboardShortcut("2", modifiers: .command)
+                    Button("") { selectedTab = 2 }
+                        .keyboardShortcut("3", modifiers: .command)
+                }
+                .opacity(0)
+                .allowsHitTesting(false)
+            }
 
             // Coach mark overlay (shown during interactive tour)
             if let step = onboarding.currentCoachStep {

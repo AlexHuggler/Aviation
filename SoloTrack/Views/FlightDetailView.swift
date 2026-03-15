@@ -96,8 +96,16 @@ struct FlightDetailView: View {
                             }
                         }
                     } label: {
-                        Text("CFI ENDORSEMENT")
-                            .sectionHeaderStyle()
+                        HStack {
+                            Text("CFI ENDORSEMENT")
+                                .sectionHeaderStyle()
+                            Spacer()
+                            if let signDate = flight.signatureDate {
+                                Text("Signed \(signDate, format: .dateTime.month(.abbreviated).day().year())")
+                                    .font(.system(.caption2, design: .rounded))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
                     .tint(Color.skyBlue)
                     .cardStyle()

@@ -50,6 +50,18 @@ struct FlightRow: View {
                     isToday ? Color.skyBlue.opacity(AppTokens.Opacity.subtle) : Color.clear
                 )
                 .clipShape(RoundedRectangle(cornerRadius: AppTokens.Radius.sm))
+                .overlay(alignment: .top) {
+                    if isToday {
+                        Text("Today")
+                            .font(.system(.caption2, design: .rounded, weight: .semibold))
+                            .foregroundStyle(Color.skyBlue)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 1)
+                            .background(Color.skyBlue.opacity(AppTokens.Opacity.light))
+                            .clipShape(Capsule())
+                            .offset(y: -8)
+                    }
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(flight.formattedRoute)
