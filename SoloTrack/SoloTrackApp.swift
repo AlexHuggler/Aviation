@@ -11,6 +11,6 @@ struct SoloTrackApp: App {
                 .environment(onboarding)
                 .notificationCoordinator()
         }
-        .modelContainer(for: FlightLog.self)
+        .modelContainer(for: [FlightLog.self, FlightTemplate.self])
     }
 }

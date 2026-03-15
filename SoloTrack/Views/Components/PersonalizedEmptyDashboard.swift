@@ -10,6 +10,9 @@ struct PersonalizedEmptyDashboard: View {
 
     let onLogFlight: () -> Void
 
+    // FR-6: Dynamic Type scaled dimensions
+    private let scaled = ScaledTokens()
+
     @State private var staggeredAppear = false
 
     var body: some View {
@@ -45,7 +48,7 @@ struct PersonalizedEmptyDashboard: View {
     private var welcomeHeader: some View {
         VStack(spacing: 12) {
             Image(systemName: onboarding.trainingStage.icon)
-                .font(.system(size: 52))
+                .font(.system(size: scaled.welcomeIcon))
                 .foregroundStyle(Color.skyBlue)
                 .symbolEffect(.pulse.byLayer, options: .repeating)
 
@@ -191,12 +194,15 @@ private struct FeatureHighlightRow: View {
     let description: String
     let isPrimary: Bool
 
+    // FR-6: Dynamic Type scaled dimensions
+    private let scaled = ScaledTokens()
+
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundStyle(isPrimary ? Color.skyBlue : .secondary)
-                .frame(minWidth: 28, idealWidth: 32, maxWidth: 40)
+                .frame(minWidth: scaled.featureIconMin, idealWidth: scaled.featureIconIdeal, maxWidth: scaled.featureIconMax)
                 .padding(.top, 2)
 
             VStack(alignment: .leading, spacing: 4) {

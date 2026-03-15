@@ -67,6 +67,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: FlightLog.self, inMemory: true)
+        .modelContainer(for: [FlightLog.self, FlightTemplate.self], inMemory: true)
         .environment(OnboardingManager())
 }

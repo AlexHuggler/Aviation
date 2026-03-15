@@ -65,6 +65,29 @@ enum AppTokens {
     }
 }
 
+// MARK: - FR-6: ScaledMetric Tokens for Dynamic Type
+
+struct ScaledTokens {
+    @ScaledMetric(relativeTo: .body) var dateCircle: CGFloat = 44
+    @ScaledMetric(relativeTo: .body) var progressRing: CGFloat = 160
+    @ScaledMetric(relativeTo: .body) var strokeWidth: CGFloat = 12
+    @ScaledMetric(relativeTo: .body) var signatureHeight: CGFloat = 80
+    @ScaledMetric(relativeTo: .body) var inputWidth: CGFloat = 80
+    @ScaledMetric(relativeTo: .title) var onboardingIcon: CGFloat = 56
+    @ScaledMetric(relativeTo: .body) var coachMarkMaxWidth: CGFloat = 340
+    @ScaledMetric(relativeTo: .body) var exportIcon: CGFloat = 48
+    @ScaledMetric(relativeTo: .body) var featureIconMin: CGFloat = 28
+    @ScaledMetric(relativeTo: .body) var featureIconIdeal: CGFloat = 32
+    @ScaledMetric(relativeTo: .body) var featureIconMax: CGFloat = 40
+    @ScaledMetric(relativeTo: .title) var currencyIcon: CGFloat = 32
+    @ScaledMetric(relativeTo: .title) var airplaneIcon: CGFloat = 64
+    @ScaledMetric(relativeTo: .body) var onboardingRowIcon: CGFloat = 28
+    @ScaledMetric(relativeTo: .body) var welcomeIcon: CGFloat = 52
+    @ScaledMetric(relativeTo: .body) var cloudLarge: CGFloat = 28
+    @ScaledMetric(relativeTo: .body) var cloudSmall: CGFloat = 20
+    @ScaledMetric(relativeTo: .body) var csvPreviewMaxHeight: CGFloat = 240
+}
+
 // MARK: - Aviation Color Palette
 
 extension Color {
