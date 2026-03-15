@@ -450,6 +450,6 @@ private struct CardPressStyle: ButtonStyle {
 
 #Preview {
     DashboardView()
-        .modelContainer(for: FlightLog.self, inMemory: true)
+        .modelContainer(for: [FlightLog.self, FlightTemplate.self], inMemory: true)
         .environment(OnboardingManager())
 }
