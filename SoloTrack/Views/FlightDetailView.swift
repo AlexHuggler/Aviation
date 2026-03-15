@@ -182,5 +182,5 @@ struct DetailItem: View {
 
 #Preview {
     FlightDetailView(flight: FlightLog())
-        .modelContainer(for: FlightLog.self, inMemory: true)
+        .modelContainer(for: [FlightLog.self, FlightTemplate.self], inMemory: true)
 }

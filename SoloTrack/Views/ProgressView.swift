@@ -227,6 +227,6 @@ struct RequirementRow: View {
 
 #Preview {
     PPLProgressView()
-        .modelContainer(for: FlightLog.self, inMemory: true)
+        .modelContainer(for: [FlightLog.self, FlightTemplate.self], inMemory: true)
         .environment(OnboardingManager())
 }

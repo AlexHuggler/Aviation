@@ -10,11 +10,14 @@ struct ExportView: View {
     // DL-5: Staggered appearance animation
     @State private var appeared = false
 
+    // FR-6: Dynamic Type scaled dimensions
+    private let scaled = ScaledTokens()
+
     var body: some View {
         NavigationStack {
             VStack(spacing: AppTokens.Spacing.xxl) {
                 Image(systemName: "doc.text")
-                    .font(.system(size: 48))
+                    .font(.system(size: scaled.exportIcon))
                     .foregroundStyle(Color.skyBlue)
 
                 Text("Export Logbook")
@@ -45,7 +48,7 @@ struct ExportView: View {
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxHeight: 240)
+                .frame(maxHeight: scaled.csvPreviewMaxHeight)
                 .background(Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)

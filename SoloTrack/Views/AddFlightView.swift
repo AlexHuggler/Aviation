@@ -8,6 +8,7 @@ struct AddFlightView: View {
 
     // Smart defaults: read most recent flight for pre-population (A1)
     @Query(sort: \FlightLog.date, order: .reverse, animation: .none) private var recentFlights: [FlightLog]
+    @Query(sort: \FlightTemplate.createdAt, order: .reverse) private var templates: [FlightTemplate]
 
     /// Optional flight to edit (B6). When nil, we create a new entry.
     var editingFlight: FlightLog?
@@ -49,6 +50,10 @@ struct AddFlightView: View {
 
     // A4: Route swap animation
     @State private var routeSwapRotation: Double = 0
+
+    // FR-9: Flight templates
+    @State private var showSaveTemplateSheet = false
+    @State private var templateName = ""
 
     // FR-2: Hobbs start/end calculator
     @State private var useHobbsCalculator = false
@@ -218,6 +223,13 @@ struct AddFlightView: View {
                             .keyboardShortcut("s", modifiers: .command)
                     }
                 }
+                ToolbarItem(placement: .secondaryAction) {
+                    Button {
+                        showSaveTemplateSheet = true
+                    } label: {
+                        Label("Save as Template", systemImage: "bookmark.fill")
+                    }
+                }
                 // A7: Next/Done keyboard toolbar for field advancement
                 ToolbarItemGroup(placement: .keyboard) {
                     Button("Previous") { advanceFocus(forward: false) }
@@ -242,6 +254,55 @@ struct AddFlightView: View {
             }
             .onAppear {
                 applyDefaults()
+            }
+            // FR-9: Save as template sheet
+            .sheet(isPresented: $showSaveTemplateSheet) {
+                NavigationStack {
+                    Form {
+                        TextField("Template Name", text: $templateName)
+                        Section("Configuration") {
+                            LabeledContent("Route", value: "\(routeFrom) → \(routeTo)")
+                            if let hobbs = Double(durationHobbs), hobbs > 0 {
+                                LabeledContent("Typical Hobbs", value: String(format: "%.1f", hobbs))
+                            }
+                            LabeledContent("Categories", value: [
+                                isSolo ? "Solo" : nil,
+                                isDualReceived ? "Dual" : nil,
+                                isCrossCountry ? "XC" : nil,
+                                isSimulatedInstrument ? "Sim Inst" : nil
+                            ].compactMap { $0 }.joined(separator: ", "))
+                        }
+                    }
+                    .navigationTitle("Save Template")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { showSaveTemplateSheet = false }
+                        }
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Save") {
+                                let template = FlightTemplate(
+                                    name: templateName.isEmpty ? "\(routeFrom)→\(routeTo)" : templateName,
+                                    routeFrom: routeFrom,
+                                    routeTo: routeTo,
+                                    typicalHobbs: Double(durationHobbs) ?? 0,
+                                    isSolo: isSolo,
+                                    isDualReceived: isDualReceived,
+                                    isCrossCountry: isCrossCountry,
+                                    isSimulatedInstrument: isSimulatedInstrument,
+                                    defaultLandingsDay: landingsDay,
+                                    remarks: remarks,
+                                    cfiNumber: cfiNumber
+                                )
+                                modelContext.insert(template)
+                                templateName = ""
+                                showSaveTemplateSheet = false
+                                HapticService.saveConfirmation()
+                            }
+                        }
+                    }
+                }
+                .presentationDetents([.medium])
             }
             // B1: Swipe-to-dismiss interception
             .interactiveDismissDisabled(isFormDirty)
@@ -307,6 +368,34 @@ struct AddFlightView: View {
         initialCfiNumber = cfiNumber
     }
 
+    // MARK: - FR-9: Apply Template
+
+    private func applyTemplate(_ template: FlightTemplate) {
+        routeFrom = template.routeFrom
+        routeTo = template.routeTo
+        if template.typicalHobbs > 0 {
+            durationHobbs = String(format: "%.1f", template.typicalHobbs)
+        }
+        isSolo = template.isSolo
+        isDualReceived = template.isDualReceived
+        isCrossCountry = template.isCrossCountry
+        isSimulatedInstrument = template.isSimulatedInstrument
+        landingsDay = template.defaultLandingsDay
+        if !template.remarks.isEmpty {
+            remarks = template.remarks
+        }
+        if !template.cfiNumber.isEmpty {
+            cfiNumber = template.cfiNumber
+        }
+        // Update initial values so isFormDirty works correctly
+        initialRouteFrom = template.routeFrom
+        initialRouteTo = template.routeTo
+        initialIsSolo = template.isSolo
+        initialIsDualReceived = template.isDualReceived
+        focusedField = .hobbs
+        HapticService.lightImpact()
+    }
+
     // MARK: - A7: Keyboard Focus Advancement
 
     private func advanceFocus(forward: Bool) {
@@ -359,6 +448,36 @@ struct AddFlightView: View {
     private var dateAndRouteSection: some View {
         Section {
             DatePicker("Date", selection: $date, in: ...Date.now, displayedComponents: .date) // A3: Prevent future dates
+
+            // FR-9: Template quick-pick pills
+            if !isEditing && !templates.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AppTokens.Spacing.sm) {
+                        ForEach(templates) { template in
+                            Button {
+                                applyTemplate(template)
+                            } label: {
+                                Label(template.name, systemImage: "bookmark.fill")
+                                    .font(.caption)
+                                    .padding(.horizontal, AppTokens.Spacing.md)
+                                    .padding(.vertical, AppTokens.Spacing.xs)
+                                    .background(Color.skyBlue.opacity(0.12))
+                                    .foregroundStyle(Color.skyBlue)
+                                    .clipShape(Capsule())
+                            }
+                            .buttonStyle(.plain)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    modelContext.delete(template)
+                                } label: {
+                                    Label("Delete Template", systemImage: "trash")
+                                }
+                            }
+                        }
+                    }
+                }
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+            }
 
             // FR-1: Quick-pick recent routes
             if !isEditing && recentRoutes.count > 1 {
@@ -782,6 +901,6 @@ struct AddFlightView: View {
 
 #Preview {
     AddFlightView()
-        .modelContainer(for: FlightLog.self, inMemory: true)
+        .modelContainer(for: [FlightLog.self, FlightTemplate.self], inMemory: true)
         .environment(OnboardingManager())
 }

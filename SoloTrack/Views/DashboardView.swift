@@ -14,6 +14,9 @@ struct DashboardView: View {
     // DL-6: Loading state polish
     @State private var hasAppeared = false
 
+    // FR-6: Dynamic Type scaled dimensions
+    private let scaled = ScaledTokens()
+
     private let currencyManager = CurrencyManager()
     private let progressTracker = ProgressTracker()
 
@@ -99,17 +102,17 @@ struct DashboardView: View {
                 // DL-10: Composed empty state illustration
                 ZStack {
                     Image(systemName: "cloud.fill")
-                        .font(.system(size: 28))
+                        .font(.system(size: scaled.cloudLarge))
                         .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.light))
                         .offset(x: -40, y: -20)
 
                     Image(systemName: "cloud.fill")
-                        .font(.system(size: 20))
+                        .font(.system(size: scaled.cloudSmall))
                         .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.subtle))
                         .offset(x: 45, y: -10)
 
                     Image(systemName: "airplane.circle")
-                        .font(.system(size: 64))
+                        .font(.system(size: scaled.airplaneIcon))
                         .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.strong))
                         .symbolEffect(.pulse.byLayer, options: .repeating)
                 }
@@ -303,12 +306,15 @@ private struct OnboardingRow: View {
     let icon: String
     let text: String
 
+    // FR-6: Dynamic Type scaled dimensions
+    private let scaled = ScaledTokens()
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.body)
                 .foregroundStyle(Color.skyBlue)
-                .frame(width: 28)
+                .frame(width: scaled.onboardingRowIcon)
 
             Text(text)
                 .font(.system(.subheadline, design: .rounded))
@@ -322,6 +328,9 @@ struct CurrencyCard: View {
     let title: String
     let icon: String
     let state: CurrencyState
+
+    // FR-6: Dynamic Type scaled dimensions
+    private let scaled = ScaledTokens()
 
     @State private var showingDetail = false
 
@@ -348,7 +357,7 @@ struct CurrencyCard: View {
         } label: {
             VStack(spacing: 10) {
                 Image(systemName: state.iconName)
-                    .font(.system(size: 32))
+                    .font(.system(size: scaled.currencyIcon))
                     .foregroundStyle(state.color)
                     .contentTransition(.symbolEffect(.replace))
 
@@ -441,6 +450,6 @@ private struct CardPressStyle: ButtonStyle {
 
 #Preview {
     DashboardView()
-        .modelContainer(for: FlightLog.self, inMemory: true)
+        .modelContainer(for: [FlightLog.self, FlightTemplate.self], inMemory: true)
         .environment(OnboardingManager())
 }
