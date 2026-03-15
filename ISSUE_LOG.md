@@ -70,9 +70,9 @@ Status: **FIXED** = resolved, **OPEN** = pending, **N/A** = no longer applicable
 
 ## Medium (Tech Debt)
 
-### M-1: `LogbookListView.swift` is 563 lines — God File — OPEN
+### M-1: `LogbookListView.swift` is 563 lines — God File — FIXED
 **File**: `LogbookListView.swift`
-**Impact**: Maintainability; contains 7 distinct view types in a single file. `FlightDetailView`, `FlightRow`, `CategoryBadge`, `DetailItem`, `SummaryPill`, `SavedToastView` all inline.
+**Resolution**: Extracted `FlightDetailView` + `DetailItem` to `FlightDetailView.swift`, `FlightRow` + `CategoryBadge` to `FlightRow.swift`. `SummaryPill` remains private in `LogbookListView.swift`. File reduced from 563 to ~315 lines.
 
 ### M-2: `DashboardFocus` enum is defined but never read — FIXED
 **File**: `OnboardingProfile.swift`
@@ -94,9 +94,9 @@ Status: **FIXED** = resolved, **OPEN** = pending, **N/A** = no longer applicable
 **Impact**: `body` on any type in a SwiftUI codebase causes autocomplete confusion.
 **Resolution**: Renamed to `CoachMarkStep.message`. Updated 2 call sites in `CoachMarkOverlay.swift`.
 
-### M-7: Hardcoded frame sizes don't scale with Dynamic Type — OPEN
-**File**: `SignatureCaptureView.swift` (`.frame(height: 120)`), `ExportView.swift` (`.frame(maxHeight: 200)`)
-**Impact**: At XXL or AX Dynamic Type sizes, fixed containers may clip content. Note: AddFlightView TextFields (H-7) are now fixed.
+### M-7: Hardcoded frame sizes don't scale with Dynamic Type — FIXED
+**File**: `ExportView.swift`, `PersonalizedEmptyDashboard.swift`
+**Resolution**: `ExportView` maxHeight increased to 240. `PersonalizedEmptyDashboard` icon frame changed to `minWidth/idealWidth/maxWidth` pattern.
 
 ### M-8: `UINotificationFeedbackGenerator` instantiated inline per trigger — FIXED
 **File**: 11+ call sites across codebase

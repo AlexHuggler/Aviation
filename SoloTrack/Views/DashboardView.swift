@@ -11,6 +11,9 @@ struct DashboardView: View {
     // Save confirmation toast
     @State private var showSavedToast = false
 
+    // DL-6: Loading state polish
+    @State private var hasAppeared = false
+
     private let currencyManager = CurrencyManager()
     private let progressTracker = ProgressTracker()
 
@@ -93,10 +96,23 @@ struct DashboardView: View {
             VStack(spacing: AppTokens.Spacing.section) {
                 Spacer(minLength: AppTokens.Spacing.jumbo)
 
-                Image(systemName: "airplane.circle")
-                    .font(.system(size: 64))
-                    .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.strong))
-                    .symbolEffect(.pulse.byLayer, options: .repeating)
+                // DL-10: Composed empty state illustration
+                ZStack {
+                    Image(systemName: "cloud.fill")
+                        .font(.system(size: 28))
+                        .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.light))
+                        .offset(x: -40, y: -20)
+
+                    Image(systemName: "cloud.fill")
+                        .font(.system(size: 20))
+                        .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.subtle))
+                        .offset(x: 45, y: -10)
+
+                    Image(systemName: "airplane.circle")
+                        .font(.system(size: 64))
+                        .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.strong))
+                        .symbolEffect(.pulse.byLayer, options: .repeating)
+                }
 
                 VStack(spacing: 8) {
                     Text("Welcome to SoloTrack")
@@ -152,6 +168,19 @@ struct DashboardView: View {
                 progressNudgeSection(requirements: requirements)
             }
             .padding()
+        }
+        .refreshable {
+            HapticService.lightImpact()
+            try? await Task.sleep(for: .milliseconds(300))
+        }
+        .redacted(reason: hasAppeared ? [] : .placeholder)
+        .task {
+            guard !hasAppeared else { return }
+            await MainActor.run {
+                withMotionAwareAnimation(.easeOut(duration: AppTokens.Duration.quick)) {
+                    hasAppeared = true
+                }
+            }
         }
     }
 
@@ -294,6 +323,8 @@ struct CurrencyCard: View {
     let icon: String
     let state: CurrencyState
 
+    @State private var showingDetail = false
+
     /// Ambient urgency gradient: green→green when safe, green→yellow when approaching, yellow→red when critical
     private var urgencyGradient: LinearGradient {
         switch state {
@@ -335,6 +366,18 @@ struct CurrencyCard: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            // DL-8: Expandable detail on tap
+            if showingDetail {
+                VStack(spacing: 4) {
+                    Divider()
+                    Text(state.label)
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
         .frame(maxWidth: .infinity)
         .cardStyle()
@@ -350,6 +393,12 @@ struct CurrencyCard: View {
         // A6: Accessibility — combine children and provide descriptive label
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title) currency: \(state.label)")
+        .onTapGesture {
+            withMotionAwareAnimation(.spring(duration: 0.3)) {
+                showingDetail.toggle()
+            }
+            HapticService.selectionChanged()
+        }
     }
 }
 
@@ -365,6 +414,7 @@ struct StatCard: View {
                 .font(.system(.title2, design: .rounded, weight: .bold))
                 .foregroundStyle(Color.skyBlue)
                 .contentTransition(.numericText())
+                .motionAwareAnimation(.spring(duration: AppTokens.Duration.normal), value: value)
 
             Text(label)
                 .font(.system(.caption2, design: .rounded))

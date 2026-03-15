@@ -196,7 +196,7 @@ private struct FeatureHighlightRow: View {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundStyle(isPrimary ? Color.skyBlue : .secondary)
-                .frame(width: 32)
+                .frame(minWidth: 28, idealWidth: 32, maxWidth: 40)
                 .padding(.top, 2)
 
             VStack(alignment: .leading, spacing: 4) {

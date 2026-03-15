@@ -15,8 +15,9 @@ struct LogbookListView: View {
     // A6: Delete-locked alert
     @State private var showLockedDeleteAlert = false
 
-    // Delete confirmation
-    @State private var flightToDelete: FlightLog?
+    // FR-R3: Undo support
+    @State private var showDeletedToast = false
+    @State private var lastDeletedFlight: FlightLog?
 
     // A1: Search & filter
     @State private var searchText = ""
@@ -40,6 +41,8 @@ struct LogbookListView: View {
             || flight.categoryTags.contains { $0.lowercased().contains(query) }
             || flight.remarks.lowercased().contains(query)
             || flight.cfiNumber.lowercased().contains(query)
+            || flight.date.formatted(date: .abbreviated, time: .omitted).lowercased().contains(query)
+            || flight.date.formatted(date: .long, time: .omitted).lowercased().contains(query)
         }
     }
 
@@ -89,20 +92,6 @@ struct LogbookListView: View {
             } message: {
                 Text("This flight has a locked CFI signature and cannot be deleted. Void the signature first to enable deletion.")
             }
-            .alert("Delete Flight?", isPresented: .init(
-                get: { flightToDelete != nil },
-                set: { if !$0 { flightToDelete = nil } }
-            )) {
-                Button("Delete", role: .destructive) {
-                    if let flight = flightToDelete {
-                        modelContext.delete(flight)
-                        HapticService.success()
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This flight entry will be permanently deleted.")
-            }
             // A3: Save confirmation overlay
             .overlay(alignment: .top) {
                 if showSavedToast {
@@ -116,6 +105,28 @@ struct LogbookListView: View {
                 guard showSavedToast else { return }
                 try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
+            }
+            // FR-R3: Delete undo toast
+            .overlay(alignment: .top) {
+                if showDeletedToast {
+                    ToastView(
+                        icon: "trash",
+                        message: "Flight deleted",
+                        iconColor: .warningRed,
+                        actionLabel: "Undo",
+                        onAction: { undoDelete() }
+                    )
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            .motionAwareAnimation(.spring(duration: 0.4), value: showDeletedToast)
+            .task(id: showDeletedToast) {
+                guard showDeletedToast else { return }
+                try? await Task.sleep(for: .seconds(4.0))
+                withMotionAwareAnimation(.easeOut(duration: 0.3)) {
+                    showDeletedToast = false
+                    lastDeletedFlight = nil
+                }
             }
         }
     }
@@ -169,7 +180,7 @@ struct LogbookListView: View {
                                     showLockedDeleteAlert = true
                                     HapticService.error()
                                 } else {
-                                    flightToDelete = flight
+                                    deleteFlight(flight)
                                 }
                             } label: {
                                 Label("Delete", systemImage: "trash")
@@ -192,7 +203,7 @@ struct LogbookListView: View {
         }
         .listStyle(.insetGrouped)
         // A1: Search bar
-        .searchable(text: $searchText, prompt: "Route, category, or remarks")
+        .searchable(text: $searchText, prompt: "Route, date, category, or remarks")
         // A1: Empty search results
         .overlay {
             if !searchText.isEmpty && filteredFlights.isEmpty {
@@ -250,6 +261,26 @@ struct LogbookListView: View {
 
     // MARK: - Delete (A6: locked feedback)
 
+    // FR-R3: Delete with undo support
+    private func deleteFlight(_ flight: FlightLog) {
+        lastDeletedFlight = flight
+        modelContext.delete(flight)
+        HapticService.deleteConfirmation()
+        withMotionAwareAnimation(.spring(duration: 0.4)) {
+            showDeletedToast = true
+        }
+    }
+
+    private func undoDelete() {
+        guard let flight = lastDeletedFlight else { return }
+        modelContext.insert(flight)
+        lastDeletedFlight = nil
+        HapticService.success()
+        withMotionAwareAnimation(.easeOut(duration: 0.3)) {
+            showDeletedToast = false
+        }
+    }
+
     private func deleteFlights(from sectionFlights: [FlightLog], at offsets: IndexSet) {
         for index in offsets {
             let flight = sectionFlights[index]
@@ -257,8 +288,7 @@ struct LogbookListView: View {
                 showLockedDeleteAlert = true
                 HapticService.error()
             } else {
-                modelContext.delete(flight)
-                HapticService.success()
+                deleteFlight(flight)
             }
         }
     }
@@ -305,254 +335,6 @@ private struct SummaryPill: View {
         .padding(.vertical, 8)
         .background(Color.skyBlue.opacity(AppTokens.Opacity.subtle))
         .clipShape(RoundedRectangle(cornerRadius: 10))
-    }
-}
-
-
-
-// MARK: - Flight Row
-
-struct FlightRow: View {
-    let flight: FlightLog
-
-    var body: some View {
-        HStack(spacing: 12) {
-            // Date circle
-            VStack(spacing: 2) {
-                Text(flight.date, format: .dateTime.day())
-                    .font(.system(.title3, design: .rounded, weight: .bold))
-                Text(flight.date, format: .dateTime.month(.abbreviated))
-                    .font(.system(.caption2, design: .rounded))
-                    .foregroundStyle(.secondary)
-            }
-            .frame(width: AppTokens.Size.dateCircle)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(flight.formattedRoute)
-                    .font(.system(.subheadline, design: .rounded, weight: .semibold))
-
-                HStack(spacing: 6) {
-                    ForEach(flight.categoryTags, id: \.self) { tag in
-                        CategoryBadge(tag: tag)
-                    }
-                }
-            }
-
-            Spacer()
-
-            VStack(alignment: .trailing, spacing: 4) {
-                Text("\(flight.formattedDuration)h")
-                    .font(.system(.subheadline, design: .rounded, weight: .bold))
-
-                HStack(spacing: 4) {
-                    if flight.hasValidSignature {
-                        Image(systemName: "signature")
-                            .font(.caption)
-                            .foregroundStyle(Color.currencyGreen)
-                            .accessibilityLabel("Has instructor signature")
-                    }
-                    if flight.isSignatureLocked {
-                        Image(systemName: "lock.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .accessibilityLabel("Signature locked")
-                    }
-                }
-            }
-        }
-        .padding(.vertical, 4)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(flight.formattedRoute), \(flight.formattedDuration) hours, \(flight.date.formatted(date: .abbreviated, time: .omitted))")
-    }
-}
-
-// MARK: - D4: Shared Category Badge
-
-struct CategoryBadge: View {
-    let tag: String
-
-    private var badgeColor: Color {
-        switch tag {
-        case "Solo": return .skyBlue
-        case "Dual": return .badgeDual
-        case "XC": return .badgeXC
-        case "Inst": return .badgeInst
-        default: return .skyBlue
-        }
-    }
-
-    var body: some View {
-        Text(tag)
-            .font(.system(.caption2, design: .rounded, weight: .medium))
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(badgeColor.opacity(AppTokens.Opacity.light))
-            .foregroundStyle(badgeColor)
-            .clipShape(Capsule())
-            .accessibilityLabel(tag)
-    }
-}
-
-// MARK: - Flight Detail View (B6: Edit support, B2: Duplicate)
-
-struct FlightDetailView: View {
-    let flight: FlightLog
-    var onDuplicate: ((FlightLog) -> Void)?
-
-    @State private var showingEditSheet = false
-    @State private var showingVoidAlert = false
-
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                // Route header
-                VStack(spacing: 4) {
-                    Text(flight.formattedRoute)
-                        .font(.system(.title, design: .rounded, weight: .bold))
-
-                    Text(flight.date, format: .dateTime.month(.wide).day().year())
-                        .font(.system(.subheadline, design: .rounded))
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.top)
-
-                // Times
-                HStack(spacing: 24) {
-                    DetailItem(label: "Hobbs", value: String(format: "%.1f", flight.durationHobbs))
-                    DetailItem(label: "Tach", value: String(format: "%.1f", flight.durationTach))
-                }
-                .cardStyle()
-
-                // Landings
-                HStack(spacing: 24) {
-                    DetailItem(label: "Day Landings", value: "\(flight.landingsDay)")
-                    DetailItem(label: "Night FS", value: "\(flight.landingsNightFullStop)")
-                }
-                .cardStyle()
-
-                // Categories — D4: using shared CategoryBadge
-                if !flight.categoryTags.isEmpty {
-                    HStack(spacing: 8) {
-                        ForEach(flight.categoryTags, id: \.self) { tag in
-                            CategoryBadge(tag: tag)
-                        }
-                    }
-                }
-
-                // Signature status
-                if flight.hasValidSignature {
-                    VStack(spacing: 8) {
-                        Text("CFI ENDORSEMENT")
-                            .sectionHeaderStyle()
-
-                        HStack {
-                            Image(systemName: "signature")
-                                .foregroundStyle(Color.currencyGreen)
-                            Text("Signed by CFI #\(flight.cfiNumber)")
-                                .font(.system(.subheadline, design: .rounded))
-                            if flight.isSignatureLocked {
-                                Image(systemName: "lock.fill")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-
-                        if let signatureData = flight.instructorSignature,
-                           let uiImage = UIImage(data: signatureData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: AppTokens.Size.signatureHeight)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-
-                        if let signDate = flight.signatureDate {
-                            Text("Signed on \(signDate, format: .dateTime.month(.wide).day().year())")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        // Void signature button
-                        if flight.isSignatureLocked {
-                            Button(role: .destructive) {
-                                showingVoidAlert = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "xmark.shield")
-                                    Text("Void Signature")
-                                }
-                                .font(.system(.caption, design: .rounded, weight: .medium))
-                            }
-                            .padding(.top, 4)
-                        }
-                    }
-                    .cardStyle()
-                }
-
-                // Remarks
-                if !flight.remarks.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("REMARKS")
-                            .sectionHeaderStyle()
-                        Text(flight.remarks)
-                            .font(.system(.body, design: .rounded))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .cardStyle()
-                }
-            }
-            .padding()
-        }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle("Flight Details")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                // B2: Duplicate button
-                if let onDuplicate {
-                    Button {
-                        onDuplicate(flight)
-                        HapticService.success()
-                    } label: {
-                        Image(systemName: "doc.on.doc")
-                    }
-                }
-                // B6: Edit button for unsigned flights
-                if flight.isEditable {
-                    Button("Edit") {
-                        showingEditSheet = true
-                    }
-                }
-            }
-        }
-        .sheet(isPresented: $showingEditSheet) {
-            AddFlightView(editingFlight: flight)
-        }
-        .alert("Void Signature?", isPresented: $showingVoidAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button("Void", role: .destructive) {
-                flight.voidSignature()
-                HapticService.warning()
-            }
-        } message: {
-            Text("This will remove the CFI endorsement and unlock the flight for editing. The instructor will need to re-sign.")
-        }
-    }
-}
-
-struct DetailItem: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(value)
-                .font(.system(.title2, design: .rounded, weight: .bold))
-            Text(label)
-                .font(.system(.caption, design: .rounded))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
     }
 }
 

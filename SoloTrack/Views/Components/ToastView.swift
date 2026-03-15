@@ -6,6 +6,8 @@ struct ToastView: View {
     let icon: String
     let message: String
     var iconColor: Color = .currencyGreen
+    var actionLabel: String? = nil
+    var onAction: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: AppTokens.Spacing.md) {
@@ -13,6 +15,14 @@ struct ToastView: View {
                 .foregroundStyle(iconColor)
             Text(message)
                 .font(.system(.subheadline, design: .rounded, weight: .semibold))
+
+            if let actionLabel, let onAction {
+                Button(actionLabel) {
+                    onAction()
+                }
+                .font(.system(.subheadline, design: .rounded, weight: .bold))
+                .foregroundStyle(Color.skyBlue)
+            }
         }
         .padding(.horizontal, AppTokens.Spacing.xl)
         .padding(.vertical, AppTokens.Spacing.lg)
@@ -27,5 +37,6 @@ struct ToastView: View {
     VStack(spacing: 20) {
         ToastView(icon: "checkmark.circle.fill", message: "Flight saved")
         ToastView(icon: "checkmark.circle.fill", message: "Saved! (3)", iconColor: .currencyGreen)
+        ToastView(icon: "trash", message: "Flight deleted", iconColor: .warningRed, actionLabel: "Undo", onAction: {})
     }
 }

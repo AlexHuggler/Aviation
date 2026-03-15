@@ -27,7 +27,19 @@ struct PPLProgressView: View {
 
     private var emptyProgressState: some View {
         ContentUnavailableView {
-            Label("No Progress Yet", systemImage: "chart.bar.fill")
+            Label {
+                Text("No Progress Yet")
+            } icon: {
+                ZStack {
+                    Image(systemName: "chart.bar.fill")
+                        .font(.system(size: 36))
+                        .foregroundStyle(Color.skyBlue.opacity(AppTokens.Opacity.strong))
+                    Image(systemName: "airplane")
+                        .font(.system(size: 14))
+                        .foregroundStyle(Color.skyBlue)
+                        .offset(x: 16, y: -16)
+                }
+            }
         } description: {
             Text("Log your first flight to start tracking progress toward your Private Pilot License requirements under FAR 61.109.")
         } actions: {
@@ -181,17 +193,21 @@ struct RequirementRow: View {
             }
         }
         .cardStyle()
-        .scaleEffect(celebrating ? 1.03 : 1.0)
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTokens.Radius.card)
+                .stroke(celebrating ? Color.currencyGreen.opacity(0.6) : Color.clear, lineWidth: 2)
+        )
+        .scaleEffect(celebrating ? 1.05 : 1.0)
         .motionAwareAnimation(.spring(duration: 0.5, bounce: 0.3), value: celebrating)
-        .sensoryFeedback(.success, trigger: celebrating)
         .onChange(of: requirement.isMet) { wasMet, isMet in
             if !wasMet && isMet {
                 celebrating = true
+                HapticService.milestoneAchieved()
             }
         }
         .task(id: celebrating) {
             guard celebrating else { return }
-            try? await Task.sleep(for: .seconds(0.6))
+            try? await Task.sleep(for: .seconds(AppTokens.Duration.celebration))
             celebrating = false
         }
         .accessibilityElement(children: .combine)

@@ -43,8 +43,6 @@ struct AddFlightView: View {
     @State private var cfiNumber = ""
 
     // UI state
-    @State private var showingValidationAlert = false
-    @State private var validationMessage = ""
     @State private var showAdvanced = false
     @State private var hasAppliedDefaults = false
     @State private var showDiscardAlert = false   // B1: Unsaved changes warning
@@ -94,6 +92,23 @@ struct AddFlightView: View {
         landingsDay == 0 && landingsNightFullStop == 0
     }
 
+    /// Inline warning message for Hobbs field (nil when valid)
+    private var hobbsWarningMessage: String? {
+        if hobbsHasError {
+            return "Enter a valid Hobbs time"
+        }
+        if let hobbs = parsedHobbs, hobbs > 12 {
+            return "Hobbs exceeds 12 hours — verify before saving"
+        }
+        return nil
+    }
+
+    /// True when Hobbs is valid but unusually high (soft warning, not a save blocker)
+    private var hobbsHasSoftWarning: Bool {
+        guard let hobbs = parsedHobbs else { return false }
+        return hobbs > 12
+    }
+
     /// Core save requirements met (inline — excludes soft warnings like >12h)
     private var saveEnabled: Bool {
         guard let hobbs = parsedHobbs, hobbs > 0 else { return false }
@@ -134,7 +149,7 @@ struct AddFlightView: View {
                 }
                 .tint(Color.skyBlue)
             }
-            .navigationTitle(isEditing ? "Edit Flight" : "Log Flight")
+            .navigationTitle(isEditing ? "Edit Flight" : (quickEntryMode ? "Quick Entry" : "Log Flight"))
             .navigationBarTitleDisplayMode(.inline)
             // Quick-Entry inline success toast
             .overlay(alignment: .top) {
@@ -142,8 +157,12 @@ struct AddFlightView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundStyle(Color.currencyGreen)
-                        Text("Saved! (\(quickEntryCount))")
+                        Text("Saved!")
                             .font(.system(.caption, design: .rounded, weight: .semibold))
+                        Text("(\(quickEntryCount))")
+                            .font(.system(.caption, design: .rounded, weight: .bold))
+                            .foregroundStyle(Color.skyBlue)
+                            .contentTransition(.numericText())
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
@@ -186,6 +205,7 @@ struct AddFlightView: View {
                         Button("Save") { saveFlight() }
                             .fontWeight(.semibold)
                             .disabled(!saveEnabled)
+                            .keyboardShortcut("s", modifiers: .command)
                     }
                 }
                 // A7: Next/Done keyboard toolbar for field advancement
@@ -199,11 +219,6 @@ struct AddFlightView: View {
                         focusedField = nil
                     }
                 }
-            }
-            .alert("Missing Information", isPresented: $showingValidationAlert) {
-                Button("OK") {}
-            } message: {
-                Text(validationMessage)
             }
             // B1: Discard changes confirmation
             .alert("Discard Flight?", isPresented: $showDiscardAlert) {
@@ -249,6 +264,14 @@ struct AddFlightView: View {
             // A1: Smart defaults from most recent flight
             routeFrom = lastFlight.routeFrom
             routeTo = lastFlight.routeTo
+            // FR-R6: Auto-swap routes for XC return legs within 24 hours
+            if lastFlight.isCrossCountry && lastFlight.routeFrom != lastFlight.routeTo {
+                let hoursSinceLast = Date.now.timeIntervalSince(lastFlight.date) / 3600
+                if hoursSinceLast < 24 {
+                    routeFrom = lastFlight.routeTo
+                    routeTo = lastFlight.routeFrom
+                }
+            }
             isSolo = lastFlight.isSolo
             isDualReceived = lastFlight.isDualReceived
             if !lastFlight.cfiNumber.isEmpty {
@@ -282,6 +305,25 @@ struct AddFlightView: View {
         if order.indices.contains(nextIndex) {
             focusedField = order[nextIndex]
         }
+    }
+
+    // MARK: - FR-R2: ICAO Auto-Completion
+
+    private func icaoSuggestions(for query: String, field: Field) -> [(code: String, name: String)] {
+        let trimmed = query.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty, trimmed.count < 4 else { return [] }
+
+        // Prioritize airports from recent routes
+        let recentCodes = Set(recentFlights.prefix(10).flatMap { [$0.routeFrom.uppercased(), $0.routeTo.uppercased()] })
+        let dbSuggestions = ICAODatabase.suggestions(for: trimmed)
+
+        let sorted = dbSuggestions.sorted { a, b in
+            let aRecent = recentCodes.contains(a.code)
+            let bRecent = recentCodes.contains(b.code)
+            if aRecent != bRecent { return aRecent }
+            return a.code < b.code
+        }
+        return Array(sorted.prefix(8))
     }
 
     // MARK: - FR-1: Recent Routes
@@ -346,7 +388,7 @@ struct AddFlightView: View {
                         if routeFrom.trimmingCharacters(in: .whitespaces).count == 4 {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 10))
-                                .foregroundStyle(Color.currencyGreen)
+                                .foregroundStyle(ICAODatabase.isKnown(routeFrom) ? Color.currencyGreen : Color.cautionYellow)
                         }
                     }
                     TextField("ICAO", text: $routeFrom)
@@ -388,7 +430,7 @@ struct AddFlightView: View {
                         if routeTo.trimmingCharacters(in: .whitespaces).count == 4 {
                             Image(systemName: "checkmark.circle.fill")
                                 .font(.system(size: 10))
-                                .foregroundStyle(Color.currencyGreen)
+                                .foregroundStyle(ICAODatabase.isKnown(routeTo) ? Color.currencyGreen : Color.cautionYellow)
                         }
                     }
                     TextField("ICAO", text: $routeTo)
@@ -398,6 +440,45 @@ struct AddFlightView: View {
                         .focused($focusedField, equals: .routeTo)
                         .submitLabel(.next)
                         .onSubmit { focusedField = .hobbs }
+                }
+            }
+
+            // FR-R2: ICAO auto-completion suggestions
+            if let activeField = focusedField,
+               (activeField == .routeFrom || activeField == .routeTo) {
+                let query = activeField == .routeFrom ? routeFrom : routeTo
+                let suggestions = icaoSuggestions(for: query, field: activeField)
+                if !suggestions.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(suggestions, id: \.code) { suggestion in
+                                Button {
+                                    if activeField == .routeFrom {
+                                        routeFrom = suggestion.code
+                                        focusedField = .routeTo
+                                    } else {
+                                        routeTo = suggestion.code
+                                        focusedField = .hobbs
+                                    }
+                                    HapticService.selectionChanged()
+                                } label: {
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        Text(suggestion.code)
+                                            .font(.system(.caption, design: .monospaced, weight: .bold))
+                                        Text(suggestion.name)
+                                            .font(.system(.caption2, design: .rounded))
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.skyBlue.opacity(AppTokens.Opacity.subtle))
+                                    .clipShape(RoundedRectangle(cornerRadius: AppTokens.Radius.sm))
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
                 }
             }
         } header: {
@@ -456,6 +537,12 @@ struct AddFlightView: View {
                     Text("hrs")
                         .foregroundStyle(hobbsHasError ? Color.warningRed.opacity(0.6) : .secondary)
                 }
+            }
+
+            if let warning = hobbsWarningMessage {
+                Text(warning)
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(hobbsHasError ? Color.warningRed : Color.cautionYellow)
             }
 
             HStack {
@@ -580,26 +667,13 @@ struct AddFlightView: View {
             }
         }
 
-        // A3: Validate Hobbs
+        // Validate — inline errors are already visible
         guard let hobbs = Double(durationHobbs), hobbs > 0 else {
-            validationMessage = "Please enter a valid Hobbs time."
-            showingValidationAlert = true
             HapticService.error()
             return
         }
 
-        // A3: Warn on unusually long flights
-        if hobbs > 12 {
-            validationMessage = "Hobbs time exceeds 12 hours. Please verify this is correct."
-            showingValidationAlert = true
-            HapticService.warning()
-            return
-        }
-
-        // A3: Ensure at least one landing for any flight
         if landingsDay == 0 && landingsNightFullStop == 0 {
-            validationMessage = "Every flight needs at least one landing. Please add your landing count."
-            showingValidationAlert = true
             HapticService.error()
             return
         }
@@ -650,7 +724,7 @@ struct AddFlightView: View {
         }
 
         // A2: Success haptic + callback
-        HapticService.success()
+        HapticService.saveConfirmation()
         onSave?()
 
         if quickEntryMode && !isEditing {

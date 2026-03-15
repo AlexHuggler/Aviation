@@ -34,6 +34,7 @@ enum AppTokens {
         static let slow: Double = 0.6
         static let ring: Double = 0.8
         static let toast: Double = 2.0
+        static let celebration: Double = 1.2
     }
 
     // Opacity scale
@@ -113,6 +114,35 @@ enum HapticService {
     static func warning() { notification.notificationOccurred(.warning) }
     static func selectionChanged() { selection.selectionChanged() }
     static func lightImpact() { impact.impactOccurred() }
+
+    // DL-2: Compound haptic patterns for premium feel
+    private static let mediumImpact = UIImpactFeedbackGenerator(style: .medium)
+
+    static func saveConfirmation() {
+        lightImpact()
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(100))
+            success()
+        }
+    }
+
+    static func deleteConfirmation() {
+        warning()
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(150))
+            lightImpact()
+        }
+    }
+
+    static func milestoneAchieved() {
+        success()
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(200))
+            success()
+            try? await Task.sleep(for: .milliseconds(200))
+            mediumImpact.impactOccurred()
+        }
+    }
 }
 
 // MARK: - View Modifiers
