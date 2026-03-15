@@ -7,6 +7,9 @@ struct ExportView: View {
     // A8: Copy confirmation state
     @State private var copied = false
 
+    // DL-5: Staggered appearance animation
+    @State private var appeared = false
+
     var body: some View {
         NavigationStack {
             VStack(spacing: AppTokens.Spacing.xxl) {
@@ -23,6 +26,18 @@ struct ExportView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
+                // DL-5: Export metadata summary
+                HStack(spacing: 12) {
+                    let rowCount = max(0, csvContent.components(separatedBy: "\n").count - 2)
+                    let fileSize = ByteCountFormatter.string(fromByteCount: Int64(csvContent.utf8.count), countStyle: .file)
+
+                    SummaryChip(value: "\(rowCount)", label: "Flights")
+                    SummaryChip(value: fileSize, label: "Size")
+                }
+                .padding(.horizontal)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 10)
+
                 // Preview
                 ScrollView {
                     Text(csvContent)
@@ -30,10 +45,12 @@ struct ExportView: View {
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxHeight: 200)
+                .frame(maxHeight: 240)
                 .background(Color(.secondarySystemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 10)
 
                 Spacer()
 
@@ -81,6 +98,7 @@ struct ExportView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical)
+            .onAppear { withMotionAwareAnimation(.easeOut(duration: 0.4)) { appeared = true } }
             // H-5 fix: Structured concurrency auto-cancels on view dismissal
             .task(id: copied) {
                 guard copied else { return }
@@ -94,6 +112,27 @@ struct ExportView: View {
                 }
             }
         }
+    }
+}
+
+// DL-5: Export summary chip
+private struct SummaryChip: View {
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.system(.subheadline, design: .rounded, weight: .bold))
+                .foregroundStyle(Color.skyBlue)
+            Text(label)
+                .font(.system(.caption2, design: .rounded))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(Color.skyBlue.opacity(AppTokens.Opacity.subtle))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 
