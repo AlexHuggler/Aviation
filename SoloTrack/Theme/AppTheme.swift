@@ -88,16 +88,40 @@ struct ScaledTokens {
     @ScaledMetric(relativeTo: .body) var csvPreviewMaxHeight: CGFloat = 240
 }
 
-// MARK: - Aviation Color Palette
+// MARK: - Aviation Color Palette (Dark Mode Aware)
 
 extension Color {
-    // Currency traffic light
-    static let currencyGreen = Color(red: 0.18, green: 0.80, blue: 0.44)
-    static let cautionYellow = Color(red: 1.0, green: 0.76, blue: 0.03)
-    static let warningRed = Color(red: 0.91, green: 0.22, blue: 0.22)
+    // Currency traffic light — slightly brighter in dark mode for contrast
+    static let currencyGreen = Color(
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 0.25, green: 0.88, blue: 0.52, alpha: 1)
+                : UIColor(red: 0.18, green: 0.80, blue: 0.44, alpha: 1)
+        }
+    )
+    static let cautionYellow = Color(
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 1.0, green: 0.82, blue: 0.15, alpha: 1)
+                : UIColor(red: 1.0, green: 0.76, blue: 0.03, alpha: 1)
+        }
+    )
+    static let warningRed = Color(
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 0.96, green: 0.30, blue: 0.30, alpha: 1)
+                : UIColor(red: 0.91, green: 0.22, blue: 0.22, alpha: 1)
+        }
+    )
 
-    // Aviation theme
-    static let skyBlue = Color(red: 0.40, green: 0.73, blue: 0.94)
+    // Aviation theme — slightly lighter in dark mode
+    static let skyBlue = Color(
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 0.47, green: 0.78, blue: 0.97, alpha: 1)
+                : UIColor(red: 0.40, green: 0.73, blue: 0.94, alpha: 1)
+        }
+    )
 
     // Category badge palette
     static let badgeDual = Color.purple

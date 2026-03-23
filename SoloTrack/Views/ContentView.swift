@@ -4,6 +4,7 @@ struct ContentView: View {
     @Environment(OnboardingManager.self) private var onboarding
 
     @State private var selectedTab = 0
+    @State private var showingShortcuts = false
 
     var body: some View {
         @Bindable var onboarding = onboarding
@@ -23,6 +24,7 @@ struct ContentView: View {
                 }
             }
             .tint(Color.skyBlue)
+            .sensoryFeedback(.selection, trigger: selectedTab)
             .background {
                 // FR-1: Keyboard shortcuts for tab switching
                 Group {
@@ -32,6 +34,8 @@ struct ContentView: View {
                         .keyboardShortcut("2", modifiers: .command)
                     Button("") { selectedTab = 2 }
                         .keyboardShortcut("3", modifiers: .command)
+                    Button("") { showingShortcuts = true }
+                        .keyboardShortcut("/", modifiers: .command)
                 }
                 .opacity(0)
                 .allowsHitTesting(false)
@@ -53,6 +57,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $onboarding.showOnboardingSheet) {
             OnboardingView()
+        }
+        .sheet(isPresented: $showingShortcuts) {
+            KeyboardShortcutsView()
         }
         // Drive tab selection during coach mark tour
         .onChange(of: onboarding.currentCoachStep) { _, newStep in
