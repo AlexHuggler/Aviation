@@ -387,6 +387,10 @@ struct AddFlightView: View {
         if !template.cfiNumber.isEmpty {
             cfiNumber = template.cfiNumber
         }
+        // Auto-expand "More Details" if template has remarks or CFI data
+        if !template.remarks.isEmpty || !template.cfiNumber.isEmpty {
+            showAdvanced = true
+        }
         // Update initial values so isFormDirty works correctly
         initialRouteFrom = template.routeFrom
         initialRouteTo = template.routeTo
@@ -621,11 +625,13 @@ struct AddFlightView: View {
                         }
                     }
                     .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
+                    .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
         } header: {
             Text("Route")
         }
+        .motionAwareAnimation(.spring(duration: AppTokens.Duration.quick), value: focusedField)
     }
 
     // MARK: - Duration (FR-2: Optional start/end calculator)
@@ -665,6 +671,7 @@ struct AddFlightView: View {
                             .fontWeight(.semibold)
                             .contentTransition(.numericText())
                     }
+                    .transition(.opacity)
                 }
             } else {
                 HStack {
@@ -685,10 +692,23 @@ struct AddFlightView: View {
                 Text(warning)
                     .font(.system(.caption, design: .rounded))
                     .foregroundStyle(hobbsHasError ? Color.warningRed : Color.cautionYellow)
+                    .transition(.opacity)
             }
 
             HStack {
                 Text("Tach")
+                // Quick copy from Hobbs when Tach differs
+                if !durationHobbs.isEmpty && durationTach != durationHobbs {
+                    Button {
+                        durationTach = durationHobbs
+                        HapticService.selectionChanged()
+                    } label: {
+                        Text("= Hobbs")
+                            .font(.system(.caption2, design: .rounded, weight: .medium))
+                            .foregroundStyle(Color.skyBlue)
+                    }
+                    .buttonStyle(.plain)
+                }
                 Spacer()
                 TextField("0.0", text: $durationTach)
                     .keyboardType(.decimalPad)
@@ -732,18 +752,53 @@ struct AddFlightView: View {
 
     private var landingsSection: some View {
         Section {
-            Stepper("Day Landings: \(landingsDay)", value: $landingsDay, in: 0...99)
+            landingRow(label: "Day Landings", value: $landingsDay)
                 .sensoryFeedback(.increase, trigger: landingsDay)
-            Stepper("Night Full-Stop: \(landingsNightFullStop)", value: $landingsNightFullStop, in: 0...99)
+            landingRow(label: "Night Full-Stop", value: $landingsNightFullStop)
                 .sensoryFeedback(.increase, trigger: landingsNightFullStop)
 
             if landingsHaveError {
                 Text("Every flight needs at least one landing")
                     .font(.system(.caption, design: .rounded))
                     .foregroundStyle(Color.warningRed)
+                    .transition(.opacity)
             }
         } header: {
             Text("Landings")
+        }
+        .motionAwareAnimation(.spring(duration: AppTokens.Duration.quick), value: landingsHaveError)
+    }
+
+    // MARK: - Landing Row (editable numeric input with +/- buttons)
+
+    private func landingRow(label: String, value: Binding<Int>) -> some View {
+        HStack {
+            Text(label)
+            Spacer()
+            Button {
+                if value.wrappedValue > 0 { value.wrappedValue -= 1 }
+                HapticService.selectionChanged()
+            } label: {
+                Image(systemName: "minus.circle.fill")
+                    .foregroundStyle(value.wrappedValue > 0 ? Color.skyBlue : Color.gray.opacity(AppTokens.Opacity.medium))
+            }
+            .buttonStyle(.plain)
+            .disabled(value.wrappedValue <= 0)
+
+            Text("\(value.wrappedValue)")
+                .font(.system(.body, design: .rounded, weight: .semibold))
+                .frame(minWidth: 32)
+                .multilineTextAlignment(.center)
+
+            Button {
+                if value.wrappedValue < 99 { value.wrappedValue += 1 }
+                HapticService.selectionChanged()
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .foregroundStyle(Color.skyBlue)
+            }
+            .buttonStyle(.plain)
+            .disabled(value.wrappedValue >= 99)
         }
     }
 

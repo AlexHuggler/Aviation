@@ -23,6 +23,11 @@ struct LogbookListView: View {
     // A1: Search & filter
     @State private var searchText = ""
 
+    // Swipe-to-edit support
+    @State private var flightToEdit: FlightLog?
+
+    // Category & date filters
+    @State private var activeFilters: Set<FlightFilter> = []
 
     // D2: Static date formatter (avoid re-allocation on every group call)
     private static let monthFormatter: DateFormatter = {
@@ -31,11 +36,37 @@ struct LogbookListView: View {
         return formatter
     }()
 
-    // A1: Filtered flights based on search text
+    // A1: Filtered flights based on search text and active filters
     private var filteredFlights: [FlightLog] {
-        guard !searchText.isEmpty else { return flights }
+        var result = flights
+
+        // Apply category/date filters
+        if !activeFilters.isEmpty {
+            let calendar = Calendar.current
+            let now = Date.now
+            result = result.filter { flight in
+                activeFilters.allSatisfy { filter in
+                    switch filter {
+                    case .solo: return flight.isSolo
+                    case .dual: return flight.isDualReceived
+                    case .crossCountry: return flight.isCrossCountry
+                    case .instrument: return flight.isSimulatedInstrument
+                    case .night: return flight.landingsNightFullStop > 0
+                    case .thisMonth:
+                        let start = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) ?? now
+                        return flight.date >= start
+                    case .last90Days:
+                        let start = calendar.date(byAdding: .day, value: -90, to: now) ?? now
+                        return flight.date >= start
+                    }
+                }
+            }
+        }
+
+        // Apply text search
+        guard !searchText.isEmpty else { return result }
         let query = searchText.lowercased()
-        return flights.filter { flight in
+        return result.filter { flight in
             flight.routeFrom.lowercased().contains(query)
             || flight.routeTo.lowercased().contains(query)
             || flight.formattedRoute.lowercased().contains(query)
@@ -87,6 +118,11 @@ struct LogbookListView: View {
             }
             .sheet(isPresented: $showingExportSheet) {
                 ExportView(csvContent: exportedCSV)
+            }
+            .sheet(item: $flightToEdit) { flight in
+                AddFlightView(editingFlight: flight, onSave: {
+                    showSavedToast = true
+                })
             }
             .alert("Cannot Delete", isPresented: $showLockedDeleteAlert) {
                 Button("OK") {}
@@ -156,6 +192,9 @@ struct LogbookListView: View {
             // B3: Logbook summary header
             logbookSummarySection
 
+            // Filter chips
+            filterChipsSection
+
             ForEach(grouped, id: \.key) { section in
                 Section {
                     ForEach(section.flights) { flight in
@@ -168,6 +207,14 @@ struct LogbookListView: View {
                         }
                         // PX-2: Swipe actions for quick access
                         .swipeActions(edge: .leading) {
+                            if flight.isEditable {
+                                Button {
+                                    flightToEdit = flight
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.orange)
+                            }
                             Button {
                                 duplicateFlight(flight)
                             } label: {
@@ -189,6 +236,13 @@ struct LogbookListView: View {
                         }
                         // B2: Context menu kept for discoverability
                         .contextMenu {
+                            if flight.isEditable {
+                                Button {
+                                    flightToEdit = flight
+                                } label: {
+                                    Label("Edit Flight", systemImage: "pencil")
+                                }
+                            }
                             Button {
                                 duplicateFlight(flight)
                             } label: {
@@ -325,6 +379,84 @@ struct LogbookListView: View {
         modelContext.insert(newFlight)
         HapticService.success()
         showSavedToast = true
+    }
+
+    // MARK: - Filter Chips
+
+    private var filterChipsSection: some View {
+        Section {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: AppTokens.Spacing.sm) {
+                    ForEach(FlightFilter.allCases) { filter in
+                        Button {
+                            withMotionAwareAnimation(.spring(duration: 0.3)) {
+                                if activeFilters.contains(filter) {
+                                    activeFilters.remove(filter)
+                                } else {
+                                    // Date filters are mutually exclusive
+                                    if filter == .thisMonth || filter == .last90Days {
+                                        activeFilters.remove(.thisMonth)
+                                        activeFilters.remove(.last90Days)
+                                    }
+                                    activeFilters.insert(filter)
+                                }
+                            }
+                            HapticService.selectionChanged()
+                        } label: {
+                            Text(filter.label)
+                                .font(.system(.caption, design: .rounded, weight: .medium))
+                                .padding(.horizontal, AppTokens.Spacing.md)
+                                .padding(.vertical, AppTokens.Spacing.xs)
+                                .background(
+                                    activeFilters.contains(filter)
+                                        ? Color.skyBlue.opacity(0.2)
+                                        : Color.skyBlue.opacity(AppTokens.Opacity.subtle)
+                                )
+                                .foregroundStyle(activeFilters.contains(filter) ? Color.skyBlue : .secondary)
+                                .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    // Clear all button when filters are active
+                    if !activeFilters.isEmpty {
+                        Button {
+                            withMotionAwareAnimation(.spring(duration: 0.3)) {
+                                activeFilters.removeAll()
+                            }
+                            HapticService.selectionChanged()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+            .listRowBackground(Color.clear)
+        }
+    }
+}
+
+// MARK: - Flight Filter
+
+enum FlightFilter: String, CaseIterable, Identifiable, Hashable {
+    case solo, dual, crossCountry, instrument, night, thisMonth, last90Days
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .solo: return "Solo"
+        case .dual: return "Dual"
+        case .crossCountry: return "XC"
+        case .instrument: return "Instrument"
+        case .night: return "Night"
+        case .thisMonth: return "This Month"
+        case .last90Days: return "Last 90 Days"
+        }
     }
 }
 

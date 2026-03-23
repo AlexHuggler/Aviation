@@ -9,6 +9,10 @@ struct PPLProgressView: View {
 
     private let progressTracker = ProgressTracker()
 
+    // Track previous met count to detect milestone transitions
+    @State private var lastMetCount = -1
+    @State private var allMetCelebrating = false
+
     var body: some View {
         NavigationStack {
             Group {
@@ -108,6 +112,24 @@ struct PPLProgressView: View {
         }
         .frame(maxWidth: .infinity)
         .cardStyle()
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTokens.Radius.card)
+                .stroke(allMetCelebrating ? Color.currencyGreen.opacity(0.6) : Color.clear, lineWidth: 3)
+        )
+        .scaleEffect(allMetCelebrating ? 1.03 : 1.0)
+        .motionAwareAnimation(.spring(duration: 0.6, bounce: 0.3), value: allMetCelebrating)
+        .onChange(of: progressTracker.requirementsMet(from: flights)) { oldMet, newMet in
+            // Celebrate when all requirements are newly met
+            if newMet == progressTracker.totalRequirements() && oldMet < newMet {
+                allMetCelebrating = true
+                HapticService.milestoneAchieved()
+            }
+        }
+        .task(id: allMetCelebrating) {
+            guard allMetCelebrating else { return }
+            try? await Task.sleep(for: .seconds(AppTokens.Duration.celebration))
+            allMetCelebrating = false
+        }
     }
 
     // MARK: - Requirements List
