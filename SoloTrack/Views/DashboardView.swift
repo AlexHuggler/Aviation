@@ -11,6 +11,9 @@ struct DashboardView: View {
     // Save confirmation toast
     @State private var showSavedToast = false
 
+    // C3: Flight recommendation from nudge card
+    @State private var recommendedFlight: FlightRecommendation?
+
     // DL-6: Loading state polish
     @State private var hasAppeared = false
 
@@ -45,8 +48,8 @@ struct DashboardView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingAddFlight) {
-                AddFlightView(onSave: {
+            .sheet(isPresented: $showingAddFlight, onDismiss: { recommendedFlight = nil }) {
+                AddFlightView(defaultRecommendation: recommendedFlight, onSave: {
                     showSavedToast = true
                 })
             }
@@ -193,32 +196,51 @@ struct DashboardView: View {
         let nextGoal = requirements
             .filter { !$0.isMet }
             .min { $0.remainingHours < $1.remainingHours }
+        let recommendation = progressTracker.nextRecommendation(from: flights)
 
         return Group {
             if let goal = nextGoal {
-                HStack(spacing: AppTokens.Spacing.lg) {
-                    Image(systemName: "target")
-                        .font(.title2)
-                        .foregroundStyle(Color.skyBlue)
+                Button {
+                    recommendedFlight = recommendation
+                    showingAddFlight = true
+                    HapticService.selectionChanged()
+                } label: {
+                    HStack(spacing: AppTokens.Spacing.lg) {
+                        Image(systemName: "target")
+                            .font(.title2)
+                            .foregroundStyle(Color.skyBlue)
 
-                    VStack(alignment: .leading, spacing: AppTokens.Spacing.xxs) {
-                        Text("NEXT MILESTONE")
-                            .sectionHeaderStyle()
-                        Text("\(String(format: "%.1f", goal.remainingHours)) hrs to \(goal.title)")
-                            .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                        Text(goal.farReference)
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: AppTokens.Spacing.xxs) {
+                            Text("NEXT MILESTONE")
+                                .sectionHeaderStyle()
+                            Text("\(String(format: "%.1f", goal.remainingHours)) hrs to \(goal.title)")
+                                .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                            if let rec = recommendation {
+                                Text(rec.description)
+                                    .font(.system(.caption, design: .rounded))
+                                    .foregroundStyle(Color.skyBlue)
+                            }
+                            Text(goal.farReference)
+                                .font(.system(.caption2, design: .monospaced))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Spacer()
+
+                        VStack(spacing: 4) {
+                            Text("\(goal.percentComplete)%")
+                                .font(.system(.title3, design: .rounded, weight: .bold))
+                                .foregroundStyle(Color.skyBlue)
+                                .contentTransition(.numericText())
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
                     }
-
-                    Spacer()
-
-                    Text("\(goal.percentComplete)%")
-                        .font(.system(.title3, design: .rounded, weight: .bold))
-                        .foregroundStyle(Color.skyBlue)
-                        .contentTransition(.numericText())
+                    .cardStyle()
                 }
-                .cardStyle()
+                .buttonStyle(.plain)
+                .accessibilityHint("Tap to log a recommended flight")
             }
         }
     }
