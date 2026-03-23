@@ -185,18 +185,47 @@ enum ICAODatabase {
         "PAJN": "Juneau Intl",
     ]
 
-    /// Returns airports matching the given prefix, sorted by code
+    // MARK: - C2: Custom Airports (user-saved private strips / unlisted fields)
+
+    private static let customAirportsKey = "customAirports"
+
+    /// User's custom airports persisted in UserDefaults
+    static var customAirports: [String: String] {
+        get {
+            UserDefaults.standard.dictionary(forKey: customAirportsKey) as? [String: String] ?? [:]
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: customAirportsKey)
+        }
+    }
+
+    static func addCustomAirport(code: String, name: String) {
+        var custom = customAirports
+        custom[code.uppercased()] = name
+        customAirports = custom
+    }
+
+    static func removeCustomAirport(code: String) {
+        var custom = customAirports
+        custom.removeValue(forKey: code.uppercased())
+        customAirports = custom
+    }
+
+    /// Returns airports matching the given prefix, sorted by code (includes custom airports)
     static func suggestions(for prefix: String) -> [(code: String, name: String)] {
         guard !prefix.isEmpty else { return [] }
         let upper = prefix.uppercased()
-        return airports
-            .filter { $0.key.hasPrefix(upper) }
+        let builtIn = airports.filter { $0.key.hasPrefix(upper) }
+        let custom = customAirports.filter { $0.key.hasPrefix(upper) }
+        let merged = builtIn.merging(custom) { builtIn, _ in builtIn }
+        return merged
             .map { (code: $0.key, name: $0.value) }
             .sorted { $0.code < $1.code }
     }
 
-    /// Returns true if the code is a known airport
+    /// Returns true if the code is a known airport (built-in or custom)
     static func isKnown(_ code: String) -> Bool {
-        airports[code.uppercased()] != nil
+        let upper = code.uppercased()
+        return airports[upper] != nil || customAirports[upper] != nil
     }
 }

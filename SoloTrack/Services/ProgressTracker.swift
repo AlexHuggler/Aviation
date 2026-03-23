@@ -36,6 +36,19 @@ struct PPLRequirement: Identifiable {
     }
 }
 
+// MARK: - C3: Flight Recommendation
+
+/// Actionable suggestion for the next flight to advance PPL progress.
+struct FlightRecommendation {
+    let description: String
+    let suggestedHobbs: Double
+    let isSolo: Bool
+    let isDual: Bool
+    let isXC: Bool
+    let isInstrument: Bool
+    let isNight: Bool
+}
+
 // MARK: - Progress Tracker
 
 /// Tracks progress against FAR 61.109 PPL requirements.
@@ -101,5 +114,33 @@ struct ProgressTracker {
 
     func totalRequirements() -> Int {
         6
+    }
+
+    /// Returns an actionable flight recommendation for the nearest-to-completion unmet requirement.
+    func nextRecommendation(from flights: [FlightLog]) -> FlightRecommendation? {
+        let reqs = computeRequirements(from: flights)
+        guard let nearest = reqs.filter({ !$0.isMet }).min(by: { $0.remainingHours < $1.remainingHours }) else {
+            return nil
+        }
+
+        let hours = min(nearest.remainingHours, 2.0)
+        let fmt = String(format: "%.1f", hours)
+
+        switch nearest.farReference {
+        case "61.109(a)":
+            return FlightRecommendation(description: "Log \(fmt)h to reach \(nearest.title)", suggestedHobbs: hours, isSolo: false, isDual: false, isXC: false, isInstrument: false, isNight: false)
+        case "61.109(a)(1)":
+            return FlightRecommendation(description: "Fly \(fmt)h dual to reach \(nearest.title)", suggestedHobbs: hours, isSolo: false, isDual: true, isXC: false, isInstrument: false, isNight: false)
+        case "61.109(a)(2)":
+            return FlightRecommendation(description: "Fly \(fmt)h solo to reach \(nearest.title)", suggestedHobbs: hours, isSolo: true, isDual: false, isXC: false, isInstrument: false, isNight: false)
+        case "61.109(a)(2)(i)":
+            return FlightRecommendation(description: "Fly a \(fmt)h solo XC", suggestedHobbs: hours, isSolo: true, isDual: false, isXC: true, isInstrument: false, isNight: false)
+        case "61.109(a)(2)(ii)":
+            return FlightRecommendation(description: "Fly \(fmt)h at night", suggestedHobbs: hours, isSolo: false, isDual: false, isXC: false, isInstrument: false, isNight: true)
+        case "61.109(a)(3)":
+            return FlightRecommendation(description: "Log \(fmt)h instrument", suggestedHobbs: hours, isSolo: false, isDual: true, isXC: false, isInstrument: true, isNight: false)
+        default:
+            return nil
+        }
     }
 }

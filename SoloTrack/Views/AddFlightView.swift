@@ -13,6 +13,9 @@ struct AddFlightView: View {
     /// Optional flight to edit (B6). When nil, we create a new entry.
     var editingFlight: FlightLog?
 
+    /// C3: Optional recommendation from the dashboard nudge card
+    var defaultRecommendation: FlightRecommendation?
+
     /// Callback fired only on successful save (A2: prevents false-positive toast).
     var onSave: (() -> Void)?
 
@@ -72,6 +75,11 @@ struct AddFlightView: View {
     @State private var initialRouteFrom = ""
     @State private var initialRouteTo = ""
     @State private var initialCfiNumber = ""
+
+    // C2: Save custom airport
+    @State private var showSaveAirportAlert = false
+    @State private var saveAirportCode = ""
+    @State private var saveAirportName = ""
 
     var isEditing: Bool { editingFlight != nil }
 
@@ -252,6 +260,20 @@ struct AddFlightView: View {
             } message: {
                 Text("You have unsaved changes that will be lost.")
             }
+            // C2: Save custom airport alert
+            .alert("Save Airport", isPresented: $showSaveAirportAlert) {
+                TextField("Airport name", text: $saveAirportName)
+                Button("Save") {
+                    ICAODatabase.addCustomAirport(
+                        code: saveAirportCode,
+                        name: saveAirportName.isEmpty ? "Custom" : saveAirportName
+                    )
+                    HapticService.saveConfirmation()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Save \(saveAirportCode) to your custom airports list?")
+            }
             .onAppear {
                 applyDefaults()
             }
@@ -351,13 +373,26 @@ struct AddFlightView: View {
             if !lastFlight.cfiNumber.isEmpty {
                 cfiNumber = lastFlight.cfiNumber
             }
-            // FR-5: Auto-focus the first required empty field
-            focusedField = .hobbs
+            // C1: Auto-focus the first truly empty required field
+            focusedField = firstEmptyRequiredField()
         } else {
             // Persona-based defaults for first-ever flight
             isSolo = onboarding.trainingStage.defaultIsSolo
             isDualReceived = onboarding.trainingStage.defaultIsDualReceived
             focusedField = .routeFrom
+        }
+
+        // C3: Apply recommendation from dashboard nudge (overrides category defaults)
+        if !isEditing, let rec = defaultRecommendation {
+            if rec.suggestedHobbs > 0 {
+                durationHobbs = String(format: "%.1f", rec.suggestedHobbs)
+            }
+            isSolo = rec.isSolo
+            isDualReceived = rec.isDual
+            isCrossCountry = rec.isXC
+            isSimulatedInstrument = rec.isInstrument
+            if rec.isNight { landingsNightFullStop = max(landingsNightFullStop, 1) }
+            focusedField = firstEmptyRequiredField()
         }
 
         // C-2 fix: Snapshot initial state so isFormDirty compares against applied defaults
@@ -396,7 +431,8 @@ struct AddFlightView: View {
         initialRouteTo = template.routeTo
         initialIsSolo = template.isSolo
         initialIsDualReceived = template.isDualReceived
-        focusedField = .hobbs
+        // C1: Skip past fields the template already filled
+        focusedField = firstEmptyRequiredField()
         HapticService.lightImpact()
     }
 
@@ -411,6 +447,20 @@ struct AddFlightView: View {
         if order.indices.contains(nextIndex) {
             focusedField = order[nextIndex]
         }
+    }
+
+    // MARK: - C1: Smart Focus Skipping
+
+    /// Returns the first empty required field so focus skips past pre-filled values.
+    private func firstEmptyRequiredField() -> Field {
+        if routeFrom.trimmingCharacters(in: .whitespaces).isEmpty { return .routeFrom }
+        if routeTo.trimmingCharacters(in: .whitespaces).isEmpty { return .routeTo }
+        if useHobbsCalculator {
+            if hobbsStart.isEmpty { return .hobbs }
+        } else {
+            if durationHobbs.isEmpty { return .hobbs }
+        }
+        return .hobbs
     }
 
     // MARK: - FR-R2: ICAO Auto-Completion
@@ -528,9 +578,16 @@ struct AddFlightView: View {
                         }
                     }
                     if routeFrom.trimmingCharacters(in: .whitespaces).count == 4 && !ICAODatabase.isKnown(routeFrom) {
-                        Text("Code not in database — verify before saving")
-                            .font(.system(.caption2, design: .rounded))
-                            .foregroundStyle(Color.cautionYellow)
+                        Button {
+                            saveAirportCode = routeFrom.uppercased()
+                            saveAirportName = ""
+                            showSaveAirportAlert = true
+                        } label: {
+                            Label("Save to My Airports", systemImage: "plus.circle")
+                                .font(.system(.caption2, design: .rounded))
+                                .foregroundStyle(Color.cautionYellow)
+                        }
+                        .buttonStyle(.plain)
                     }
                     TextField("ICAO", text: $routeFrom)
                         .textInputAutocapitalization(.characters)
@@ -575,9 +632,16 @@ struct AddFlightView: View {
                         }
                     }
                     if routeTo.trimmingCharacters(in: .whitespaces).count == 4 && !ICAODatabase.isKnown(routeTo) {
-                        Text("Code not in database — verify before saving")
-                            .font(.system(.caption2, design: .rounded))
-                            .foregroundStyle(Color.cautionYellow)
+                        Button {
+                            saveAirportCode = routeTo.uppercased()
+                            saveAirportName = ""
+                            showSaveAirportAlert = true
+                        } label: {
+                            Label("Save to My Airports", systemImage: "plus.circle")
+                                .font(.system(.caption2, design: .rounded))
+                                .foregroundStyle(Color.cautionYellow)
+                        }
+                        .buttonStyle(.plain)
                     }
                     TextField("ICAO", text: $routeTo)
                         .textInputAutocapitalization(.characters)
