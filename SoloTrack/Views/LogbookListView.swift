@@ -36,8 +36,15 @@ struct LogbookListView: View {
         return formatter
     }()
 
-    // A1: Filtered flights based on search text and active filters
-    private var filteredFlights: [FlightLog] {
+    // H-11 fix: Cached filtered results to avoid recomputation on every body eval
+    @State private var filteredFlights: [FlightLog] = []
+
+    // A1: Filtering logic extracted for reuse and testability
+    static func filterFlights(
+        _ flights: [FlightLog],
+        searchText: String,
+        activeFilters: Set<FlightFilter>
+    ) -> [FlightLog] {
         var result = flights
 
         // Apply category/date filters
@@ -76,6 +83,10 @@ struct LogbookListView: View {
             || flight.date.formatted(date: .abbreviated, time: .omitted).lowercased().contains(query)
             || flight.date.formatted(date: .long, time: .omitted).lowercased().contains(query)
         }
+    }
+
+    private func refilter() {
+        filteredFlights = Self.filterFlights(flights, searchText: searchText, activeFilters: activeFilters)
     }
 
     var body: some View {
@@ -140,7 +151,8 @@ struct LogbookListView: View {
             // H-5 fix: Structured concurrency auto-cancels on view dismissal
             .task(id: showSavedToast) {
                 guard showSavedToast else { return }
-                try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
+                do { try await Task.sleep(for: .seconds(AppTokens.Duration.toast)) }
+                catch { return }
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
             }
             // FR-R3: Delete undo toast
@@ -159,12 +171,18 @@ struct LogbookListView: View {
             .motionAwareAnimation(.spring(duration: 0.4), value: showDeletedToast)
             .task(id: showDeletedToast) {
                 guard showDeletedToast else { return }
-                try? await Task.sleep(for: .seconds(4.0))
+                do { try await Task.sleep(for: .seconds(4.0)) }
+                catch { return }
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) {
                     showDeletedToast = false
                     lastDeletedFlight = nil
                 }
             }
+            // H-11 fix: Refilter when inputs change instead of recomputing in body
+            .onAppear { refilter() }
+            .onChange(of: flights.count) { _, _ in refilter() }
+            .onChange(of: searchText) { _, _ in refilter() }
+            .onChange(of: activeFilters) { _, _ in refilter() }
         }
     }
 

@@ -28,6 +28,7 @@ struct NotificationCoordinator: ViewModifier {
                 guard newCount > oldCount else { return }
                 // A flight was added — check for milestones and currency changes.
                 Task {
+                    guard !Task.isCancelled else { return }
                     let events = evaluator.detectEvents(
                         flights: flights,
                         trainingStage: onboarding.trainingStage
@@ -44,6 +45,7 @@ struct NotificationCoordinator: ViewModifier {
                 guard !flights.isEmpty else { return }
                 // App foregrounded — check for stalls and currency decay.
                 Task {
+                    guard !Task.isCancelled else { return }
                     let events = evaluator.detectEvents(
                         flights: flights,
                         trainingStage: onboarding.trainingStage

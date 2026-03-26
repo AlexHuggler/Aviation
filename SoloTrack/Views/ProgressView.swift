@@ -127,7 +127,8 @@ struct PPLProgressView: View {
         }
         .task(id: allMetCelebrating) {
             guard allMetCelebrating else { return }
-            try? await Task.sleep(for: .seconds(AppTokens.Duration.celebration))
+            do { try await Task.sleep(for: .seconds(AppTokens.Duration.celebration)) }
+            catch { return }
             allMetCelebrating = false
         }
     }
@@ -229,7 +230,8 @@ struct RequirementRow: View {
         }
         .task(id: celebrating) {
             guard celebrating else { return }
-            try? await Task.sleep(for: .seconds(AppTokens.Duration.celebration))
+            do { try await Task.sleep(for: .seconds(AppTokens.Duration.celebration)) }
+            catch { return }
             celebrating = false
         }
         .accessibilityElement(children: .combine)

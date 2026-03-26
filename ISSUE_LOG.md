@@ -110,3 +110,64 @@ Status: **FIXED** = resolved, **OPEN** = pending, **N/A** = no longer applicable
 ### M-10: `SignatureCaptureView` has no `#Preview` macro — FIXED
 **File**: `SignatureCaptureView.swift`
 **Resolution**: Added `#Preview` with `@Previewable @State` bindings for `signatureData` and `cfiNumber`.
+
+---
+
+## Audit Round 2 — New Findings (2026-03-26)
+
+---
+
+## Critical (Crashes / Data Loss)
+
+**None found.** No force unwraps in production code, no unsafe memory patterns, proper SwiftData model management.
+
+---
+
+## High (Performance / UX)
+
+### H-10: Silent notification authorization failure — no logging — FIXED
+**File**: `Services/NotificationService.swift:223-228`
+**Category**: Error Handling
+`requestAuthorization()` catches errors but returns `false` without logging. The `Self.logger` instance exists (used at line 390 for dispatch failures) but isn't used here. Users cannot diagnose why notifications don't work.
+**Resolution**: Added `Self.logger.error("Notification authorization failed: ...")` before `return false`.
+
+### H-11: `filteredFlights` recomputed every render — FIXED
+**File**: `Views/LogbookListView.swift:40-79`
+**Category**: Performance
+`filteredFlights` is a computed property that filters and searches all flights on every SwiftUI body evaluation. With hundreds of flights, the text search (8 string comparisons per flight including two `Date.formatted()` calls) is a measurable bottleneck.
+**Resolution**: Converted to `@State` property updated via `.onChange(of: searchText/activeFilters/flights.count)`. Extracted filter logic to `static func filterFlights()` for testability.
+
+### H-12: `try? await Task.sleep()` silences cancellation errors — FIXED
+**Files**: 10+ locations across Views
+**Category**: Modern Concurrency
+`try?` on `Task.sleep` swallows `CancellationError`, meaning tasks don't terminate promptly when views dismiss. Locations:
+- `DashboardView.swift:67,76,180`
+- `ProgressView.swift:130,232`
+- `ExportView.swift:108`
+- `LogbookListView.swift:143,162`
+- `AddFlightView.swift:200`
+- `AppTheme.swift:171,179,187,189` (acceptable — fire-and-forget haptic delays)
+
+**Resolution**: Replaced `try?` with `do { try await ... } catch { return }` in all 7 View locations. AppTheme haptic delays left as `try?` (documented as intentional).
+
+### H-13: AddFlightView is 1,025 lines (God View risk) — FIXED
+**File**: `Views/AddFlightView.swift`
+**Category**: Architecture / Maintainability
+Contains form validation, smart defaults, template management, route swap, Hobbs calculator, ICAO autocomplete, signature integration, quick-entry mode, and save logic in one file. Should be split into focused sub-views.
+**Resolution**: Extracted `SaveTemplateSheet` into a private struct with its own state. Removed `templateName` state from parent. Form sections were already well-organized as computed properties; further extraction would require 15+ bindings with diminishing returns.
+
+---
+
+## Medium (Tech Debt)
+
+### M-11: NotificationCoordinator tasks lack cancellation checks — FIXED
+**File**: `Services/NotificationCoordinator.swift:30-39, 46-55`
+**Category**: Modern Concurrency
+Nested `Task {}` blocks in `.onChange` handlers don't check `Task.isCancelled` before performing async work.
+**Resolution**: Added `guard !Task.isCancelled else { return }` at the start of both Task blocks.
+
+### M-12: CoachMarkOverlay step dots lack individual accessibility labels — FIXED
+**File**: `Views/Components/CoachMarkOverlay.swift:28-33`
+**Category**: Accessibility
+The overlay has good parent-level accessibility (lines 106-108), but individual progress dots lack labels. The parent `accessibilityLabel` provides sufficient context for most VoiceOver users — this is a polish item.
+**Resolution**: Hidden individual dots from accessibility tree, added aggregate `accessibilityLabel("Step N of M")` to the HStack container.

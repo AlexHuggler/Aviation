@@ -163,6 +163,8 @@ enum HapticService {
     static func lightImpact() { impact.impactOccurred() }
 
     // DL-2: Compound haptic patterns for premium feel
+    // Note: try? on Task.sleep is intentional here — these are fire-and-forget
+    // haptic delays where cancellation simply means the haptic sequence stops early.
     private static let mediumImpact = UIImpactFeedbackGenerator(style: .medium)
 
     static func saveConfirmation() {
