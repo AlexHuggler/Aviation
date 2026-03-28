@@ -36,8 +36,12 @@ struct LogbookListView: View {
         return formatter
     }()
 
-    // H-11 fix: Cached filtered results to avoid recomputation on every body eval
-    @State private var filteredFlights: [FlightLog] = []
+    // H-11 fix: Filtering logic extracted as static func for testability
+    // Kept as computed property so @Query changes (edits, adds, deletes) are
+    // reflected immediately without manual onChange wiring.
+    private var filteredFlights: [FlightLog] {
+        Self.filterFlights(flights, searchText: searchText, activeFilters: activeFilters)
+    }
 
     // A1: Filtering logic extracted for reuse and testability
     static func filterFlights(
@@ -83,10 +87,6 @@ struct LogbookListView: View {
             || flight.date.formatted(date: .abbreviated, time: .omitted).lowercased().contains(query)
             || flight.date.formatted(date: .long, time: .omitted).lowercased().contains(query)
         }
-    }
-
-    private func refilter() {
-        filteredFlights = Self.filterFlights(flights, searchText: searchText, activeFilters: activeFilters)
     }
 
     var body: some View {
@@ -178,11 +178,6 @@ struct LogbookListView: View {
                     lastDeletedFlight = nil
                 }
             }
-            // H-11 fix: Refilter when inputs change instead of recomputing in body
-            .onAppear { refilter() }
-            .onChange(of: flights.count) { _, _ in refilter() }
-            .onChange(of: searchText) { _, _ in refilter() }
-            .onChange(of: activeFilters) { _, _ in refilter() }
         }
     }
 

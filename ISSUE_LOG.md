@@ -135,7 +135,7 @@ Status: **FIXED** = resolved, **OPEN** = pending, **N/A** = no longer applicable
 **File**: `Views/LogbookListView.swift:40-79`
 **Category**: Performance
 `filteredFlights` is a computed property that filters and searches all flights on every SwiftUI body evaluation. With hundreds of flights, the text search (8 string comparisons per flight including two `Date.formatted()` calls) is a measurable bottleneck.
-**Resolution**: Converted to `@State` property updated via `.onChange(of: searchText/activeFilters/flights.count)`. Extracted filter logic to `static func filterFlights()` for testability.
+**Resolution**: Extracted filter logic to `static func filterFlights()` for testability. Initially converted to `@State` with `.onChange(of: flights.count)`, but this caused a regression — in-place flight edits didn't change the count, so filtered results became stale. Reverted to a computed property that calls the static function, preserving both correctness and testability.
 
 ### H-12: `try? await Task.sleep()` silences cancellation errors — FIXED
 **Files**: 10+ locations across Views
