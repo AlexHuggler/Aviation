@@ -64,7 +64,8 @@ struct DashboardView: View {
             .sensoryFeedback(.success, trigger: showSavedToast)
             .task(id: showSavedToast) {
                 guard showSavedToast else { return }
-                try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
+                do { try await Task.sleep(for: .seconds(AppTokens.Duration.toast)) }
+                catch { return }
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
             }
             // Auto-open AddFlightView when onboarding intent is log/backfill
@@ -73,7 +74,8 @@ struct DashboardView: View {
                 onboarding.shouldOpenAddFlight = false
                 // Small delay so the sheet presentation doesn't conflict
                 // with the onboarding sheet dismissal
-                try? await Task.sleep(for: .seconds(AppTokens.Onboarding.autoOpenDelay))
+                do { try await Task.sleep(for: .seconds(AppTokens.Onboarding.autoOpenDelay)) }
+                catch { return }
                 showingAddFlight = true
             }
         }
@@ -177,7 +179,8 @@ struct DashboardView: View {
         }
         .refreshable {
             HapticService.lightImpact()
-            try? await Task.sleep(for: .milliseconds(300))
+            do { try await Task.sleep(for: .milliseconds(300)) }
+            catch { return }
         }
         .redacted(reason: hasAppeared ? [] : .placeholder)
         .task {

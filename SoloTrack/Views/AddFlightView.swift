@@ -56,7 +56,6 @@ struct AddFlightView: View {
 
     // FR-9: Flight templates
     @State private var showSaveTemplateSheet = false
-    @State private var templateName = ""
 
     // FR-2: Hobbs start/end calculator
     @State private var useHobbsCalculator = false
@@ -197,7 +196,8 @@ struct AddFlightView: View {
             .motionAwareAnimation(.spring(duration: 0.3), value: quickEntrySaved)
             .task(id: quickEntrySaved) {
                 guard quickEntrySaved else { return }
-                try? await Task.sleep(for: .seconds(1.5))
+                do { try await Task.sleep(for: .seconds(1.5)) }
+                catch { return }
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) { quickEntrySaved = false }
             }
             .toolbar {
@@ -279,52 +279,19 @@ struct AddFlightView: View {
             }
             // FR-9: Save as template sheet
             .sheet(isPresented: $showSaveTemplateSheet) {
-                NavigationStack {
-                    Form {
-                        TextField("Template Name", text: $templateName)
-                        Section("Configuration") {
-                            LabeledContent("Route", value: "\(routeFrom) → \(routeTo)")
-                            if let hobbs = Double(durationHobbs), hobbs > 0 {
-                                LabeledContent("Typical Hobbs", value: String(format: "%.1f", hobbs))
-                            }
-                            LabeledContent("Categories", value: [
-                                isSolo ? "Solo" : nil,
-                                isDualReceived ? "Dual" : nil,
-                                isCrossCountry ? "XC" : nil,
-                                isSimulatedInstrument ? "Sim Inst" : nil
-                            ].compactMap { $0 }.joined(separator: ", "))
-                        }
-                    }
-                    .navigationTitle("Save Template")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Cancel") { showSaveTemplateSheet = false }
-                        }
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Save") {
-                                let template = FlightTemplate(
-                                    name: templateName.isEmpty ? "\(routeFrom)→\(routeTo)" : templateName,
-                                    routeFrom: routeFrom,
-                                    routeTo: routeTo,
-                                    typicalHobbs: Double(durationHobbs) ?? 0,
-                                    isSolo: isSolo,
-                                    isDualReceived: isDualReceived,
-                                    isCrossCountry: isCrossCountry,
-                                    isSimulatedInstrument: isSimulatedInstrument,
-                                    defaultLandingsDay: landingsDay,
-                                    remarks: remarks,
-                                    cfiNumber: cfiNumber
-                                )
-                                modelContext.insert(template)
-                                templateName = ""
-                                showSaveTemplateSheet = false
-                                HapticService.saveConfirmation()
-                            }
-                        }
-                    }
-                }
-                .presentationDetents([.medium])
+                SaveTemplateSheet(
+                    routeFrom: routeFrom,
+                    routeTo: routeTo,
+                    durationHobbs: durationHobbs,
+                    isSolo: isSolo,
+                    isDualReceived: isDualReceived,
+                    isCrossCountry: isCrossCountry,
+                    isSimulatedInstrument: isSimulatedInstrument,
+                    landingsDay: landingsDay,
+                    remarks: remarks,
+                    cfiNumber: cfiNumber,
+                    isPresented: $showSaveTemplateSheet
+                )
             }
             // B1: Swipe-to-dismiss interception
             .interactiveDismissDisabled(isFormDirty)
@@ -1015,6 +982,74 @@ struct AddFlightView: View {
         } else {
             dismiss()
         }
+    }
+}
+
+// MARK: - H-13: Extracted Save Template Sheet
+
+private struct SaveTemplateSheet: View {
+    @Environment(\.modelContext) private var modelContext
+
+    let routeFrom: String
+    let routeTo: String
+    let durationHobbs: String
+    let isSolo: Bool
+    let isDualReceived: Bool
+    let isCrossCountry: Bool
+    let isSimulatedInstrument: Bool
+    let landingsDay: Int
+    let remarks: String
+    let cfiNumber: String
+
+    @Binding var isPresented: Bool
+    @State private var templateName = ""
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("Template Name", text: $templateName)
+                Section("Configuration") {
+                    LabeledContent("Route", value: "\(routeFrom) → \(routeTo)")
+                    if let hobbs = Double(durationHobbs), hobbs > 0 {
+                        LabeledContent("Typical Hobbs", value: String(format: "%.1f", hobbs))
+                    }
+                    LabeledContent("Categories", value: [
+                        isSolo ? "Solo" : nil,
+                        isDualReceived ? "Dual" : nil,
+                        isCrossCountry ? "XC" : nil,
+                        isSimulatedInstrument ? "Sim Inst" : nil
+                    ].compactMap { $0 }.joined(separator: ", "))
+                }
+            }
+            .navigationTitle("Save Template")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { isPresented = false }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        let template = FlightTemplate(
+                            name: templateName.isEmpty ? "\(routeFrom)→\(routeTo)" : templateName,
+                            routeFrom: routeFrom,
+                            routeTo: routeTo,
+                            typicalHobbs: Double(durationHobbs) ?? 0,
+                            isSolo: isSolo,
+                            isDualReceived: isDualReceived,
+                            isCrossCountry: isCrossCountry,
+                            isSimulatedInstrument: isSimulatedInstrument,
+                            defaultLandingsDay: landingsDay,
+                            remarks: remarks,
+                            cfiNumber: cfiNumber
+                        )
+                        modelContext.insert(template)
+                        isPresented = false
+                        HapticService.saveConfirmation()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }
 

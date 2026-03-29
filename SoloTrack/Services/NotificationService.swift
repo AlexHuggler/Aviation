@@ -224,6 +224,7 @@ struct NotificationService {
         do {
             return try await center.requestAuthorization(options: [.alert, .sound, .badge])
         } catch {
+            Self.logger.error("Notification authorization failed: \(error.localizedDescription)")
             return false
         }
     }

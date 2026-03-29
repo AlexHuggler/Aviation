@@ -105,7 +105,8 @@ struct ExportView: View {
             // H-5 fix: Structured concurrency auto-cancels on view dismissal
             .task(id: copied) {
                 guard copied else { return }
-                try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
+                do { try await Task.sleep(for: .seconds(AppTokens.Duration.toast)) }
+                catch { return }
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) { copied = false }
             }
             .navigationBarTitleDisplayMode(.inline)

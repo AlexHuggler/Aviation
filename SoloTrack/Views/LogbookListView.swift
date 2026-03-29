@@ -36,8 +36,19 @@ struct LogbookListView: View {
         return formatter
     }()
 
-    // A1: Filtered flights based on search text and active filters
+    // H-11 fix: Filtering logic extracted as static func for testability
+    // Kept as computed property so @Query changes (edits, adds, deletes) are
+    // reflected immediately without manual onChange wiring.
     private var filteredFlights: [FlightLog] {
+        Self.filterFlights(flights, searchText: searchText, activeFilters: activeFilters)
+    }
+
+    // A1: Filtering logic extracted for reuse and testability
+    static func filterFlights(
+        _ flights: [FlightLog],
+        searchText: String,
+        activeFilters: Set<FlightFilter>
+    ) -> [FlightLog] {
         var result = flights
 
         // Apply category/date filters
@@ -140,7 +151,8 @@ struct LogbookListView: View {
             // H-5 fix: Structured concurrency auto-cancels on view dismissal
             .task(id: showSavedToast) {
                 guard showSavedToast else { return }
-                try? await Task.sleep(for: .seconds(AppTokens.Duration.toast))
+                do { try await Task.sleep(for: .seconds(AppTokens.Duration.toast)) }
+                catch { return }
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) { showSavedToast = false }
             }
             // FR-R3: Delete undo toast
@@ -159,7 +171,8 @@ struct LogbookListView: View {
             .motionAwareAnimation(.spring(duration: 0.4), value: showDeletedToast)
             .task(id: showDeletedToast) {
                 guard showDeletedToast else { return }
-                try? await Task.sleep(for: .seconds(4.0))
+                do { try await Task.sleep(for: .seconds(4.0)) }
+                catch { return }
                 withMotionAwareAnimation(.easeOut(duration: 0.3)) {
                     showDeletedToast = false
                     lastDeletedFlight = nil

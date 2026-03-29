@@ -26,12 +26,16 @@ struct CoachMarkOverlay: View {
             VStack(spacing: AppTokens.Spacing.xxl) {
                 // Step indicator
                 HStack(spacing: 6) {
-                    ForEach(CoachMarkStep.allCases.filter { $0 != .tourComplete }, id: \.self) { s in
+                    let visibleSteps = CoachMarkStep.allCases.filter { $0 != .tourComplete }
+                    ForEach(visibleSteps, id: \.self) { s in
                         Circle()
                             .fill(s.rawValue <= step.rawValue ? Color.skyBlue : Color.white.opacity(0.3))
                             .frame(width: 6, height: 6)
+                            .accessibilityHidden(true)
                     }
                 }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Step \(step.rawValue + 1) of \(CoachMarkStep.allCases.count - 1)")
 
                 // Icon
                 Image(systemName: step.icon)
