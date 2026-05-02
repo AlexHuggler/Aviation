@@ -25,10 +25,30 @@ Live at <https://solo-track.com/>. Hosted on GitHub Pages with a Cloudflare-mana
 /llms-full.txt             → Detailed AI-citation reference
 /feed.xml                  → Blog RSS feed
 /CNAME                     → solo-track.com
+/.nojekyll                 → Disables Jekyll on GitHub Pages
+/app-icon.png              → Hero / OG / favicon image
 /assets/css/page.css       → Shared styles for legal/blog/docs pages
+/internal/                 → Product strategy docs (excluded via robots.txt)
 ```
 
-The `01_*.md` through `05_*.md` product spec files in the repo root remain as internal source material.
+`/internal/` holds the `01_*.md` through `05_*.md` product spec files. They live in the public repo but are blocked from indexing via `Disallow: /internal/` in `robots.txt` and are not linked from any page or sitemap.
+
+## Deploy
+
+GitHub Pages is configured as **Deploy from a branch**:
+
+- Source: `Deploy from a branch`
+- Branch: `main`
+- Folder: `/` (root)
+- Custom domain: `solo-track.com`
+- Enforce HTTPS: enabled
+
+Cloudflare (DNS / CDN in front of GitHub Pages):
+
+- SSL/TLS encryption mode: **Full (strict)**
+- Apex `solo-track.com` resolves to GitHub Pages IPs (or CNAME-flattened to `<user>.github.io`)
+
+A push to `main` triggers a Pages build automatically. The presence of `/.nojekyll` skips the Jekyll step so files are served exactly as committed.
 
 ## Local preview
 
