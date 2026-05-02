@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoloTrack — The Student Pilot Logbook</title>
+    <meta name="description" content="SoloTrack is a free iOS flight logbook app built for student pilots working toward their Private Pilot License. Track FAR 61.109 requirements, log flights fast, and stay checkride-ready.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue-50: #eff6ff; --blue-100: #dbeafe; --blue-200: #bfdbfe;
+            --blue-400: #60a5fa; --blue-500: #3b82f6; --blue-600: #2563eb;
+            --blue-700: #1d4ed8; --blue-800: #1e40af; --blue-900: #1e3a5f;
+            --sky-50: #f0f9ff; --sky-100: #e0f2fe; --sky-200: #bae6fd; --sky-400: #38bdf8;
+            --green-500: #22c55e; --green-600: #16a34a;
+            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0;
+            --slate-300: #cbd5e1; --slate-400: #94a3b8; --slate-500: #64748b;
+            --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b; --slate-900: #0f172a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--slate-800); line-height: 1.6; background: #fff; overflow-x: hidden; }
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--slate-200); transition: box-shadow 0.3s; }
+        nav.scrolled { box-shadow: 0 1px 12px rgba(0,0,0,0.08); }
+        .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--blue-700); text-decoration: none; }
+        .nav-logo svg { width: 32px; height: 32px; }
+        .nav-links { display: flex; gap: 32px; }
+        .nav-links a { text-decoration: none; color: var(--slate-600); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--blue-600); }
+        .nav-cta { background: var(--blue-600); color: #fff !important; padding: 8px 20px; border-radius: 8px; font-weight: 600; }
+        .nav-cta:hover { background: var(--blue-700); }
+        .hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 120px 24px 80px; background: linear-gradient(180deg, var(--sky-50) 0%, #fff 60%); overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 600px; height: 600px; background: radial-gradient(circle, var(--blue-100) 0%, transparent 70%); opacity: 0.5; }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: 100px; padding: 6px 16px; font-size: 0.85rem; font-weight: 600; color: var(--blue-700); margin-bottom: 24px; }
+        .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.08; color: var(--slate-900); margin-bottom: 20px; letter-spacing: -0.03em; }
+        .hero h1 span { color: var(--blue-600); }
+        .hero p { font-size: 1.2rem; color: var(--slate-500); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; }
+        .hero-cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--blue-600); color: #fff; padding: 14px 32px; border-radius: 12px; font-size: 1.05rem; font-weight: 600; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 14px rgba(37,99,235,0.3); }
+        .btn-primary:hover { background: var(--blue-700); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.35); }
+        .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: var(--slate-700); padding: 14px 32px; border-radius: 12px; font-size: 1.05rem; font-weight: 600; text-decoration: none; border: 1.5px solid var(--slate-200); transition: all 0.2s; }
+        .btn-secondary:hover { border-color: var(--blue-300); color: var(--blue-700); }
+        .hero-phone { margin-top: 60px; position: relative; }
+        .hero-phone img { width: 100%; max-width: 380px; border-radius: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04); }
+        .stats-bar { background: var(--slate-900); color: #fff; padding: 48px 24px; }
+        .stats-inner { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; text-align: center; }
+        .stat-item h3 { font-size: 2.5rem; font-weight: 800; color: var(--sky-400); }
+        .stat-item p { font-size: 0.95rem; color: var(--slate-400); margin-top: 4px; }
+        .feature-section { padding: 100px 24px; overflow: hidden; }
+        .feature-section:nth-child(even) { background: var(--slate-50); }
+        .feature-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+        .feature-inner.reverse { direction: rtl; }
+        .feature-inner.reverse > * { direction: ltr; }
+        .feature-text { max-width: 480px; }
+        .feature-label { display: inline-block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--blue-600); margin-bottom: 12px; }
+        .feature-text h2 { font-size: 2.2rem; font-weight: 800; line-height: 1.15; color: var(--slate-900); margin-bottom: 16px; letter-spacing: -0.02em; }
+        .feature-text p { font-size: 1.05rem; color: var(--slate-500); line-height: 1.75; margin-bottom: 24px; }
+        .feature-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .feature-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.95rem; color: var(--slate-600); }
+        .feature-list li svg { flex-shrink: 0; width: 20px; height: 20px; color: var(--green-500); margin-top: 2px; }
+        .feature-image { text-align: center; }
+        .feature-image img { width: 100%; max-width: 440px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.03); transition: transform 0.3s; }
+        .feature-image img:hover { transform: scale(1.02); }
+        .cta-section { text-align: center; padding: 100px 24px; background: linear-gradient(180deg, #fff 0%, var(--blue-50) 100%); }
+        .cta-section h2 { font-size: 2.5rem; font-weight: 800; color: var(--slate-900); margin-bottom: 16px; }
+        .cta-section p { font-size: 1.15rem; color: var(--slate-500); max-width: 550px; margin: 0 auto 40px; }
+        footer { background: var(--slate-900); color: var(--slate-400); padding: 48px 24px; text-align: center; font-size: 0.9rem; }
+        footer a { color: var(--sky-400); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        .check-icon { display: inline-flex; align-items: center; justify-content: center; }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .feature-inner, .feature-inner.reverse { grid-template-columns: 1fr; gap: 40px; direction: ltr; }
+            .feature-inner > *:first-child { order: 1; }
+            .feature-inner > *:last-child { order: 2; }
+            .feature-inner.reverse > .feature-image { order: 1; }
+            .feature-inner.reverse > .feature-text { order: 2; }
+            .feature-text { max-width: 100%; text-align: center; }
+            .feature-list { align-items: center; }
+            .stats-inner { grid-template-columns: 1fr; gap: 24px; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+        .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+<nav id="nav"><div class="nav-inner"><a href="#" class="nav-logo"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="10" fill="#1d4ed8"/><path d="M10 28L20 12L30 28H10Z" fill="white" opacity="0.3"/><path d="M8 24L20 14L32 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14V8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M20 8L24 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>SoloTrack</a><div class="nav-links"><a href="#features">Features</a><a href="#progress">Progress</a><a href="#logging">Logging</a><a href="#contact" class="nav-cta">Get in Touch</a></div></div></nav>
+
+<section class="hero"><div class="hero-content"><div class="hero-badge"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="4" fill="#2563eb"/></svg>Free for Student Pilots</div><h1>Your flight logbook,<br><span>built for the PPL.</span></h1><p>SoloTrack tracks all six FAR 61.109 aeronautical experience categories in real time, monitors 90-day currency, and adapts to every training stage. Built for iOS with offline-first architecture.</p><div class="hero-cta-group"><a href="#contact" class="btn-primary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Join the Beta</a><a href="#features" class="btn-secondary">See Features</a></div><div class="hero-phone fade-up"><img src="https://lh3.googleusercontent.com/d/1Go90hNqhP3w3eFk3NimZFMHX9SMnQiKm=w800" alt="SoloTrack Dashboard showing currency status, total hours, and milestone tracker"></div></div></section>
+
+<div class="stats-bar"><div class="stats-inner"><div class="stat-item"><h3>6</h3><p>FAR 61.109 categories tracked</p></div><div class="stat-item"><h3>90-Day</h3><p>Rolling currency monitoring</p></div><div class="stat-item"><h3>100%</h3><p>Offline-first &amp; local data</p></div></div></div>
+
+<section class="feature-section" id="progress"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Progress Tracking</span><h2>See real PPL progress at a glance</h2><p>Know exactly where you stand on every FAR 61.109 requirement. SoloTrack breaks down Total Time, Solo, Dual, Cross-Country, Night, and Instrument hours with visual progress bars and a training checklist.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>All 6 FAR 61.109 requirement categories</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Training checklist per FAR 61.109(a)</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Overall progress percentage &amp; hours-to-go</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1MW1YadmTvBroF64OopeS9TGtl2iZjLMV=w800" alt="PPL Progress screen showing 72% overall progress with 4 of 6 requirements met"></div></div></section>
+
+<section class="feature-section" id="logging"><div class="feature-inner reverse fade-up"><div class="feature-text"><span class="feature-label">Flight Logging</span><h2>Log every flight in under a minute</h2><p>Smart defaults, templates for Pattern Work, Local Lesson, and Cross-Country flights, plus Quick Entry mode. Just pick a template, confirm the details, and save.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>One-tap templates for common flight types</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Hobbs &amp; Tach time, landings, categories</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Airport identifiers with route mapping</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1u2Y3EMPfjYWEO_OKBLFeqlk29IZISJBg=w800" alt="Add Flight screen with Quick Entry templates"></div></div></section>
+
+<section class="feature-section" id="features"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Live Tracking</span><h2>Time flights as you fly</h2><p>Start a session before takeoff and SoloTrack records everything in real time. The Live Activity and home screen widget keep your session visible at a glance, then one tap prefills your logbook entry.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>iOS Live Activity on your lock screen</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Home screen widget with live stats</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>One-tap prefill from session to logbook</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1XEA5rp43W9-2ZyA_m7ObiJtXIEvI5Nom=w800" alt="Flight session timer with Live Activity and home screen widget"></div></div></section>
+
+<section class="feature-section"><div class="feature-inner reverse fade-up"><div class="feature-text"><span class="feature-label">Checkride Prep</span><h2>Stay checkride-ready</h2><p>Capture CFI signatures digitally, log advanced training details like instrument approaches, holding procedures, and course tracking. Endorsed flights are locked and tamper-proof.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Digital CFI signature capture</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Advanced training fields (approaches, holds, XC distance)</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Endorsed &amp; locked flight records</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/17U3e2lWUHtkKAQT1_f5Ej_J9iXtl0-1W=w800" alt="Checkride-ready screen with CFI signature capture"></div></div></section>
+
+<section class="feature-section"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Data Portability</span><h2>Import, export, and sync</h2><p>Bring in past flights from CSV, export to PDF for your CFI, and optionally sync across devices with iCloud. Duplicate detection prevents double entries, and your data stays local-first.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>CSV import with duplicate detection</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>CSV &amp; PDF export for printable logbooks</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Optional end-to-end encrypted iCloud sync</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1Loki2YfKpUGI2dCfIsrGVL8Y-xDBWOvw=w800" alt="Import/Export screen with CSV and PDF export"></div></div></section>
+
+<section class="cta-section" id="contact"><h2>Interested in beta testing?</h2><p>We're looking for flight schools to try SoloTrack this summer. Get early access for your students — completely free.</p><a href="mailto:alexhuggler@gmail.com" class="btn-primary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>alexhuggler@gmail.com</a></section>
+
+<footer><p>&copy; 2026 SoloTrack &middot; Built by Alex Huggler &middot; <a href="mailto:alexhuggler@gmail.com">alexhuggler@gmail.com</a></p></footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 20); });
+const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.15 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
