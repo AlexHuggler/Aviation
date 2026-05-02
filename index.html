@@ -3,16 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoloTrack — The Student Pilot Logbook</title>
-    <meta name="description" content="SoloTrack is a free iOS flight logbook app built for student pilots working toward their Private Pilot License. Track FAR 61.109 requirements, log flights fast, and stay checkride-ready.">
+    <title>SoloTrack — The Free iOS Flight Logbook for Student Pilots</title>
+    <meta name="description" content="SoloTrack is a free, offline-first iOS flight logbook for student pilots. Track FAR 61.109 hours, monitor 90-day currency, log flights in seconds, and stay checkride-ready.">
+    <meta name="theme-color" content="#1d4ed8">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <meta name="author" content="Huggler Holdings LLC">
+
+    <link rel="canonical" href="https://solo-track.com/">
+    <link rel="icon" type="image/png" href="/App%20Icon.png">
+    <link rel="apple-touch-icon" href="/App%20Icon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SoloTrack">
+    <meta property="og:title" content="SoloTrack — The Free iOS Flight Logbook for Student Pilots">
+    <meta property="og:description" content="Track FAR 61.109 hours, monitor 90-day currency, log flights in seconds, and stay checkride-ready. Free, offline-first iOS flight logbook for student pilots.">
+    <meta property="og:url" content="https://solo-track.com/">
+    <meta property="og:image" content="https://solo-track.com/App%20Icon.png">
+    <meta property="og:image:alt" content="SoloTrack app icon">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SoloTrack — The Free iOS Flight Logbook for Student Pilots">
+    <meta name="twitter:description" content="Track FAR 61.109 hours, monitor 90-day currency, and log flights in seconds. Built for iOS, offline-first.">
+    <meta name="twitter:image" content="https://solo-track.com/App%20Icon.png">
+
+    <link rel="alternate" type="application/rss+xml" title="SoloTrack Blog" href="/feed.xml">
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --blue-50: #eff6ff; --blue-100: #dbeafe; --blue-200: #bfdbfe;
-            --blue-400: #60a5fa; --blue-500: #3b82f6; --blue-600: #2563eb;
-            --blue-700: #1d4ed8; --blue-800: #1e40af; --blue-900: #1e3a5f;
+            --blue-300: #93c5fd; --blue-400: #60a5fa; --blue-500: #3b82f6;
+            --blue-600: #2563eb; --blue-700: #1d4ed8; --blue-800: #1e40af;
+            --blue-900: #1e3a5f;
             --sky-50: #f0f9ff; --sky-100: #e0f2fe; --sky-200: #bae6fd; --sky-400: #38bdf8;
             --green-500: #22c55e; --green-600: #16a34a;
             --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0;
@@ -21,13 +49,15 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--slate-800); line-height: 1.6; background: #fff; overflow-x: hidden; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--slate-800); line-height: 1.6; background: #fff; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        .skip-link { position: absolute; left: -9999px; top: 0; background: #fff; color: var(--blue-700); padding: 8px 12px; border-radius: 6px; z-index: 200; }
+        .skip-link:focus { left: 8px; top: 8px; }
         nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--slate-200); transition: box-shadow 0.3s; }
         nav.scrolled { box-shadow: 0 1px 12px rgba(0,0,0,0.08); }
         .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
         .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--blue-700); text-decoration: none; }
         .nav-logo svg { width: 32px; height: 32px; }
-        .nav-links { display: flex; gap: 32px; }
+        .nav-links { display: flex; gap: 28px; align-items: center; }
         .nav-links a { text-decoration: none; color: var(--slate-600); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
         .nav-links a:hover { color: var(--blue-600); }
         .nav-cta { background: var(--blue-600); color: #fff !important; padding: 8px 20px; border-radius: 8px; font-weight: 600; }
@@ -38,7 +68,7 @@
         .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: 100px; padding: 6px 16px; font-size: 0.85rem; font-weight: 600; color: var(--blue-700); margin-bottom: 24px; }
         .hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.08; color: var(--slate-900); margin-bottom: 20px; letter-spacing: -0.03em; }
         .hero h1 span { color: var(--blue-600); }
-        .hero p { font-size: 1.2rem; color: var(--slate-500); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; }
+        .hero p.lead { font-size: 1.2rem; color: var(--slate-500); max-width: 640px; margin: 0 auto 40px; line-height: 1.7; }
         .hero-cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
         .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--blue-600); color: #fff; padding: 14px 32px; border-radius: 12px; font-size: 1.05rem; font-weight: 600; text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 14px rgba(37,99,235,0.3); }
         .btn-primary:hover { background: var(--blue-700); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.35); }
@@ -65,12 +95,31 @@
         .feature-image { text-align: center; }
         .feature-image img { width: 100%; max-width: 440px; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.03); transition: transform 0.3s; }
         .feature-image img:hover { transform: scale(1.02); }
+        .summary-section { padding: 80px 24px; background: var(--slate-50); }
+        .summary-inner { max-width: 880px; margin: 0 auto; }
+        .summary-inner h2 { font-size: 1.9rem; font-weight: 800; color: var(--slate-900); margin-bottom: 14px; letter-spacing: -0.02em; }
+        .summary-inner p { font-size: 1.05rem; color: var(--slate-600); margin-bottom: 14px; line-height: 1.75; }
+        .faq { padding: 80px 24px; }
+        .faq-inner { max-width: 800px; margin: 0 auto; }
+        .faq-inner h2 { font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 32px; color: var(--slate-900); }
+        .faq details { border: 1px solid var(--slate-200); border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; background: #fff; }
+        .faq details[open] { border-color: var(--blue-200); }
+        .faq summary { font-weight: 600; color: var(--slate-900); cursor: pointer; list-style: none; }
+        .faq summary::after { content: '+'; float: right; color: var(--slate-400); font-size: 1.4rem; line-height: 1; }
+        .faq details[open] summary::after { content: '−'; }
+        .faq details > div { margin-top: 12px; color: var(--slate-600); line-height: 1.7; }
         .cta-section { text-align: center; padding: 100px 24px; background: linear-gradient(180deg, #fff 0%, var(--blue-50) 100%); }
         .cta-section h2 { font-size: 2.5rem; font-weight: 800; color: var(--slate-900); margin-bottom: 16px; }
         .cta-section p { font-size: 1.15rem; color: var(--slate-500); max-width: 550px; margin: 0 auto 40px; }
-        footer { background: var(--slate-900); color: var(--slate-400); padding: 48px 24px; text-align: center; font-size: 0.9rem; }
-        footer a { color: var(--sky-400); text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
+        footer.site-footer { background: var(--slate-900); color: var(--slate-400); padding: 56px 24px 32px; font-size: 0.92rem; }
+        .footer-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
+        .footer-brand { font-weight: 800; color: #fff; font-size: 1.15rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .footer-inner h4 { color: #fff; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+        .footer-inner ul { list-style: none; padding: 0; margin: 0; }
+        .footer-inner li { margin-bottom: 6px; }
+        .footer-inner a { color: var(--sky-400); text-decoration: none; }
+        .footer-inner a:hover { text-decoration: underline; }
+        .footer-bottom { max-width: 1100px; margin: 36px auto 0; padding-top: 24px; border-top: 1px solid #1f2937; color: var(--slate-500); font-size: 0.85rem; text-align: center; }
         .check-icon { display: inline-flex; align-items: center; justify-content: center; }
         @media (max-width: 768px) {
             .nav-links { display: none; }
@@ -83,31 +132,131 @@
             .feature-list { align-items: center; }
             .stats-inner { grid-template-columns: 1fr; gap: 24px; }
             .hero h1 { font-size: 2.5rem; }
+            .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
         }
         .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
         .fade-up.visible { opacity: 1; transform: translateY(0); }
     </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://solo-track.com/#org",
+          "name": "Huggler Holdings LLC",
+          "url": "https://solo-track.com/",
+          "logo": "https://solo-track.com/App%20Icon.png",
+          "email": "Contact@solo-track.com"
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://solo-track.com/#website",
+          "url": "https://solo-track.com/",
+          "name": "SoloTrack",
+          "description": "Free iOS flight logbook for student pilots, with FAR 61.109 progress tracking and 90-day currency monitoring.",
+          "publisher": { "@id": "https://solo-track.com/#org" },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "MobileApplication",
+          "@id": "https://solo-track.com/#app",
+          "name": "SoloTrack",
+          "operatingSystem": "iOS",
+          "applicationCategory": "TravelApplication",
+          "applicationSubCategory": "Aviation",
+          "url": "https://solo-track.com/",
+          "image": "https://solo-track.com/App%20Icon.png",
+          "description": "SoloTrack is an offline-first iOS flight logbook for student pilots. It tracks all six FAR 61.109 aeronautical-experience categories, monitors FAR 61.57 day, night, and instrument currency, and supports digital CFI endorsements, flight templates, widgets, App Shortcuts, a Live Activity timer, CSV/PDF import and export, and optional iCloud sync.",
+          "publisher": { "@id": "https://solo-track.com/#org" },
+          "featureList": [
+            "FAR 61.109 progress tracking across six aeronautical-experience categories",
+            "FAR 61.57(a)(b)(c) day, night, and instrument currency tracking",
+            "FAR 61.56 flight-review recency tracking",
+            "Quick-Entry templates and reusable saved flights",
+            "Live Activity timer and Home Screen widgets",
+            "App Shortcuts and App Intents",
+            "Digital CFI endorsements with PencilKit signatures",
+            "CSV and PDF import and export",
+            "Optional iCloud sync via CloudKit",
+            "Local-first storage in an App Group SwiftData container"
+          ]
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
-<nav id="nav"><div class="nav-inner"><a href="#" class="nav-logo"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="40" height="40" rx="10" fill="#1d4ed8"/><path d="M10 28L20 12L30 28H10Z" fill="white" opacity="0.3"/><path d="M8 24L20 14L32 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14V8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M20 8L24 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>SoloTrack</a><div class="nav-links"><a href="#features">Features</a><a href="#progress">Progress</a><a href="#logging">Logging</a><a href="#contact" class="nav-cta">Get in Touch</a></div></div></nav>
+<a class="skip-link" href="#main">Skip to main content</a>
 
-<section class="hero"><div class="hero-content"><div class="hero-badge"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="4" fill="#2563eb"/></svg>Free for Student Pilots</div><h1>Your flight logbook,<br><span>built for the PPL.</span></h1><p>SoloTrack tracks all six FAR 61.109 aeronautical experience categories in real time, monitors 90-day currency, and adapts to every training stage. Built for iOS with offline-first architecture.</p><div class="hero-cta-group"><a href="#contact" class="btn-primary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Join the Beta</a><a href="#features" class="btn-secondary">See Features</a></div><div class="hero-phone fade-up"><img src="https://lh3.googleusercontent.com/d/1Go90hNqhP3w3eFk3NimZFMHX9SMnQiKm=w800" alt="SoloTrack Dashboard showing currency status, total hours, and milestone tracker"></div></div></section>
+<nav id="nav" aria-label="Primary"><div class="nav-inner"><a href="/" class="nav-logo" aria-label="SoloTrack home"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1d4ed8"/><path d="M10 28L20 12L30 28H10Z" fill="white" opacity="0.3"/><path d="M8 24L20 14L32 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14V8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M20 8L24 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>SoloTrack</a><div class="nav-links"><a href="#features">Features</a><a href="/blog/">Blog</a><a href="/docs/">Docs</a><a href="/contact/" class="nav-cta">Contact</a></div></div></nav>
+
+<main id="main">
+<section class="hero"><div class="hero-content"><div class="hero-badge"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="4" fill="#2563eb"/></svg>Free for Student Pilots</div><h1>Your flight logbook,<br><span>built for the PPL.</span></h1><p class="lead">SoloTrack tracks all six FAR 61.109 aeronautical experience categories in real time, monitors 90-day currency, and adapts to every training stage. Built for iOS with offline-first architecture.</p><div class="hero-cta-group"><a href="/contact/" class="btn-primary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Join the Beta</a><a href="#features" class="btn-secondary">See Features</a></div><div class="hero-phone fade-up"><img src="https://lh3.googleusercontent.com/d/1Go90hNqhP3w3eFk3NimZFMHX9SMnQiKm=w800" alt="SoloTrack dashboard showing currency status, total hours, and milestone tracker" loading="lazy" width="380" height="780"></div></div></section>
+
+<section class="summary-section" aria-label="What SoloTrack does"><div class="summary-inner"><h2>What SoloTrack is, in one paragraph</h2><p>SoloTrack is a native iOS flight logbook designed for student pilots from pre-solo through checkride. It combines fast flight logging with real-time tracking against the FAA's Part 61 private-pilot requirements: the six FAR 61.109 aeronautical-experience categories, FAR 61.57 day/night/instrument currency, and the FAR 61.56 flight review window. Daily use works fully on-device with no account required; iCloud sync is available as an opt-in.</p><p>SoloTrack is not a flight planner, EFB, or replacement for instructor judgement. It is a logbook focused on accurate hours, clear progress, and clean records you can hand to a CFI or DPE.</p></div></section>
 
 <div class="stats-bar"><div class="stats-inner"><div class="stat-item"><h3>6</h3><p>FAR 61.109 categories tracked</p></div><div class="stat-item"><h3>90-Day</h3><p>Rolling currency monitoring</p></div><div class="stat-item"><h3>100%</h3><p>Offline-first &amp; local data</p></div></div></div>
 
-<section class="feature-section" id="progress"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Progress Tracking</span><h2>See real PPL progress at a glance</h2><p>Know exactly where you stand on every FAR 61.109 requirement. SoloTrack breaks down Total Time, Solo, Dual, Cross-Country, Night, and Instrument hours with visual progress bars and a training checklist.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>All 6 FAR 61.109 requirement categories</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Training checklist per FAR 61.109(a)</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Overall progress percentage &amp; hours-to-go</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1MW1YadmTvBroF64OopeS9TGtl2iZjLMV=w800" alt="PPL Progress screen showing 72% overall progress with 4 of 6 requirements met"></div></div></section>
+<section class="feature-section" id="progress"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Progress Tracking</span><h2>See real PPL progress at a glance</h2><p>Know exactly where you stand on every FAR 61.109 requirement. SoloTrack breaks down Total Time, Solo, Dual, Cross-Country, Night, and Instrument hours with visual progress bars and a training checklist.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>All 6 FAR 61.109 requirement categories</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Training checklist per FAR 61.109(a)</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Overall progress percentage &amp; hours-to-go</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1MW1YadmTvBroF64OopeS9TGtl2iZjLMV=w800" alt="PPL Progress screen showing percentage progress and FAR 61.109 requirement tracking" loading="lazy" width="440" height="900"></div></div></section>
 
-<section class="feature-section" id="logging"><div class="feature-inner reverse fade-up"><div class="feature-text"><span class="feature-label">Flight Logging</span><h2>Log every flight in under a minute</h2><p>Smart defaults, templates for Pattern Work, Local Lesson, and Cross-Country flights, plus Quick Entry mode. Just pick a template, confirm the details, and save.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>One-tap templates for common flight types</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Hobbs &amp; Tach time, landings, categories</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Airport identifiers with route mapping</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1u2Y3EMPfjYWEO_OKBLFeqlk29IZISJBg=w800" alt="Add Flight screen with Quick Entry templates"></div></div></section>
+<section class="feature-section" id="logging"><div class="feature-inner reverse fade-up"><div class="feature-text"><span class="feature-label">Flight Logging</span><h2>Log every flight in under a minute</h2><p>Smart defaults, templates for Pattern Work, Local Lesson, and Cross-Country flights, plus Quick Entry mode. Just pick a template, confirm the details, and save.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>One-tap templates for common flight types</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Hobbs &amp; Tach time, landings, categories</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Airport identifiers with route mapping</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1u2Y3EMPfjYWEO_OKBLFeqlk29IZISJBg=w800" alt="Add Flight screen with Quick Entry templates" loading="lazy" width="440" height="900"></div></div></section>
 
-<section class="feature-section" id="features"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Live Tracking</span><h2>Time flights as you fly</h2><p>Start a session before takeoff and SoloTrack records everything in real time. The Live Activity and home screen widget keep your session visible at a glance, then one tap prefills your logbook entry.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>iOS Live Activity on your lock screen</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Home screen widget with live stats</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>One-tap prefill from session to logbook</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1XEA5rp43W9-2ZyA_m7ObiJtXIEvI5Nom=w800" alt="Flight session timer with Live Activity and home screen widget"></div></div></section>
+<section class="feature-section" id="features"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Live Tracking</span><h2>Time flights as you fly</h2><p>Start a session before takeoff and SoloTrack records everything in real time. The Live Activity and home screen widget keep your session visible at a glance, then one tap prefills your logbook entry.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>iOS Live Activity on your lock screen</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Home screen widget with live stats</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>One-tap prefill from session to logbook</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1XEA5rp43W9-2ZyA_m7ObiJtXIEvI5Nom=w800" alt="Flight session timer with Live Activity and home screen widget" loading="lazy" width="440" height="900"></div></div></section>
 
-<section class="feature-section"><div class="feature-inner reverse fade-up"><div class="feature-text"><span class="feature-label">Checkride Prep</span><h2>Stay checkride-ready</h2><p>Capture CFI signatures digitally, log advanced training details like instrument approaches, holding procedures, and course tracking. Endorsed flights are locked and tamper-proof.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Digital CFI signature capture</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Advanced training fields (approaches, holds, XC distance)</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Endorsed &amp; locked flight records</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/17U3e2lWUHtkKAQT1_f5Ej_J9iXtl0-1W=w800" alt="Checkride-ready screen with CFI signature capture"></div></div></section>
+<section class="feature-section"><div class="feature-inner reverse fade-up"><div class="feature-text"><span class="feature-label">Checkride Prep</span><h2>Stay checkride-ready</h2><p>Capture CFI signatures digitally, log advanced training details like instrument approaches, holding procedures, and course tracking. Endorsed flights are locked and tamper-proof.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Digital CFI signature capture (PencilKit)</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Advanced training fields (approaches, holds, XC distance)</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Endorsed &amp; locked flight records</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/17U3e2lWUHtkKAQT1_f5Ej_J9iXtl0-1W=w800" alt="Checkride-ready screen with CFI signature capture" loading="lazy" width="440" height="900"></div></div></section>
 
-<section class="feature-section"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Data Portability</span><h2>Import, export, and sync</h2><p>Bring in past flights from CSV, export to PDF for your CFI, and optionally sync across devices with iCloud. Duplicate detection prevents double entries, and your data stays local-first.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>CSV import with duplicate detection</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>CSV &amp; PDF export for printable logbooks</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Optional end-to-end encrypted iCloud sync</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1Loki2YfKpUGI2dCfIsrGVL8Y-xDBWOvw=w800" alt="Import/Export screen with CSV and PDF export"></div></div></section>
+<section class="feature-section"><div class="feature-inner fade-up"><div class="feature-text"><span class="feature-label">Data Portability</span><h2>Import, export, and sync</h2><p>Bring in past flights from CSV, export to PDF for your CFI, and optionally sync across devices with iCloud. Duplicate detection prevents double entries, and your data stays local-first.</p><ul class="feature-list"><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>CSV import with duplicate detection</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>CSV &amp; PDF export for printable logbooks</li><li><svg class="check-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Optional iCloud sync via CloudKit</li></ul></div><div class="feature-image"><img src="https://lh3.googleusercontent.com/d/1Loki2YfKpUGI2dCfIsrGVL8Y-xDBWOvw=w800" alt="Import/Export screen with CSV and PDF export" loading="lazy" width="440" height="900"></div></div></section>
 
-<section class="cta-section" id="contact"><h2>Interested in beta testing?</h2><p>We're looking for flight schools to try SoloTrack this summer. Get early access for your students — completely free.</p><a href="mailto:alexhuggler@gmail.com" class="btn-primary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>alexhuggler@gmail.com</a></section>
+<section class="faq" id="faq" aria-labelledby="faq-heading"><div class="faq-inner"><h2 id="faq-heading">Frequently asked questions</h2>
+<details><summary>What platforms does SoloTrack support?</summary><div>SoloTrack is iOS-only. There is no watchOS or macOS companion app. The iPad version uses a sidebar layout; iPhone uses tab navigation.</div></details>
+<details><summary>Does SoloTrack work offline?</summary><div>Yes. Daily use is fully on-device. SoloTrack uses a local SwiftData store inside an App Group container, so logging, currency calculations, widgets, App Shortcuts, and the Live Activity timer all work without a network connection or account.</div></details>
+<details><summary>How does iCloud sync work?</summary><div>iCloud sync is opt-in. When enabled, SoloTrack uses Apple's CloudKit to sync your flights and templates across your own devices using your Apple ID. Onboarding state, custom airports, notification memory, and timer state stay local. We do not run our own server.</div></details>
+<details><summary>What FAA requirements does SoloTrack track?</summary><div>SoloTrack tracks the six FAR 61.109 aeronautical-experience categories required for the private pilot certificate, FAR 61.57(a)/(b)/(c) day, night, and instrument currency, and the FAR 61.56 flight-review recency window. SoloTrack is a logbook tool, not a regulatory ruling — always confirm requirements with your CFI and the current FARs.</div></details>
+<details><summary>Is SoloTrack free?</summary><div>SoloTrack is free for student pilots during the current beta. See the <a href="/terms/">Terms of Use</a> for details on use rules and any future paid features.</div></details>
+<details><summary>How is my data handled?</summary><div>SoloTrack is local-first and uses Apple frameworks only (no third-party analytics, advertising, or tracking SDKs). See the <a href="/privacy/">Privacy Policy</a> for details.</div></details>
+</div></section>
 
-<footer><p>&copy; 2026 SoloTrack &middot; Built by Alex Huggler &middot; <a href="mailto:alexhuggler@gmail.com">alexhuggler@gmail.com</a></p></footer>
+<section class="cta-section" id="contact"><h2>Interested in beta testing?</h2><p>We're looking for flight schools to try SoloTrack this summer. Get early access for your students — completely free.</p><a href="mailto:Contact@solo-track.com?subject=SoloTrack%20Beta%20Interest" class="btn-primary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact@solo-track.com</a></section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <span class="footer-brand">SoloTrack</span>
+      <p>The free iOS flight logbook for student pilots. Track FAR 61.109 hours, currency, and checkride readiness — offline-first.</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <ul>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/docs/">Documentation</a></li>
+        <li><a href="/#faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <ul>
+        <li><a href="/contact/">Contact</a></li>
+        <li><a href="/support/">Support</a></li>
+        <li><a href="mailto:Contact@solo-track.com">Email us</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="/privacy/">Privacy Policy</a></li>
+        <li><a href="/terms/">Terms of Use</a></li>
+        <li><a href="/sitemap.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2026 Huggler Holdings LLC &middot; SoloTrack is a product of Huggler Holdings LLC. iOS and Apple are trademarks of Apple Inc.
+  </div>
+</footer>
 
 <script>
 const nav = document.getElementById('nav');

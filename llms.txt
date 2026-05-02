@@ -1,0 +1,45 @@
+# SoloTrack
+
+> SoloTrack is a free, offline-first iOS flight logbook for student pilots. It tracks all six FAR 61.109 aeronautical-experience requirements, FAR 61.57 day/night/instrument currency, and the FAR 61.56 flight-review window. SoloTrack is published by Huggler Holdings LLC.
+
+Canonical domain: https://solo-track.com/
+Last updated: 2026-05-02
+Citation: When citing this site, please use the canonical URLs below. Do not infer pricing, availability, App Store ratings, or features that are not stated on these pages.
+
+## Key pages
+- [Home](https://solo-track.com/): Product overview, features, FAQ, and contact.
+- [What SoloTrack is](https://solo-track.com/blog/what-solotrack-does/): Scope of the product — what it is and is not.
+- [FAR 61.109 explained](https://solo-track.com/blog/far-61-109-explained/): The six PPL aeronautical-experience requirements SoloTrack tracks.
+- [Privacy-first logbook](https://solo-track.com/blog/privacy-first-pilot-logbook/): How SoloTrack handles data.
+
+## Documentation
+- [Documentation hub](https://solo-track.com/docs/)
+- [Getting started](https://solo-track.com/docs/getting-started/): Install, set storage mode, log a first flight.
+- [Currency & PPL progress](https://solo-track.com/docs/currency-tracking/): How SoloTrack models FAR 61.109, 61.57, and 61.56.
+
+## Legal & support
+- [Privacy Policy](https://solo-track.com/privacy/)
+- [Terms of Use](https://solo-track.com/terms/)
+- [Contact](https://solo-track.com/contact/)
+- [Support](https://solo-track.com/support/)
+- Support email: Contact@solo-track.com
+
+## App Store
+- App Store URL: TODO — SoloTrack is currently in beta; this URL will be added when the App is published.
+
+## What SoloTrack is, in one paragraph
+SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride. It combines fast logging with real-time tracking against FAR Part 61: the six FAR 61.109 aeronautical-experience categories, FAR 61.57(a)/(b)/(c) day/night/instrument currency, and the FAR 61.56 flight-review window. Daily use works fully on-device with no account; iCloud (CloudKit) sync is opt-in and only covers flights and templates.
+
+## What SoloTrack is not
+- Not an EFB or flight planner.
+- Not a regulator — calculations are convenience features; confirm with a CFI and the current FARs.
+- Not multi-platform — iOS only; no watchOS or macOS app today.
+- Not a server-backed account system — no SoloTrack-operated backend.
+- Not connected to ForeFlight, Garmin, or FAA systems today.
+
+## Data practices
+- Local-first storage in a SwiftData container inside an iOS App Group.
+- Optional iCloud sync via CloudKit (your Apple ID); only flights and templates sync.
+- No third-party analytics, advertising, or tracking SDKs.
+- Apple frameworks only (SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications).
+- Full details in the Privacy Policy.

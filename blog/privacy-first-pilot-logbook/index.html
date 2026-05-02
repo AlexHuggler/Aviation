@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A privacy-first flight logbook: how SoloTrack handles your data — SoloTrack Blog</title>
+<meta name="description" content="Why SoloTrack stores your flight log on-device, how optional iCloud sync works, and what we deliberately do not do with your data.">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://solo-track.com/blog/privacy-first-pilot-logbook/">
+<link rel="icon" type="image/png" href="/App%20Icon.png">
+<link rel="apple-touch-icon" href="/App%20Icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SoloTrack">
+<meta property="og:title" content="A privacy-first flight logbook: how SoloTrack handles your data">
+<meta property="og:description" content="Why SoloTrack stores your flight log on-device, how optional iCloud sync works, and what we deliberately do not do with your data.">
+<meta property="og:url" content="https://solo-track.com/blog/privacy-first-pilot-logbook/">
+<meta property="og:image" content="https://solo-track.com/App%20Icon.png">
+<meta property="article:published_time" content="2026-05-02">
+<meta property="article:modified_time" content="2026-05-02">
+<meta property="article:author" content="SoloTrack Team">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A privacy-first flight logbook">
+<meta name="twitter:description" content="How SoloTrack handles your data — and what we don't do.">
+<meta name="twitter:image" content="https://solo-track.com/App%20Icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/page.css">
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org","@type":"BlogPosting",
+ "headline":"A privacy-first flight logbook: how SoloTrack handles your data",
+ "description":"Why SoloTrack stores your flight log on-device, how optional iCloud sync works, and what we deliberately do not do with your data.",
+ "author":{"@type":"Organization","name":"SoloTrack Team","url":"https://solo-track.com/"},
+ "publisher":{"@type":"Organization","name":"Huggler Holdings LLC","url":"https://solo-track.com/","logo":{"@type":"ImageObject","url":"https://solo-track.com/App%20Icon.png"}},
+ "datePublished":"2026-05-02","dateModified":"2026-05-02",
+ "mainEntityOfPage":{"@type":"WebPage","@id":"https://solo-track.com/blog/privacy-first-pilot-logbook/"},
+ "image":"https://solo-track.com/App%20Icon.png",
+ "inLanguage":"en-US"
+}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+  {"@type":"ListItem","position":1,"name":"Home","item":"https://solo-track.com/"},
+  {"@type":"ListItem","position":2,"name":"Blog","item":"https://solo-track.com/blog/"},
+  {"@type":"ListItem","position":3,"name":"A privacy-first flight logbook","item":"https://solo-track.com/blog/privacy-first-pilot-logbook/"}
+]}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Primary"><div class="nav-inner">
+  <a href="/" class="nav-logo" aria-label="SoloTrack home"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1d4ed8"/><path d="M10 28L20 12L30 28H10Z" fill="white" opacity="0.3"/><path d="M8 24L20 14L32 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14V8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M20 8L24 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>SoloTrack</a>
+  <div class="nav-links"><a href="/#features">Features</a><a href="/blog/">Blog</a><a href="/docs/">Docs</a><a href="/contact/" class="nav-cta">Contact</a></div>
+</div></nav>
+
+<header class="page-hero"><div class="page-hero-inner">
+  <h1>A privacy-first flight logbook</h1>
+  <p class="lead">How SoloTrack stores your data, what optional iCloud sync actually does, and what we deliberately do not do.</p>
+  <p class="meta">Published May 2, 2026 &middot; SoloTrack Team</p>
+</div></header>
+
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/blog/">Blog</a><span>›</span>Privacy-first logbook</nav>
+
+<main id="main" class="prose">
+  <p>A logbook is a record of where you've been as a pilot. It is also, sometimes, a record sensitive enough that you'd rather not see it sitting in someone else's database. SoloTrack is built with that in mind.</p>
+
+  <h2>Local-first, by default</h2>
+  <p>SoloTrack stores your flights, templates, endorsement signatures, custom airports, onboarding state, notification memory, and timer state in a local SwiftData container on your device. The same data backs the home-screen widgets, App Shortcuts, and the Live Activity timer through a shared App Group.</p>
+  <p>That means:</p>
+  <ul>
+    <li>Daily use does not require a network connection.</li>
+    <li>You don't need an account, email address, or sign-up.</li>
+    <li>We don't operate a server that holds copies of your logbook.</li>
+  </ul>
+
+  <h2>Optional iCloud sync (CloudKit)</h2>
+  <p>If you want your flights and templates on more than one Apple device, you can opt in to iCloud sync. SoloTrack uses Apple's CloudKit, so:</p>
+  <ul>
+    <li>Sync flows between your own devices via your Apple ID.</li>
+    <li>Apple manages the storage and security; we don't operate the server.</li>
+    <li>Only your <strong>flights</strong> and <strong>templates</strong> sync. Onboarding state, custom airports, notification memory, and timer state stay local to each device.</li>
+    <li>You can turn it off in the App, or revoke access from your device's iCloud settings.</li>
+  </ul>
+
+  <h2>What SoloTrack does not do</h2>
+  <p>Based on the current build:</p>
+  <ul>
+    <li>No third-party analytics SDKs.</li>
+    <li>No advertising or attribution SDKs.</li>
+    <li>No third-party crash reporting SDKs.</li>
+    <li>No purchase-or-paywall SDKs (no RevenueCat, Superwall, or similar today).</li>
+    <li>No Firebase, Supabase, or other third-party backends.</li>
+    <li>No selling of personal information.</li>
+    <li>No cross-app or cross-site tracking.</li>
+  </ul>
+  <p>The full list of frameworks SoloTrack uses is the Apple-provided set: SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, and UserNotifications.</p>
+
+  <h2>Why this matters for student pilots</h2>
+  <p>Your logbook contains identifiable training history, dates, instructor information, and signatures. Local-first storage means the failure modes are simple and small: your phone, your iCloud account, and your direct control over both.</p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li><strong>Export anytime.</strong> CSV and PDF export are built in.</li>
+    <li><strong>Delete anytime.</strong> Delete individual flights, your full log, or remove the App entirely. If you used iCloud sync, also clear SoloTrack data from your device's iCloud settings.</li>
+    <li><strong>Lock or void endorsements.</strong> Endorsed flights are locked to preserve integrity, and a CFI-led void process is supported when needed.</li>
+  </ul>
+
+  <h2>Read more</h2>
+  <ul>
+    <li>The full <a href="/privacy/">Privacy Policy</a></li>
+    <li><a href="/blog/what-solotrack-does/">What SoloTrack does (and what it does not)</a></li>
+    <li><a href="/contact/">Contact us</a> with privacy questions.</li>
+  </ul>
+
+  <hr>
+  <p class="meta">SoloTrack is a flight-logging tool. This post is informational and does not constitute legal advice.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><span class="footer-brand">SoloTrack</span><p>The free iOS flight logbook for student pilots.</p></div>
+    <div><h4>Product</h4><ul><li><a href="/#features">Features</a></li><li><a href="/blog/">Blog</a></li><li><a href="/docs/">Documentation</a></li><li><a href="/#faq">FAQ</a></li></ul></div>
+    <div><h4>Support</h4><ul><li><a href="/contact/">Contact</a></li><li><a href="/support/">Support</a></li><li><a href="mailto:Contact@solo-track.com">Email us</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a href="/privacy/">Privacy Policy</a></li><li><a href="/terms/">Terms of Use</a></li><li><a href="/sitemap.xml">Sitemap</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 Huggler Holdings LLC &middot; iOS and Apple are trademarks of Apple Inc.</div>
+</footer>
+</body>
+</html>

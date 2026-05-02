@@ -1,0 +1,7 @@
+# SoloTrack — robots.txt
+# All search engines and well-behaved AI crawlers allowed.
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+Sitemap: https://solo-track.com/sitemap.xml

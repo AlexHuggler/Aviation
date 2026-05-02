@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — SoloTrack</title>
+<meta name="description" content="How SoloTrack handles your flight log data: local-first storage, optional iCloud sync, no third-party analytics, advertising, or tracking SDKs.">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://solo-track.com/privacy/">
+<link rel="icon" type="image/png" href="/App%20Icon.png">
+<link rel="apple-touch-icon" href="/App%20Icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SoloTrack">
+<meta property="og:title" content="Privacy Policy — SoloTrack">
+<meta property="og:description" content="How SoloTrack handles your flight log data: local-first storage, optional iCloud sync, and no third-party analytics SDKs.">
+<meta property="og:url" content="https://solo-track.com/privacy/">
+<meta property="og:image" content="https://solo-track.com/App%20Icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Privacy Policy — SoloTrack">
+<meta name="twitter:description" content="How SoloTrack handles your flight log data.">
+<meta name="twitter:image" content="https://solo-track.com/App%20Icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/page.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Privacy Policy",
+  "url": "https://solo-track.com/privacy/",
+  "inLanguage": "en-US",
+  "isPartOf": { "@type": "WebSite", "url": "https://solo-track.com/", "name": "SoloTrack" },
+  "publisher": { "@type": "Organization", "name": "Huggler Holdings LLC", "url": "https://solo-track.com/" },
+  "about": "Privacy practices for the SoloTrack iOS app and website.",
+  "dateModified": "2026-05-02"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://solo-track.com/"},
+    {"@type":"ListItem","position":2,"name":"Privacy Policy","item":"https://solo-track.com/privacy/"}
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Primary"><div class="nav-inner">
+  <a href="/" class="nav-logo" aria-label="SoloTrack home"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1d4ed8"/><path d="M10 28L20 12L30 28H10Z" fill="white" opacity="0.3"/><path d="M8 24L20 14L32 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14V8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M20 8L24 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>SoloTrack</a>
+  <div class="nav-links"><a href="/#features">Features</a><a href="/blog/">Blog</a><a href="/docs/">Docs</a><a href="/contact/" class="nav-cta">Contact</a></div>
+</div></nav>
+
+<header class="page-hero"><div class="page-hero-inner">
+  <h1>Privacy Policy</h1>
+  <p class="lead">SoloTrack is local-first by design. This policy explains exactly what that means for your flight log data.</p>
+  <p class="meta">Effective date: May 2, 2026 &middot; Last updated: May 2, 2026</p>
+</div></header>
+
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span>Privacy Policy</nav>
+
+<main id="main" class="prose">
+  <p><strong>Summary.</strong> SoloTrack stores your flight log on your device. Daily use does not require an account, network connection, or third-party service. If you turn on iCloud sync, your flights and templates are synced through Apple's CloudKit using your own Apple ID. SoloTrack does not use third-party analytics, advertising, or tracking SDKs.</p>
+
+  <div class="callout"><strong>Plain-language version:</strong> Your logbook is yours. We don't run a server, we don't sell data, and we don't track you for ads.</div>
+
+  <h2>1. Who we are</h2>
+  <p>SoloTrack is published by <strong>Huggler Holdings LLC</strong> ("SoloTrack", "we", "us", or "our"). You can reach us at <a href="mailto:Contact@solo-track.com">Contact@solo-track.com</a>.</p>
+
+  <h2>2. Scope of this policy</h2>
+  <p>This Privacy Policy applies to:</p>
+  <ul>
+    <li>The SoloTrack iOS application.</li>
+    <li>The SoloTrack website at <code>solo-track.com</code>.</li>
+  </ul>
+  <p>It does not apply to third-party services that you choose to interact with (for example, Apple's iCloud), which are governed by their own privacy policies.</p>
+
+  <h2>3. What data SoloTrack stores</h2>
+  <p>SoloTrack stores the data you enter into your logbook on your device, including:</p>
+  <ul>
+    <li>Flight records (date, route, Hobbs/Tach, landings, training categories, advanced training fields, remarks).</li>
+    <li>Saved flight templates.</li>
+    <li>CFI endorsement information you choose to capture, such as the CFI number, signature image, and signature date.</li>
+    <li>App preferences, onboarding state, custom airports, notification memory, and timer state.</li>
+  </ul>
+  <p>This data lives in a local SwiftData store inside an App Group container on your device. App preferences and shared widget state are stored in a shared <code>UserDefaults</code> domain on the same device.</p>
+
+  <h2>4. What data SoloTrack does not collect</h2>
+  <p>Based on the current build, SoloTrack does <strong>not</strong>:</p>
+  <ul>
+    <li>Require an account, sign-in, or email address to use.</li>
+    <li>Run its own server or send your flight log to a SoloTrack-operated backend.</li>
+    <li>Use third-party analytics, advertising, attribution, or crash-reporting SDKs.</li>
+    <li>Sell or rent your personal information.</li>
+    <li>Use your data for cross-app or cross-site tracking.</li>
+  </ul>
+  <p class="meta">TODO: Confirm with the developer before each App Store submission that no third-party SDKs (analytics, attribution, ads, crash reporting, A/B testing, RevenueCat, Superwall, Firebase, Supabase, etc.) have been added in a later build. If any are added, this section and the App Privacy Nutrition Label must be updated.</p>
+
+  <h2>5. Optional iCloud sync (CloudKit)</h2>
+  <p>SoloTrack offers an optional iCloud sync mode that uses Apple's CloudKit. When you turn iCloud sync on:</p>
+  <ul>
+    <li>Your flights and templates are synced between your own Apple devices via your iCloud account.</li>
+    <li>Sync is handled by Apple. Huggler Holdings LLC does not operate a server and does not have access to your iCloud data.</li>
+    <li>Onboarding state, notification memory, custom airports, and timer state stay local to each device.</li>
+  </ul>
+  <p>You can turn iCloud sync off at any time in the app's settings. You can also revoke iCloud access for SoloTrack in your device's iCloud settings.</p>
+  <p>For information on how Apple handles iCloud data, see the <a href="https://www.apple.com/legal/privacy/" rel="noopener">Apple Privacy Policy</a>.</p>
+
+  <h2>6. How we use the data</h2>
+  <p>Data you enter into SoloTrack is used solely to provide the app's features:</p>
+  <ul>
+    <li>Computing your hours toward FAR 61.109 requirements.</li>
+    <li>Computing FAR 61.57 day/night/instrument currency and FAR 61.56 flight-review windows.</li>
+    <li>Powering the Live Activity timer, widgets, App Shortcuts, and notifications on your device.</li>
+    <li>Importing and exporting CSV/PDF logbooks at your request.</li>
+  </ul>
+
+  <h2>7. Third-party services</h2>
+  <p>SoloTrack uses Apple frameworks only. Specifically:</p>
+  <ul>
+    <li><strong>SwiftData</strong> for local persistence.</li>
+    <li><strong>CloudKit</strong> for optional iCloud sync (only if you enable it).</li>
+    <li><strong>WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications</strong> for in-app features.</li>
+  </ul>
+  <p>Standard Apple App Store and iOS-level diagnostics may apply if you opt in at the device level. SoloTrack does not receive identifying information from those Apple-level systems.</p>
+
+  <h2>8. Children's privacy</h2>
+  <p>SoloTrack is intended for student pilots and active pilots. It is not directed at children under 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided personal information through the app, please contact us at <a href="mailto:Contact@solo-track.com">Contact@solo-track.com</a> and we will work with you to address the issue.</p>
+
+  <h2>9. International users</h2>
+  <p>SoloTrack is offered globally through the Apple App Store. Because data is stored on your device (and, if you enable it, in your own iCloud account), no international data transfer occurs through SoloTrack itself. Apple's iCloud handling is governed by Apple's privacy practices.</p>
+
+  <h2>10. Your choices and rights</h2>
+  <ul>
+    <li><strong>Access &amp; portability:</strong> You can export your flight log to CSV or PDF at any time from inside the app.</li>
+    <li><strong>Deletion:</strong> Because your data is on-device, you can delete individual flights or your entire log at any time, or delete the app to remove all local data. If you used iCloud sync, you can also remove SoloTrack data from iCloud through your device's iCloud settings.</li>
+    <li><strong>Endorsed flights:</strong> Endorsed flight records are locked to preserve their integrity for examiners. You can void an endorsement to make a record editable again.</li>
+    <li><strong>Privacy questions or requests:</strong> Email <a href="mailto:Contact@solo-track.com">Contact@solo-track.com</a>.</li>
+  </ul>
+
+  <h2>11. Data retention</h2>
+  <p>SoloTrack retains your data until you delete it or remove the app. We do not have a SoloTrack-operated database where copies of your data accumulate.</p>
+
+  <h2>12. Security</h2>
+  <p>Data on your device is protected by iOS file-level encryption. iCloud sync, if you enable it, relies on Apple's CloudKit security and your iCloud account protections. No system can be 100% secure, and you remain responsible for protecting access to your device and Apple ID.</p>
+
+  <h2>13. Tracking and "Do Not Track"</h2>
+  <p>SoloTrack does not engage in cross-site or cross-app tracking. Because we do not perform tracking, "Do Not Track" browser signals do not change SoloTrack's behavior.</p>
+
+  <h2>14. Changes to this policy</h2>
+  <p>If we make material changes, we will update this page and the "Last updated" date above. For App Store-distributed updates, the in-app or Privacy Nutrition Label disclosures will be revised in parallel.</p>
+
+  <h2>15. Contact</h2>
+  <p>Questions about this policy? Email <a href="mailto:Contact@solo-track.com">Contact@solo-track.com</a>.</p>
+
+  <hr>
+  <p class="meta">SoloTrack is a flight-logging tool. It does not provide aeronautical, legal, medical, or regulatory advice. Always confirm currency and certification requirements with your CFI and the current Federal Aviation Regulations.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><span class="footer-brand">SoloTrack</span><p>The free iOS flight logbook for student pilots.</p></div>
+    <div><h4>Product</h4><ul><li><a href="/#features">Features</a></li><li><a href="/blog/">Blog</a></li><li><a href="/docs/">Documentation</a></li><li><a href="/#faq">FAQ</a></li></ul></div>
+    <div><h4>Support</h4><ul><li><a href="/contact/">Contact</a></li><li><a href="/support/">Support</a></li><li><a href="mailto:Contact@solo-track.com">Email us</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a href="/privacy/" aria-current="page">Privacy Policy</a></li><li><a href="/terms/">Terms of Use</a></li><li><a href="/sitemap.xml">Sitemap</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 Huggler Holdings LLC &middot; iOS and Apple are trademarks of Apple Inc.</div>
+</footer>
+</body>
+</html>

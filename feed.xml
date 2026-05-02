@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SoloTrack Blog</title>
+    <link>https://solo-track.com/blog/</link>
+    <atom:link href="https://solo-track.com/feed.xml" rel="self" type="application/rss+xml" />
+    <description>Practical writing for student pilots: flight logging, currency tracking, FAR 61.109 progress, and how SoloTrack fits into training.</description>
+    <language>en-US</language>
+    <lastBuildDate>Sat, 02 May 2026 00:00:00 GMT</lastBuildDate>
+
+    <item>
+      <title>What SoloTrack does (and what it does not)</title>
+      <link>https://solo-track.com/blog/what-solotrack-does/</link>
+      <guid isPermaLink="true">https://solo-track.com/blog/what-solotrack-does/</guid>
+      <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
+      <description>A clear scope of what SoloTrack is — a focused iOS flight logbook for student pilots — and the things it intentionally is not.</description>
+    </item>
+    <item>
+      <title>FAR 61.109 explained: the six requirements every PPL student needs to track</title>
+      <link>https://solo-track.com/blog/far-61-109-explained/</link>
+      <guid isPermaLink="true">https://solo-track.com/blog/far-61-109-explained/</guid>
+      <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
+      <description>A plain-English walk-through of the FAA's aeronautical-experience requirements for the private pilot certificate, mapped to how SoloTrack tracks them.</description>
+    </item>
+    <item>
+      <title>A privacy-first flight logbook: how SoloTrack handles your data</title>
+      <link>https://solo-track.com/blog/privacy-first-pilot-logbook/</link>
+      <guid isPermaLink="true">https://solo-track.com/blog/privacy-first-pilot-logbook/</guid>
+      <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
+      <description>Why SoloTrack stores your flight log on-device, how optional iCloud sync works, and what we deliberately do not do with your data.</description>
+    </item>
+  </channel>
+</rss>

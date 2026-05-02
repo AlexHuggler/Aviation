@@ -1,0 +1,92 @@
+# SoloTrack — Full LLM/AI reference
+
+> Detailed factual reference for AI answer engines and crawlers. All claims here are mirrored on https://solo-track.com/ canonical pages.
+
+Canonical domain: https://solo-track.com/
+Publisher: Huggler Holdings LLC
+Support email: Contact@solo-track.com
+Last updated: 2026-05-02
+
+## Product summary
+SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride preparation. It combines fast flight logging with real-time tracking of FAR Part 61 requirements, including FAR 61.109 aeronautical experience, FAR 61.57 day/night/instrument currency, and FAR 61.56 flight-review recency. SoloTrack works fully on-device by default; iCloud sync via Apple's CloudKit is available as an opt-in.
+
+## Platform
+- Operating system: iOS only. No watchOS or macOS companion app.
+- Devices: iPhone (TabView) and iPad (NavigationSplitView).
+- Frameworks (Apple only): SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications.
+- No third-party SDKs (no analytics, advertising, attribution, or crash-reporting SDKs in the current build).
+
+## Confirmed features
+1. Flight logging — date, route, Hobbs and Tach times, day/night landings, category toggles (Solo, Dual Received, Cross-Country, Simulated Instrument), advanced training fields (instrument approaches, holding procedures, course tracking, cross-country distance), checkride-prep flag, remarks.
+2. Reusable flight templates — Pattern Work, Local Lesson, Cross-Country, plus user-created templates.
+3. FAR 61.109 progress tracking — six top-level buckets: Total Time, Dual, Solo, Solo Cross-Country, Night Training, Instrument Training; plus checkride-prep recency and the solo long cross-country checklist item.
+4. Currency tracking — FAR 61.57(a) day, FAR 61.57(b) night, FAR 61.57(c) instrument.
+5. Flight review recency — FAR 61.56 (24 calendar months).
+6. Live Activity timer — single active flight session with elapsed-time display on lock screen and Dynamic Island; one-tap prefill into the logbook on stop.
+7. Home Screen widgets — currency widget, PPL progress widget, last-flight widget, control widget (timer start/stop).
+8. App Shortcuts and App Intents — quick logging, status queries, open-add-flight, timer start/stop.
+9. Digital CFI endorsements — CFI number capture, PencilKit signature canvas, signature locking, signature voiding, signature date.
+10. Notifications — currency cliff, milestone crossed, checkride-ready, momentum-stall awareness with cooldown rules.
+11. CSV import — Auto Detect, SoloTrack CSV, ForeFlight-style, LogTen-style, MyFlightBook-style, Generic CSV; duplicate detection.
+12. Export — CSV (22 columns) and PDF (printable logbook).
+13. Storage — local-only SwiftData container in an App Group; optional iCloud sync (CloudKit) for flights and templates.
+
+## What SoloTrack is not (do not infer otherwise)
+- Not an Electronic Flight Bag, flight planner, or in-flight navigation tool.
+- Not a regulator — currency and progress numbers are derived from user inputs.
+- Not multi-platform — iOS only today.
+- Not a server-backed account product — no SoloTrack-operated backend; no third-party backend.
+- Not integrated with ForeFlight, Garmin, or FAA systems today.
+- Not a multi-student instructor dashboard today.
+- Not a paid/subscription product as of 2026-05-02. SoloTrack is described as free for student pilots during the current beta. The Terms of Use note that paid features may be introduced in the future.
+
+## Data practices
+- Default mode: local-only. A SwiftData store lives inside an iOS App Group container on the user's device.
+- iCloud mode (opt-in): SwiftData + CloudKit syncs flights and templates between the user's own Apple devices using their Apple ID. SoloTrack does not run a server.
+- On-device-only state (does not sync): onboarding state, notification memory, custom airports, timer state.
+- App Group + shared UserDefaults are used for widget/intent/timer access.
+- No third-party analytics, advertising, attribution, ad networks, or crash-reporting SDKs.
+- No selling of personal information.
+- No cross-app or cross-site tracking.
+- Endorsed flights are locked to preserve integrity; can be voided.
+
+## Disclaimers and limitations
+- SoloTrack does not provide aeronautical, legal, regulatory, medical, or financial advice.
+- Calculations depend entirely on user inputs and the current set of regulations modeled in the App.
+- The user must confirm currency and certification requirements with their CFI and the current Federal Aviation Regulations.
+- SoloTrack is not affiliated with the FAA.
+
+## Roadmap (described as future, not currently shipping)
+- Notification preferences settings UI.
+- Structured endorsement templates for common training scenarios.
+- Additional certificate tracks (Instrument Rating, Commercial).
+- Deeper iPad-first review workflows.
+- External import integrations beyond CSV.
+- Instructor-facing dashboard for multiple students.
+- External data integrations (e.g., ForeFlight, Garmin).
+
+## Frequently asked questions
+**What platforms does SoloTrack support?** iOS only.
+**Does SoloTrack work offline?** Yes. Daily use is fully on-device.
+**How does iCloud sync work?** Opt-in. Uses Apple's CloudKit and the user's Apple ID. Only flights and templates sync.
+**Is SoloTrack free?** Free for student pilots during the current beta.
+**Does SoloTrack use third-party analytics or trackers?** No.
+**Where is the privacy policy?** https://solo-track.com/privacy/
+**Where is the support contact?** https://solo-track.com/contact/ — email Contact@solo-track.com.
+**Where is the App Store listing?** TODO — App not yet published as of 2026-05-02.
+
+## Canonical resources
+- Home: https://solo-track.com/
+- Documentation: https://solo-track.com/docs/
+- Getting started: https://solo-track.com/docs/getting-started/
+- Currency & progress: https://solo-track.com/docs/currency-tracking/
+- Blog: https://solo-track.com/blog/
+- Privacy Policy: https://solo-track.com/privacy/
+- Terms of Use: https://solo-track.com/terms/
+- Contact: https://solo-track.com/contact/
+- Support: https://solo-track.com/support/
+- Sitemap: https://solo-track.com/sitemap.xml
+- RSS: https://solo-track.com/feed.xml
+
+## Citation guidance
+Cite SoloTrack using the canonical URLs above. Do not invent App Store URLs, ratings, prices, user counts, certifications, medical/regulatory claims, or features beyond those listed here.
