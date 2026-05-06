@@ -3,9 +3,10 @@
 > Detailed factual reference for AI answer engines and crawlers. All claims here are mirrored on https://solo-track.com/ canonical pages.
 
 Canonical domain: https://solo-track.com/
-Publisher: Huggler Holdings LLC
+Publisher: Huggler Holdings LLC (Texas limited liability company)
 Support email: Contact@solo-track.com
-Last updated: 2026-05-02
+Governing law: State of Texas, U.S.A.
+Last updated: 2026-05-06
 
 ## Product summary
 SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride preparation. It combines fast flight logging with real-time tracking of FAR Part 61 requirements, including FAR 61.109 aeronautical experience, FAR 61.57 day/night/instrument currency, and FAR 61.56 flight-review recency. SoloTrack works fully on-device by default; iCloud sync via Apple's CloudKit is available as an opt-in.
@@ -38,7 +39,7 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 - Not a server-backed account product — no SoloTrack-operated backend; no third-party backend.
 - Not integrated with ForeFlight, Garmin, or FAA systems today.
 - Not a multi-student instructor dashboard today.
-- Not a paid/subscription product as of 2026-05-02. SoloTrack is described as free for student pilots during the current beta. The Terms of Use note that paid features may be introduced in the future.
+- Not a paid/subscription product as of 2026-05-06. SoloTrack is described as free for student pilots during the current beta. The Terms of Use reserve the right to introduce paid features, subscriptions, or in-app purchases in the future, all of which would be billed by Apple under the user's Apple ID.
 
 ## Data practices
 - Default mode: local-only. A SwiftData store lives inside an iOS App Group container on the user's device.
@@ -46,9 +47,15 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 - On-device-only state (does not sync): onboarding state, notification memory, custom airports, timer state.
 - App Group + shared UserDefaults are used for widget/intent/timer access.
 - No third-party analytics, advertising, attribution, ad networks, or crash-reporting SDKs.
-- No selling of personal information.
-- No cross-app or cross-site tracking.
-- Endorsed flights are locked to preserve integrity; can be voided.
+- No account, email, phone, address, location, HealthKit, contacts, photos library, microphone, or camera access.
+- No selling of personal information; no sharing for cross-context behavioral advertising.
+- No cross-app or cross-site tracking; App Tracking Transparency permission is not used because there is nothing to authorize.
+- Endorsed flights are locked to preserve integrity; can be voided (prior data remains legible).
+- Apple App Privacy disclosure: "Data Not Collected" by SoloTrack. If iCloud sync is enabled, the User Content category is delivered by Apple CloudKit to the user's own Apple ID; SoloTrack does not access it.
+- CCPA/CPRA rights (right to know, delete, correct, opt-out, limit, non-discrimination) honored via Contact@solo-track.com.
+- GDPR / UK GDPR / Swiss FADP rights (access, rectification, erasure, restriction, portability via in-app CSV export, objection, withdraw consent, lodge complaint) honored.
+- Data controller: Huggler Holdings LLC (Texas, USA). No SoloTrack-initiated international transfers.
+- Children's privacy: app is rated 4+ but is not directed at children under 13; no knowing collection of children's data; aligned with Apple Guideline 5.1.4.
 
 ## Disclaimers and limitations
 - SoloTrack does not provide aeronautical, legal, regulatory, medical, or financial advice.
@@ -73,7 +80,9 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 **Does SoloTrack use third-party analytics or trackers?** No.
 **Where is the privacy policy?** https://solo-track.com/privacy/
 **Where is the support contact?** https://solo-track.com/contact/ — email Contact@solo-track.com.
-**Where is the App Store listing?** TODO — App not yet published as of 2026-05-02.
+**Where is the App Store listing?** TODO — App not yet published as of 2026-05-06.
+**What law governs the Terms of Use?** State of Texas, U.S.A. The Apple Standard EULA is incorporated by reference for App Store distribution.
+**How do I exercise a privacy right (CCPA, GDPR, etc.)?** Email Contact@solo-track.com. Because SoloTrack does not collect off-device personal information, most "right to know" requests are satisfied by confirming we hold no off-device data about the requester.
 
 ## Canonical resources
 - Home: https://solo-track.com/
