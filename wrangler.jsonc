@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "solotrack-beta-form",
+  "main": "worker/src/index.ts",
+  "compatibility_date": "2026-05-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "forms.solo-track.com",
+      "custom_domain": true
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "ALLOWED_ORIGIN": "https://www.solo-track.com",
+    "EMAIL_FROM": "beta@solo-track.com",
+    "EMAIL_FROM_NAME": "SoloTrack Beta",
+    "EMAIL_TO": "Contact@solo-track.com"
+  },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "Contact@solo-track.com",
+      "allowed_sender_addresses": ["beta@solo-track.com", "noreply@solo-track.com"]
+    }
+  ]
+}
