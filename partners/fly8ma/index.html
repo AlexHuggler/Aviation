@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoloTrack for FLY8MA Review</title>
+<meta name="description" content="A compact partner-facing SoloTrack explainer for FLY8MA: what the iOS logbook is, who it is for, real workflows it supports, and where it is intentionally limited.">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="canonical" href="https://solo-track.com/partners/fly8ma/">
+<link rel="icon" type="image/png" href="/App%20Icon.png">
+<link rel="apple-touch-icon" href="/App%20Icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SoloTrack">
+<meta property="og:title" content="SoloTrack for FLY8MA Review">
+<meta property="og:description" content="A compact review page for SoloTrack, a local-first iOS logbook beta for PPL students and CFIs.">
+<meta property="og:url" content="https://solo-track.com/partners/fly8ma/">
+<meta property="og:image" content="https://solo-track.com/assets/media/solotrack-beta-landscape-still.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SoloTrack for FLY8MA Review">
+<meta name="twitter:description" content="A compact review page for SoloTrack, a local-first iOS logbook beta for PPL students and CFIs.">
+<meta name="twitter:image" content="https://solo-track.com/assets/media/solotrack-beta-landscape-still.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/page.css">
+<style>
+  .partner-hero{padding:82px 24px 50px;background:linear-gradient(180deg,var(--sky-50) 0%,#fff 82%);border-bottom:1px solid var(--slate-100)}
+  .partner-hero-inner{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,520px);gap:44px;align-items:center}
+  .partner-note{display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;color:var(--blue-700);font-size:.84rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+  .partner-note::before{content:"";width:8px;height:8px;border-radius:999px;background:var(--blue-600)}
+  .partner-hero h1{font-size:clamp(2.2rem,5vw,4rem);font-weight:900;line-height:1.04;color:var(--slate-900);letter-spacing:-.03em;margin-bottom:18px}
+  .partner-hero .lead{font-size:1.12rem;color:var(--slate-600);max-width:640px;margin-bottom:24px}
+  .partner-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .video-frame{border:1px solid var(--slate-200);border-radius:16px;background:#000;box-shadow:0 24px 70px rgba(15,23,42,.12);overflow:hidden}
+  .video-frame video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+  .context-strip{max-width:1060px;margin:26px auto 0;padding:16px 18px;border:1px solid var(--blue-100);border-radius:12px;background:#fff;color:var(--slate-600);font-size:.95rem}
+  .partner-main{max-width:1060px;margin:0 auto;padding:54px 24px 84px}
+  .section-heading{max-width:760px;margin-bottom:22px}
+  .section-heading h2{font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.15;color:var(--slate-900);letter-spacing:-.02em;margin-bottom:10px}
+  .section-heading p{color:var(--slate-600);font-size:1.02rem}
+  .partner-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0 46px}
+  .partner-card{border:1px solid var(--slate-200);border-radius:12px;background:#fff;padding:20px;box-shadow:0 10px 30px rgba(15,23,42,.04)}
+  .partner-card h3{font-size:1rem;line-height:1.25;color:var(--slate-900);margin-bottom:8px}
+  .partner-card p,.partner-card li{color:var(--slate-600);font-size:.94rem}
+  .partner-card ul{margin:0 0 0 18px}
+  .workflow-band{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center;margin:28px 0 52px;padding:28px;border:1px solid var(--slate-200);border-radius:14px;background:var(--slate-50)}
+  .workflow-list{display:grid;gap:12px}
+  .workflow-item{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--slate-200);border-radius:10px;background:#fff}
+  .workflow-item strong{display:block;color:var(--slate-900);font-size:.95rem;margin-bottom:2px}
+  .workflow-item span{display:block;color:var(--slate-600);font-size:.9rem}
+  .workflow-dot{width:24px;height:24px;border-radius:8px;background:var(--blue-100);color:var(--blue-700);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;flex:0 0 auto}
+  .screen-rail{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0 52px}
+  .screen-rail figure{margin:0}
+  .screen-rail img{width:100%;border-radius:14px;border:1px solid var(--slate-200);box-shadow:0 16px 36px rgba(15,23,42,.08);background:#fff}
+  .screen-rail figcaption{font-size:.82rem;color:var(--slate-500);margin-top:8px}
+  .split-section{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0 48px}
+  .quiet-box{border:1px solid var(--slate-200);border-radius:12px;padding:22px;background:#fff}
+  .quiet-box h3{color:var(--slate-900);margin-bottom:10px}
+  .quiet-box p,.quiet-box li{color:var(--slate-600);font-size:.95rem}
+  .quiet-box ul{margin:0 0 0 18px}
+  .final-cta{padding:30px;border-radius:16px;background:linear-gradient(180deg,var(--blue-50),#fff);border:1px solid var(--blue-100);text-align:center}
+  .final-cta h2{font-size:1.55rem;color:var(--slate-900);margin-bottom:10px}
+  .final-cta p{max-width:720px;margin:0 auto 20px;color:var(--slate-600)}
+  @media(max-width:880px){
+    .partner-hero-inner,.workflow-band,.split-section{grid-template-columns:1fr}
+    .partner-grid,.screen-rail{grid-template-columns:1fr}
+    .partner-hero{padding-top:56px}
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Primary"><div class="nav-inner">
+  <a href="/" class="nav-logo" aria-label="SoloTrack home"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1d4ed8"/><path d="M10 28L20 12L30 28H10Z" fill="white" opacity="0.3"/><path d="M8 24L20 14L32 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14V8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M20 8L24 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>SoloTrack</a>
+  <div class="nav-links"><a href="/#features">Features</a><a href="/blog/what-solotrack-does/">Scope</a><a href="/privacy/">Privacy</a><a href="mailto:Contact@solo-track.com" class="nav-cta">Contact</a></div>
+</div></nav>
+
+<header class="partner-hero">
+  <div class="partner-hero-inner">
+    <div>
+      <div class="partner-note">Private review explainer</div>
+      <h1>SoloTrack helps PPL students track the flying side of training.</h1>
+      <p class="lead">A focused iOS logbook beta for student pilots and CFIs, built around quick logging, FAR 61.109 progress, currency awareness, instructor signatures, and cleaner review exports.</p>
+      <div class="partner-actions">
+        <a class="btn-primary" href="mailto:Contact@solo-track.com?subject=SoloTrack%20FLY8MA%20review%20access">Ask for review access</a>
+        <a class="btn-secondary" href="#workflows">See workflows</a>
+      </div>
+    </div>
+    <div class="video-frame" aria-label="SoloTrack beta promo video">
+      <video controls preload="metadata" playsinline poster="/assets/media/solotrack-beta-landscape-still.png">
+        <source src="/assets/media/solotrack-beta-landscape.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+  <div class="context-strip">
+    This page is a compact review asset prepared after FLY8MA asked for a link and more detail. It does not imply any partnership, sponsorship, endorsement, FAA approval, or review outcome.
+  </div>
+</header>
+
+<main id="main" class="partner-main">
+  <section aria-labelledby="what-heading">
+    <div class="section-heading">
+      <h2 id="what-heading">What SoloTrack is</h2>
+      <p>SoloTrack is a local-first iOS flight logbook for private-pilot students. It is meant to turn logbook entries into practical training visibility: what has been flown, what is still missing, and what record is ready for a CFI or DPE to review.</p>
+    </div>
+    <div class="partner-grid">
+      <article class="partner-card">
+        <h3>Student-first logbook</h3>
+        <p>Built for pre-solo through checkride prep, with stage-aware onboarding and defaults for common student workflows.</p>
+      </article>
+      <article class="partner-card">
+        <h3>Training progress, not just rows</h3>
+        <p>Tracks FAR 61.109 progress, FAR 61.57 day/night/instrument currency, and the FAR 61.56 flight-review window from the flights a student logs.</p>
+      </article>
+      <article class="partner-card">
+        <h3>Local-first by design</h3>
+        <p>No SoloTrack account is required. Daily logging works on device, with optional iCloud sync for flights and templates.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="audience-heading">
+    <div class="section-heading">
+      <h2 id="audience-heading">Who it is for</h2>
+      <p>SoloTrack is primarily for active PPL students. CFIs can use it in the moment when reviewing or signing a student's record, but there is no instructor dashboard or multi-student school console today.</p>
+    </div>
+    <div class="partner-grid">
+      <article class="partner-card">
+        <h3>Pre-solo students</h3>
+        <p>Start clean habits early: quick dual-flight entries, currency visibility, and a dashboard that shows what matters next.</p>
+      </article>
+      <article class="partner-card">
+        <h3>Solo and XC builders</h3>
+        <p>Reuse common routes, log cross-country details, and keep progress visible instead of waiting for a spreadsheet check.</p>
+      </article>
+      <article class="partner-card">
+        <h3>Checkride-prep students and CFIs</h3>
+        <p>Review requirement gaps, capture CFI signatures, lock endorsed records, and export a cleaner PDF for review.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="workflows" aria-labelledby="workflow-heading">
+    <div class="section-heading">
+      <h2 id="workflow-heading">Real workflows it supports</h2>
+      <p>The current product is narrow on purpose. These are the workflows SoloTrack is designed to support today.</p>
+    </div>
+    <div class="workflow-band">
+      <div class="workflow-list">
+        <div class="workflow-item"><span class="workflow-dot">1</span><div><strong>Log a lesson quickly</strong><span>Use templates, route fields, Hobbs/Tach, landings, category toggles, remarks, and CFI number fields.</span></div></div>
+        <div class="workflow-item"><span class="workflow-dot">2</span><div><strong>Track PPL progress</strong><span>See FAR 61.109 buckets such as total, solo, dual, cross-country, night, and instrument progress.</span></div></div>
+        <div class="workflow-item"><span class="workflow-dot">3</span><div><strong>Check currency status</strong><span>Monitor day, night, instrument, and flight-review recency from logged flight data.</span></div></div>
+        <div class="workflow-item"><span class="workflow-dot">4</span><div><strong>Use timer-to-entry</strong><span>Start a flight session, keep it visible with iOS surfaces, and prefill a logbook entry afterward.</span></div></div>
+      </div>
+      <div class="workflow-list">
+        <div class="workflow-item"><span class="workflow-dot">5</span><div><strong>Capture CFI signatures</strong><span>Use PencilKit signature capture and lock endorsed records until a signature is voided.</span></div></div>
+        <div class="workflow-item"><span class="workflow-dot">6</span><div><strong>Import existing data</strong><span>Bring in CSV logbook data with duplicate detection and review before committing entries.</span></div></div>
+        <div class="workflow-item"><span class="workflow-dot">7</span><div><strong>Export for review</strong><span>Create CSV or PDF exports so the student can share cleaner records with an instructor or examiner.</span></div></div>
+        <div class="workflow-item"><span class="workflow-dot">8</span><div><strong>Keep it accessible</strong><span>Use widgets, App Shortcuts, and a Live Activity to reduce friction around logging and status checks.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="screens-heading">
+    <div class="section-heading">
+      <h2 id="screens-heading">Product surfaces</h2>
+      <p>These screenshots come from the current SoloTrack showcase and App Store media set.</p>
+    </div>
+    <div class="screen-rail">
+      <figure>
+        <img src="https://lh3.googleusercontent.com/d/1Go90hNqhP3w3eFk3NimZFMHX9SMnQiKm=w800" alt="SoloTrack dashboard showing currency status, total hours, and milestone tracker" loading="lazy">
+        <figcaption>Dashboard with currency, total hours, and next milestone.</figcaption>
+      </figure>
+      <figure>
+        <img src="https://lh3.googleusercontent.com/d/1MW1YadmTvBroF64OopeS9TGtl2iZjLMV=w800" alt="SoloTrack progress screen showing private pilot progress" loading="lazy">
+        <figcaption>PPL progress view organized around requirement buckets.</figcaption>
+      </figure>
+      <figure>
+        <img src="https://lh3.googleusercontent.com/d/17U3e2lWUHtkKAQT1_f5Ej_J9iXtl0-1W=w800" alt="SoloTrack checkride detail screen with CFI signature capture" loading="lazy">
+        <figcaption>Checkride details, CFI signature capture, and locked records.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section aria-labelledby="complement-heading">
+    <div class="section-heading">
+      <h2 id="complement-heading">How it could complement FLY8MA</h2>
+      <p>FLY8MA teaches students what they need to know. SoloTrack helps them track what they have actually flown and what still needs attention.</p>
+    </div>
+    <div class="split-section">
+      <div class="quiet-box">
+        <h3>The fit</h3>
+        <p>For a student watching ground school, checkride prep, or training videos, SoloTrack can be a companion record: after the lesson, the student logs what happened and sees whether that flight moved them closer to a requirement or kept them current.</p>
+      </div>
+      <div class="quiet-box">
+        <h3>The ask</h3>
+        <p>The smallest useful review is simple: one FLY8MA instructor tries the no-paywall TestFlight build for about 10 minutes and says whether it is worth showing students, not yet ready, or missing something obvious.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="limits-heading">
+    <div class="section-heading">
+      <h2 id="limits-heading">What SoloTrack is not</h2>
+      <p>SoloTrack should be judged as a student logbook and training tracker, not as a full aviation platform. It is not an EFB, not ground school, and not a substitute for a CFI.</p>
+    </div>
+    <div class="partner-grid">
+      <article class="partner-card">
+        <h3>Not an EFB</h3>
+        <p>It does not provide charts, weather briefings, flight planning, dispatch, or in-flight navigation.</p>
+      </article>
+      <article class="partner-card">
+        <h3>Not ground school</h3>
+        <p>It does not teach maneuvers, regulations, oral prep, or written-test material.</p>
+      </article>
+      <article class="partner-card">
+        <h3>Not a substitute for a CFI</h3>
+        <p>It is not a CFI, DPE, FAA source, or regulatory decision-maker. Students should confirm requirements and readiness with their instructor and current FARs.</p>
+      </article>
+    </div>
+    <div class="quiet-box">
+      <h3>Current product limits</h3>
+      <ul>
+        <li>iOS only.</li>
+        <li>No multi-student instructor dashboard today.</li>
+        <li>No direct ForeFlight, Garmin, FAA, or school system integration today.</li>
+        <li>Calculations are convenience features based on entered data, not FAA or DPE approval.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="final-cta" aria-labelledby="next-step-heading">
+    <h2 id="next-step-heading">Smallest useful next step</h2>
+    <p>Try the launch review build and send one honest reaction: worth showing students, not yet, or here is the workflow that would need to change.</p>
+    <a class="btn-primary" href="mailto:Contact@solo-track.com?subject=SoloTrack%20FLY8MA%20review%20access">Request TestFlight review access</a>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><span class="footer-brand">SoloTrack</span><p>The iOS flight logbook for student pilots.</p></div>
+    <div><h4>Product</h4><ul><li><a href="/#features">Features</a></li><li><a href="/blog/what-solotrack-does/">Scope</a></li><li><a href="/docs/">Documentation</a></li></ul></div>
+    <div><h4>Support</h4><ul><li><a href="/contact/">Contact</a></li><li><a href="/support/">Support</a></li><li><a href="mailto:Contact@solo-track.com">Email us</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a href="/privacy/">Privacy Policy</a></li><li><a href="/terms/">Terms of Use</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 Huggler Holdings LLC &middot; iOS and Apple are trademarks of Apple Inc. FLY8MA is referenced only as the intended reviewer for this private explainer.</div>
+</footer>
+</body>
+</html>

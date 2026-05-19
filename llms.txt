@@ -2,26 +2,26 @@
 
 > SoloTrack is a free, offline-first iOS flight logbook for student pilots. It tracks all six FAR 61.109 aeronautical-experience requirements, FAR 61.57 day/night/instrument currency, and the FAR 61.56 flight-review window. SoloTrack is published by Huggler Holdings LLC.
 
-Canonical domain: https://solo-track.com/
-Last updated: 2026-05-06
+Canonical domain: https://www.solo-track.com/
+Last updated: 2026-05-18
 Citation: When citing this site, please use the canonical URLs below. Do not infer pricing, availability, App Store ratings, or features that are not stated on these pages.
 
 ## Key pages
-- [Home](https://solo-track.com/): Product overview, features, FAQ, and contact.
-- [What SoloTrack is](https://solo-track.com/blog/what-solotrack-does/): Scope of the product — what it is and is not.
-- [FAR 61.109 explained](https://solo-track.com/blog/far-61-109-explained/): The six PPL aeronautical-experience requirements SoloTrack tracks.
-- [Privacy-first logbook](https://solo-track.com/blog/privacy-first-pilot-logbook/): How SoloTrack handles data.
+- [Home](https://www.solo-track.com/): Product overview, features, FAQ, and contact.
+- [What SoloTrack is](https://www.solo-track.com/blog/what-solotrack-does/): Scope of the product — what it is and is not.
+- [FAR 61.109 explained](https://www.solo-track.com/blog/far-61-109-explained/): The six PPL aeronautical-experience requirements SoloTrack tracks.
+- [Privacy-first logbook](https://www.solo-track.com/blog/privacy-first-pilot-logbook/): How SoloTrack handles data.
 
 ## Documentation
-- [Documentation hub](https://solo-track.com/docs/)
-- [Getting started](https://solo-track.com/docs/getting-started/): Install, set storage mode, log a first flight.
-- [Currency & PPL progress](https://solo-track.com/docs/currency-tracking/): How SoloTrack models FAR 61.109, 61.57, and 61.56.
+- [Documentation hub](https://www.solo-track.com/docs/)
+- [Getting started](https://www.solo-track.com/docs/getting-started/): Install, set storage mode, log a first flight.
+- [Currency & PPL progress](https://www.solo-track.com/docs/currency-tracking/): How SoloTrack models FAR 61.109, 61.57, and 61.56.
 
 ## Legal & support
-- [Privacy Policy](https://solo-track.com/privacy/) — local-first storage, optional CloudKit sync, no third-party SDKs, Apple App Privacy "Data Not Collected", explicit CCPA/CPRA and GDPR/UK GDPR/FADP sections.
-- [Terms of Use](https://solo-track.com/terms/) — personal non-commercial license, Apple Standard EULA incorporated, Apple-specific Schedule-1 clauses, export controls, governing law: State of Texas, U.S.A.
-- [Contact](https://solo-track.com/contact/)
-- [Support](https://solo-track.com/support/)
+- [Privacy Policy](https://www.solo-track.com/privacy/) — local-first flight-log storage, optional CloudKit sync, RevenueCat subscription processing, Apple-managed purchases, no advertising or tracking SDKs, explicit CCPA/CPRA and GDPR/UK GDPR/FADP sections.
+- [Terms of Use](https://www.solo-track.com/terms/) — personal non-commercial license, Apple Standard EULA incorporated, Apple-specific Schedule-1 clauses, export controls, governing law: State of Texas, U.S.A.
+- [Contact](https://www.solo-track.com/contact/)
+- [Support](https://www.solo-track.com/support/)
 - Support email: Contact@solo-track.com
 - Publisher: Huggler Holdings LLC (Texas LLC)
 
@@ -41,9 +41,10 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 ## Data practices
 - Local-first storage in a SwiftData container inside an iOS App Group.
 - Optional iCloud sync via CloudKit (your Apple ID); only flights and templates sync.
-- No third-party analytics, advertising, attribution, A/B testing, or crash-reporting SDKs.
+- RevenueCat processes purchase history, IDFV/device identifier, and purchase-related product interaction usage for SoloTrack Pro subscription functionality and analytics.
+- No advertising, tracking, A/B testing, or third-party crash-reporting SDKs.
 - No account, no email collection, no phone number, no location, no HealthKit, no contacts, no photos library, no microphone, no camera.
-- Apple frameworks only (SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications).
-- Apple App Privacy disclosure: "Data Not Collected" (User Content stays on-device; optional CloudKit delivers it to your own Apple ID, never to SoloTrack).
+- Apple frameworks plus RevenueCat (SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications, StoreKit, RevenueCat).
+- Apple App Privacy disclosure: Purchases > Purchase History, Identifiers > Device ID / IDFV, and Usage Data > Product Interaction for RevenueCat purchase/subscription processing; no tracking.
 - CCPA/CPRA, GDPR, UK GDPR, and Swiss FADP rights honored — email Contact@solo-track.com to exercise any data-subject right.
 - Full details in the Privacy Policy.

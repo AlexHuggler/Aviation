@@ -1,12 +1,12 @@
 # SoloTrack — Full LLM/AI reference
 
-> Detailed factual reference for AI answer engines and crawlers. All claims here are mirrored on https://solo-track.com/ canonical pages.
+> Detailed factual reference for AI answer engines and crawlers. All claims here are mirrored on https://www.solo-track.com/ canonical pages.
 
-Canonical domain: https://solo-track.com/
+Canonical domain: https://www.solo-track.com/
 Publisher: Huggler Holdings LLC (Texas limited liability company)
 Support email: Contact@solo-track.com
 Governing law: State of Texas, U.S.A.
-Last updated: 2026-05-06
+Last updated: 2026-05-18
 
 ## Product summary
 SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride preparation. It combines fast flight logging with real-time tracking of FAR Part 61 requirements, including FAR 61.109 aeronautical experience, FAR 61.57 day/night/instrument currency, and FAR 61.56 flight-review recency. SoloTrack works fully on-device by default; iCloud sync via Apple's CloudKit is available as an opt-in.
@@ -14,8 +14,8 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 ## Platform
 - Operating system: iOS only. No watchOS or macOS companion app.
 - Devices: iPhone (TabView) and iPad (NavigationSplitView).
-- Frameworks (Apple only): SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications.
-- No third-party SDKs (no analytics, advertising, attribution, or crash-reporting SDKs in the current build).
+- Frameworks and services: SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications, StoreKit, and RevenueCat.
+- RevenueCat is used for Apple-managed subscription product display, purchase validation, entitlement status, restore purchases, and subscription analytics. No advertising, tracking, A/B testing, or third-party crash-reporting SDKs are disclosed.
 
 ## Confirmed features
 1. Flight logging — date, route, Hobbs and Tach times, day/night landings, category toggles (Solo, Dual Received, Cross-Country, Simulated Instrument), advanced training fields (instrument approaches, holding procedures, course tracking, cross-country distance), checkride-prep flag, remarks.
@@ -36,25 +36,26 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 - Not an Electronic Flight Bag, flight planner, or in-flight navigation tool.
 - Not a regulator — currency and progress numbers are derived from user inputs.
 - Not multi-platform — iOS only today.
-- Not a server-backed account product — no SoloTrack-operated backend; no third-party backend.
+- Not a server-backed account product — no SoloTrack-operated flight-log backend.
 - Not integrated with ForeFlight, Garmin, or FAA systems today.
 - Not a multi-student instructor dashboard today.
-- Not a paid/subscription product as of 2026-05-06. SoloTrack is described as free for student pilots during the current beta. The Terms of Use reserve the right to introduce paid features, subscriptions, or in-app purchases in the future, all of which would be billed by Apple under the user's Apple ID.
+- Not an external-payment product. SoloTrack is free to download with SoloTrack Pro subscriptions / in-app purchases processed by Apple under the user's Apple ID and managed through RevenueCat.
 
 ## Data practices
 - Default mode: local-only. A SwiftData store lives inside an iOS App Group container on the user's device.
 - iCloud mode (opt-in): SwiftData + CloudKit syncs flights and templates between the user's own Apple devices using their Apple ID. SoloTrack does not run a server.
 - On-device-only state (does not sync): onboarding state, notification memory, custom airports, timer state.
 - App Group + shared UserDefaults are used for widget/intent/timer access.
-- No third-party analytics, advertising, attribution, ad networks, or crash-reporting SDKs.
+- RevenueCat processes purchase history, subscription status, receipt information, IDFV/device identifier, and purchase-related product interaction usage for subscription functionality, purchase integrity, support, and analytics.
+- No advertising, tracking, A/B testing, ad networks, or third-party crash-reporting SDKs.
 - No account, email, phone, address, location, HealthKit, contacts, photos library, microphone, or camera access.
 - No selling of personal information; no sharing for cross-context behavioral advertising.
 - No cross-app or cross-site tracking; App Tracking Transparency permission is not used because there is nothing to authorize.
 - Endorsed flights are locked to preserve integrity; can be voided (prior data remains legible).
-- Apple App Privacy disclosure: "Data Not Collected" by SoloTrack. If iCloud sync is enabled, the User Content category is delivered by Apple CloudKit to the user's own Apple ID; SoloTrack does not access it.
+- Apple App Privacy disclosure: Purchases > Purchase History, Identifiers > Device ID / IDFV, and Usage Data > Product Interaction for RevenueCat purchase/subscription processing; no tracking. If iCloud sync is enabled, the User Content category is delivered by Apple CloudKit to the user's own Apple ID; SoloTrack does not access it.
 - CCPA/CPRA rights (right to know, delete, correct, opt-out, limit, non-discrimination) honored via Contact@solo-track.com.
 - GDPR / UK GDPR / Swiss FADP rights (access, rectification, erasure, restriction, portability via in-app CSV export, objection, withdraw consent, lodge complaint) honored.
-- Data controller: Huggler Holdings LLC (Texas, USA). No SoloTrack-initiated international transfers.
+- Data controller: Huggler Holdings LLC (Texas, USA). Subscription and purchase data may be processed internationally by Apple and RevenueCat.
 - Children's privacy: app is rated 4+ but is not directed at children under 13; no knowing collection of children's data; aligned with Apple Guideline 5.1.4.
 
 ## Disclaimers and limitations
@@ -76,26 +77,26 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 **What platforms does SoloTrack support?** iOS only.
 **Does SoloTrack work offline?** Yes. Daily use is fully on-device.
 **How does iCloud sync work?** Opt-in. Uses Apple's CloudKit and the user's Apple ID. Only flights and templates sync.
-**Is SoloTrack free?** Free for student pilots during the current beta.
-**Does SoloTrack use third-party analytics or trackers?** No.
-**Where is the privacy policy?** https://solo-track.com/privacy/
-**Where is the support contact?** https://solo-track.com/contact/ — email Contact@solo-track.com.
-**Where is the App Store listing?** TODO — App not yet published as of 2026-05-06.
+**Is SoloTrack free?** SoloTrack is free to download with SoloTrack Pro subscriptions / in-app purchases for full access or premium features.
+**Does SoloTrack use third-party analytics or trackers?** SoloTrack uses RevenueCat for Apple-managed subscription processing and does not use advertising or tracking SDKs.
+**Where is the privacy policy?** https://www.solo-track.com/privacy/
+**Where is the support contact?** https://www.solo-track.com/contact/ — email Contact@solo-track.com.
+**Where is the App Store listing?** TODO — App not yet published as of 2026-05-18.
 **What law governs the Terms of Use?** State of Texas, U.S.A. The Apple Standard EULA is incorporated by reference for App Store distribution.
-**How do I exercise a privacy right (CCPA, GDPR, etc.)?** Email Contact@solo-track.com. Because SoloTrack does not collect off-device personal information, most "right to know" requests are satisfied by confirming we hold no off-device data about the requester.
+**How do I exercise a privacy right (CCPA, GDPR, etc.)?** Email Contact@solo-track.com. SoloTrack can help with support/beta contact records and direct users to Apple or RevenueCat for purchase/subscription records where applicable.
 
 ## Canonical resources
-- Home: https://solo-track.com/
-- Documentation: https://solo-track.com/docs/
-- Getting started: https://solo-track.com/docs/getting-started/
-- Currency & progress: https://solo-track.com/docs/currency-tracking/
-- Blog: https://solo-track.com/blog/
-- Privacy Policy: https://solo-track.com/privacy/
-- Terms of Use: https://solo-track.com/terms/
-- Contact: https://solo-track.com/contact/
-- Support: https://solo-track.com/support/
-- Sitemap: https://solo-track.com/sitemap.xml
-- RSS: https://solo-track.com/feed.xml
+- Home: https://www.solo-track.com/
+- Documentation: https://www.solo-track.com/docs/
+- Getting started: https://www.solo-track.com/docs/getting-started/
+- Currency & progress: https://www.solo-track.com/docs/currency-tracking/
+- Blog: https://www.solo-track.com/blog/
+- Privacy Policy: https://www.solo-track.com/privacy/
+- Terms of Use: https://www.solo-track.com/terms/
+- Contact: https://www.solo-track.com/contact/
+- Support: https://www.solo-track.com/support/
+- Sitemap: https://www.solo-track.com/sitemap.xml
+- RSS: https://www.solo-track.com/feed.xml
 
 ## Citation guidance
 Cite SoloTrack using the canonical URLs above. Do not invent App Store URLs, ratings, prices, user counts, certifications, medical/regulatory claims, or features beyond those listed here.
