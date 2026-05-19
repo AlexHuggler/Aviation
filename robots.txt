@@ -4,4 +4,4 @@ User-agent: *
 Allow: /
 Disallow: /404.html
 
-Sitemap: https://solo-track.com/sitemap.xml
+Sitemap: https://www.solo-track.com/sitemap.xml
