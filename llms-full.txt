@@ -6,7 +6,7 @@ Canonical domain: https://www.solo-track.com/
 Publisher: Huggler Holdings LLC (Texas limited liability company)
 Support email: Contact@solo-track.com
 Governing law: State of Texas, U.S.A.
-Last updated: 2026-05-18
+Last updated: 2026-05-19
 
 ## Product summary
 SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride preparation. It combines fast flight logging with real-time tracking of FAR Part 61 requirements, including FAR 61.109 aeronautical experience, FAR 61.57 day/night/instrument currency, and FAR 61.56 flight-review recency. SoloTrack works fully on-device by default; iCloud sync via Apple's CloudKit is available as an opt-in.
