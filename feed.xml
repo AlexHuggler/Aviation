@@ -11,21 +11,21 @@
     <item>
       <title>What SoloTrack does (and what it does not)</title>
       <link>https://www.solo-track.com/blog/what-solotrack-does/</link>
-      <guid isPermaLink="true">https://www.solo-track.com/blog/what-solotrack-does/</guid>
+      <guid isPermaLink="false">https://solo-track.com/blog/what-solotrack-does/</guid>
       <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
       <description>A clear scope of what SoloTrack is — a focused iOS flight logbook for student pilots — and the things it intentionally is not.</description>
     </item>
     <item>
       <title>FAR 61.109 explained: the six requirements every PPL student needs to track</title>
       <link>https://www.solo-track.com/blog/far-61-109-explained/</link>
-      <guid isPermaLink="true">https://www.solo-track.com/blog/far-61-109-explained/</guid>
+      <guid isPermaLink="false">https://solo-track.com/blog/far-61-109-explained/</guid>
       <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
       <description>A plain-English walk-through of the FAA's aeronautical-experience requirements for the private pilot certificate, mapped to how SoloTrack tracks them.</description>
     </item>
     <item>
       <title>A privacy-first flight logbook: how SoloTrack handles your data</title>
       <link>https://www.solo-track.com/blog/privacy-first-pilot-logbook/</link>
-      <guid isPermaLink="true">https://www.solo-track.com/blog/privacy-first-pilot-logbook/</guid>
+      <guid isPermaLink="false">https://solo-track.com/blog/privacy-first-pilot-logbook/</guid>
       <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
       <description>Why SoloTrack stores your flight log on-device, how optional iCloud sync works, and what we deliberately do not do with your data.</description>
     </item>
