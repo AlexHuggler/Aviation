@@ -1,7 +1,58 @@
 # SoloTrack — robots.txt
 # All search engines and well-behaved AI crawlers allowed.
+# Updated: 2026-05-19
+
 User-agent: *
 Allow: /
 Disallow: /404.html
+
+# Explicit allow for major AI / answer-engine crawlers.
+# Some agents (notably Google-Extended and Applebot-Extended) treat
+# absence of explicit policy as ambiguous, so we opt in explicitly.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
 
 Sitemap: https://www.solo-track.com/sitemap.xml
