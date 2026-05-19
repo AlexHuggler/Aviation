@@ -68,7 +68,7 @@ describe("App Store launch readiness copy", () => {
     const html = await readSiteFile("index.html");
 
     expect(html).toContain("SoloTrack Pro");
-    expect(html).toContain("30-day free trial");
+    expect(html).not.toContain("30-day free trial");
     expect(html).toContain("RevenueCat");
   });
 });
