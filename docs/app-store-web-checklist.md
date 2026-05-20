@@ -2,7 +2,7 @@
 
 Use this page when filling out App Store Connect for SoloTrack. Every URL below resolves on the live site at <https://www.solo-track.com/>.
 
-_Last updated: 2026-05-18_
+_Last updated: 2026-05-20_
 
 ## URLs to paste into App Store Connect
 
@@ -15,7 +15,7 @@ _Last updated: 2026-05-18_
 | Alternate Support URL (Contact page) | `https://www.solo-track.com/contact/` |
 | EULA | Use Apple's Standard EULA, or replace `https://www.solo-track.com/terms/` if a custom EULA is preferred (legal review recommended) |
 | Support email | `Contact@solo-track.com` |
-| App Store URL | TODO — fill in after the App is published |
+| App Store URL | `https://apps.apple.com/us/app/solotrack/id6762449244` |
 
 ## Developer / publisher
 
@@ -73,7 +73,7 @@ RevenueCat is the only disclosed non-Apple SDK in the app. No advertising, track
 
 - [ ] Legal owner/counsel should review final `/terms/` wording before submission.
 - [ ] Confirm Apple Standard EULA vs custom EULA decision with legal counsel.
-- [ ] Replace TODO App Store URL once the App is published.
+- [x] Replace TODO App Store URL once the App is published.
 - [ ] Re-verify before each App Store submission that third-party SDK disclosures match the shipped build.
 - [ ] Confirm App Store Connect App Privacy includes RevenueCat Purchase History and only includes Identifiers/Product Interaction if the final build or RevenueCat configuration requires them.
 
