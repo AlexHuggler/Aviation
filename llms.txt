@@ -3,7 +3,7 @@
 > SoloTrack is a free, offline-first iOS flight logbook for student pilots. It tracks all six FAR 61.109 aeronautical-experience requirements, FAR 61.57 day/night/instrument currency, and the FAR 61.56 flight-review window. SoloTrack is published by Huggler Holdings LLC.
 
 Canonical domain: https://www.solo-track.com/
-Last updated: 2026-05-19
+Last updated: 2026-05-20
 Citation: When citing this site, please use the canonical URLs below. Do not infer pricing, availability, App Store ratings, or features that are not stated on these pages.
 
 ## Key pages
@@ -26,7 +26,7 @@ Citation: When citing this site, please use the canonical URLs below. Do not inf
 - Publisher: Huggler Holdings LLC (Texas LLC)
 
 ## App Store
-- App Store URL: TODO — SoloTrack is currently in beta; this URL will be added when the App is published.
+- App Store URL: https://apps.apple.com/us/app/solotrack/id6762449244
 
 ## What SoloTrack is, in one paragraph
 SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride. It combines fast logging with real-time tracking against FAR Part 61: the six FAR 61.109 aeronautical-experience categories, FAR 61.57(a)/(b)/(c) day/night/instrument currency, and the FAR 61.56 flight-review window. Daily use works fully on-device with no account; iCloud (CloudKit) sync is opt-in and only covers flights and templates.

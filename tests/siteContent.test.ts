@@ -5,19 +5,35 @@ async function readSiteFile(path: string): Promise<string> {
   return readFile(new URL(`../${path}`, import.meta.url), "utf8");
 }
 
-describe("beta form page", () => {
-  it("submits beta applications to a managed HTTPS form endpoint", async () => {
+describe("homepage App Store CTA", () => {
+  it("links the App Store listing from the nav, hero, and download section", async () => {
+    const html = await readSiteFile("index.html");
+    const appStoreUrl = "https://apps.apple.com/us/app/solotrack/id6762449244";
+
+    const matches = html.match(new RegExp(appStoreUrl.replace(/\./g, "\\."), "g")) ?? [];
+    expect(matches.length).toBeGreaterThanOrEqual(3);
+
+    expect(html).toContain("Download on the App Store");
+    expect(html).toContain('id="download"');
+  });
+
+  it("removes the pre-launch beta application form and Launch List CTAs", async () => {
     const html = await readSiteFile("index.html");
 
-    expect(html).toContain('action="https://formsubmit.co/ajax/Contact@solo-track.com"');
-    expect(html).toContain('method="POST"');
-    expect(html).toContain('headers: { \'Accept\': \'application/json\' }');
-    expect(html).toContain('id="formStatus"');
-    expect(html).toContain('aria-live="polite"');
-    expect(html).toContain('href="mailto:Contact@solo-track.com"');
-    expect(html).not.toContain("https://forms.solo-track.com");
-    expect(html).not.toContain("mailto:Contact@solo-track.com?");
-    expect(html).not.toContain("mailto:Contact@solo-track.com?subject=${subject}&body=${body}");
+    expect(html).not.toContain('id="betaForm"');
+    expect(html).not.toContain('class="beta-form"');
+    expect(html).not.toContain("formsubmit.co/ajax/Contact@solo-track.com");
+    expect(html).not.toContain("Join Launch List");
+    expect(html).not.toContain("Launch List");
+    expect(html).not.toContain('id="beta"');
+  });
+
+  it("marks the MobileApplication as InStock with the App Store offer URL", async () => {
+    const html = await readSiteFile("index.html");
+
+    expect(html).toContain('"availability": "https://schema.org/InStock"');
+    expect(html).not.toContain("schema.org/PreOrder");
+    expect(html).toContain('"downloadUrl": "https://apps.apple.com/us/app/solotrack/id6762449244"');
   });
 });
 

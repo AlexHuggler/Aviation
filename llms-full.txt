@@ -6,7 +6,7 @@ Canonical domain: https://www.solo-track.com/
 Publisher: Huggler Holdings LLC (Texas limited liability company)
 Support email: Contact@solo-track.com
 Governing law: State of Texas, U.S.A.
-Last updated: 2026-05-19
+Last updated: 2026-05-20
 
 ## Product summary
 SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride preparation. It combines fast flight logging with real-time tracking of FAR Part 61 requirements, including FAR 61.109 aeronautical experience, FAR 61.57 day/night/instrument currency, and FAR 61.56 flight-review recency. SoloTrack works fully on-device by default; iCloud sync via Apple's CloudKit is available as an opt-in.
@@ -81,9 +81,9 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 **Does SoloTrack use third-party analytics or trackers?** SoloTrack uses RevenueCat for Apple-managed subscription processing and does not use advertising or tracking SDKs.
 **Where is the privacy policy?** https://www.solo-track.com/privacy/
 **Where is the support contact?** https://www.solo-track.com/contact/ — email Contact@solo-track.com.
-**Where is the App Store listing?** TODO — App not yet published as of 2026-05-18.
+**Where is the App Store listing?** https://apps.apple.com/us/app/solotrack/id6762449244
 **What law governs the Terms of Use?** State of Texas, U.S.A. The Apple Standard EULA is incorporated by reference for App Store distribution.
-**How do I exercise a privacy right (CCPA, GDPR, etc.)?** Email Contact@solo-track.com. SoloTrack can help with support/beta contact records and direct users to Apple or RevenueCat for purchase/subscription records where applicable.
+**How do I exercise a privacy right (CCPA, GDPR, etc.)?** Email Contact@solo-track.com. SoloTrack can help with support contact records and direct users to Apple or RevenueCat for purchase/subscription records where applicable.
 
 ## Canonical resources
 - Home: https://www.solo-track.com/
