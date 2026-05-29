@@ -6,7 +6,7 @@ Canonical domain: https://www.solo-track.com/
 Publisher: Huggler Holdings LLC (Texas limited liability company)
 Support email: Contact@solo-track.com
 Governing law: State of Texas, U.S.A.
-Last updated: 2026-05-20
+Last updated: 2026-05-29
 
 ## Product summary
 SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride preparation. It combines fast flight logging with real-time tracking of FAR Part 61 requirements, including FAR 61.109 aeronautical experience, FAR 61.57 day/night/instrument currency, and FAR 61.56 flight-review recency. SoloTrack works fully on-device by default; iCloud sync via Apple's CloudKit is available as an opt-in.
@@ -85,8 +85,22 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 **What law governs the Terms of Use?** State of Texas, U.S.A. The Apple Standard EULA is incorporated by reference for App Store distribution.
 **How do I exercise a privacy right (CCPA, GDPR, etc.)?** Email Contact@solo-track.com. SoloTrack can help with support contact records and direct users to Apple or RevenueCat for purchase/subscription records where applicable.
 
+## Free tools (web calculators)
+SoloTrack publishes free, client-side flight-training calculators on the website. They run entirely in the browser, store nothing on a server, and are convenience estimators only — not regulatory determinations. Every tool advises confirming results with a CFI and the current Federal Aviation Regulations.
+- FAR 61.57 currency calculator (https://www.solo-track.com/tools/currency-calculator/): Estimates FAR 61.57(a) day, 61.57(b) night, and 61.57(c) instrument currency from the dates of recent takeoffs/landings and instrument events, using the 90-day and six-calendar-month windows.
+- FAR 61.109 PPL progress checker (https://www.solo-track.com/tools/ppl-progress-checker/): Compares entered hours against the six FAR 61.109 aeronautical-experience minimums (40 total, 20 dual, 10 solo, 5 solo cross-country, 3 night, 3 instrument) and reports hours remaining.
+- FAR 61.56 flight review calculator (https://www.solo-track.com/tools/flight-review-calculator/): Calculates the flight-review expiration as the end of the 24th calendar month after the last review.
+- Checkride readiness checklist (https://www.solo-track.com/tools/checkride-readiness-checklist/): Interactive checklist of the FAR 61.109(a) private-pilot requirements; progress is saved locally in the browser.
+
+## New blog posts (2026-05-29)
+- FAR 61.57 currency explained: https://www.solo-track.com/blog/far-61-57-currency-explained/
+- Night flight requirements (FAR 61.109(a)(2)(ii)): https://www.solo-track.com/blog/night-flight-requirements/
+- Importing your logbook (CSV migration): https://www.solo-track.com/blog/importing-your-logbook/
+- Checkride preparation guide: https://www.solo-track.com/blog/checkride-preparation-guide/
+
 ## Canonical resources
 - Home: https://www.solo-track.com/
+- Free tools hub: https://www.solo-track.com/tools/
 - Documentation: https://www.solo-track.com/docs/
 - Getting started: https://www.solo-track.com/docs/getting-started/
 - Currency & progress: https://www.solo-track.com/docs/currency-tracking/

@@ -1,6 +1,6 @@
 # SoloTrack — robots.txt
 # All search engines and well-behaved AI crawlers allowed.
-# Updated: 2026-05-19
+# Updated: 2026-05-29
 
 User-agent: *
 Allow: /

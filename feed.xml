@@ -6,26 +6,54 @@
     <atom:link href="https://www.solo-track.com/feed.xml" rel="self" type="application/rss+xml" />
     <description>Practical writing for student pilots: flight logging, currency tracking, FAR 61.109 progress, and how SoloTrack fits into training.</description>
     <language>en-US</language>
-    <lastBuildDate>Sat, 02 May 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 29 May 2026 00:00:00 GMT</lastBuildDate>
 
+    <item>
+      <title>Checkride preparation: what your DPE expects and how to organize your logbook</title>
+      <link>https://www.solo-track.com/blog/checkride-preparation-guide/</link>
+      <guid isPermaLink="false">https://www.solo-track.com/blog/checkride-preparation-guide/</guid>
+      <pubDate>Fri, 29 May 2026 00:00:00 GMT</pubDate>
+      <description>How to prepare for your private pilot checkride — the experience requirements, endorsements, and a clean logbook your DPE can actually review.</description>
+    </item>
+    <item>
+      <title>How to import your logbook into SoloTrack (CSV from paper, ForeFlight, LogTen, MyFlightBook)</title>
+      <link>https://www.solo-track.com/blog/importing-your-logbook/</link>
+      <guid isPermaLink="false">https://www.solo-track.com/blog/importing-your-logbook/</guid>
+      <pubDate>Fri, 29 May 2026 00:00:00 GMT</pubDate>
+      <description>Step-by-step: export your existing flights to CSV and import them into SoloTrack with duplicate detection — from paper, ForeFlight, LogTen, or MyFlightBook.</description>
+    </item>
+    <item>
+      <title>Night flight requirements for the private pilot certificate (FAR 61.109(a)(2)(ii))</title>
+      <link>https://www.solo-track.com/blog/night-flight-requirements/</link>
+      <guid isPermaLink="false">https://www.solo-track.com/blog/night-flight-requirements/</guid>
+      <pubDate>Fri, 29 May 2026 00:00:00 GMT</pubDate>
+      <description>The night dual, night cross-country, and towered-airport landing requirements every PPL student needs — broken down in plain English.</description>
+    </item>
+    <item>
+      <title>FAR 61.57 currency explained: day, night, and instrument</title>
+      <link>https://www.solo-track.com/blog/far-61-57-currency-explained/</link>
+      <guid isPermaLink="false">https://www.solo-track.com/blog/far-61-57-currency-explained/</guid>
+      <pubDate>Fri, 29 May 2026 00:00:00 GMT</pubDate>
+      <description>A plain-English guide to FAR 61.57 day, night, and instrument currency — what counts, the 90-day and six-month windows, and how to stay legal to carry passengers.</description>
+    </item>
     <item>
       <title>What SoloTrack does (and what it does not)</title>
       <link>https://www.solo-track.com/blog/what-solotrack-does/</link>
-      <guid isPermaLink="false">https://solo-track.com/blog/what-solotrack-does/</guid>
+      <guid isPermaLink="false">https://www.solo-track.com/blog/what-solotrack-does/</guid>
       <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
       <description>A clear scope of what SoloTrack is — a focused iOS flight logbook for student pilots — and the things it intentionally is not.</description>
     </item>
     <item>
       <title>FAR 61.109 explained: the six requirements every PPL student needs to track</title>
       <link>https://www.solo-track.com/blog/far-61-109-explained/</link>
-      <guid isPermaLink="false">https://solo-track.com/blog/far-61-109-explained/</guid>
+      <guid isPermaLink="false">https://www.solo-track.com/blog/far-61-109-explained/</guid>
       <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
       <description>A plain-English walk-through of the FAA's aeronautical-experience requirements for the private pilot certificate, mapped to how SoloTrack tracks them.</description>
     </item>
     <item>
       <title>A privacy-first flight logbook: how SoloTrack handles your data</title>
       <link>https://www.solo-track.com/blog/privacy-first-pilot-logbook/</link>
-      <guid isPermaLink="false">https://solo-track.com/blog/privacy-first-pilot-logbook/</guid>
+      <guid isPermaLink="false">https://www.solo-track.com/blog/privacy-first-pilot-logbook/</guid>
       <pubDate>Sat, 02 May 2026 00:00:00 GMT</pubDate>
       <description>Why SoloTrack stores your flight log on-device, how optional iCloud sync works, and what we deliberately do not do with your data.</description>
     </item>

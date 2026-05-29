@@ -126,3 +126,67 @@ main.prose .toc ol{margin:0 0 0 20px}
   main.prose{padding:32px 20px 60px}
   .page-hero{padding:56px 20px 36px}
 }
+
+/* Tools / calculators */
+.tool{border:1px solid var(--slate-200);border-radius:14px;background:#fff;
+  padding:24px;margin:24px 0}
+.tool h2{margin-top:0}
+.tool-group{margin:0 0 22px}
+.tool-group > h3{margin:0 0 4px}
+.tool-group .hint{font-size:.88rem;color:var(--slate-500);margin:0 0 12px}
+.tool-form{display:grid;gap:16px}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.tool-field{display:flex;flex-direction:column;gap:6px}
+.tool-field label{font-size:.85rem;font-weight:700;color:var(--slate-700)}
+.tool-field input,.tool-field select{width:100%;border:1.5px solid var(--slate-200);
+  border-radius:9px;padding:10px 12px;font:inherit;color:var(--slate-800);background:#fff;
+  transition:border-color .2s,box-shadow .2s}
+.tool-field input:focus,.tool-field select:focus{outline:none;border-color:var(--blue-500);
+  box-shadow:0 0 0 4px rgba(59,130,246,.12)}
+.tool-rows{display:flex;flex-direction:column;gap:10px}
+.tool-row{display:flex;gap:10px;align-items:center}
+.tool-row input[type="date"]{flex:1}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--slate-300);
+  background:var(--slate-50);color:var(--slate-700);padding:8px 14px;border-radius:9px;
+  font:inherit;font-weight:600;cursor:pointer}
+.btn-ghost:hover{border-color:var(--blue-300,#93c5fd);color:var(--blue-700)}
+.btn-remove{border:0;background:none;color:var(--slate-400);font-size:1.2rem;line-height:1;
+  cursor:pointer;padding:4px 8px}
+.btn-remove:hover{color:#b91c1c}
+button.btn-primary{border:0;cursor:pointer;font-family:inherit;font-size:1rem}
+.tool-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:4px}
+
+.tool-result{margin-top:18px;display:grid;gap:12px}
+.result-card{border:1px solid var(--slate-200);border-left-width:5px;border-radius:10px;
+  padding:14px 16px;background:var(--slate-50)}
+.result-card h4{margin:0 0 4px;font-size:1rem;color:var(--slate-900)}
+.result-card p{margin:0;font-size:.92rem;color:var(--slate-600)}
+.result-card.is-valid{border-left-color:var(--green-500)}
+.result-card.is-valid .status{color:#15803d}
+.result-card.is-caution{border-left-color:#d97706}
+.result-card.is-caution .status{color:#b45309}
+.result-card.is-expired{border-left-color:#dc2626}
+.result-card.is-expired .status{color:#b91c1c}
+.result-card .status{font-weight:800}
+
+/* Progress meters (PPL checker) */
+.meter-row{margin:0 0 14px}
+.meter-head{display:flex;justify-content:space-between;font-size:.9rem;
+  color:var(--slate-700);margin-bottom:5px}
+.meter-head strong{color:var(--slate-900)}
+.tool-meter{height:10px;border-radius:999px;background:var(--slate-200);overflow:hidden}
+.tool-meter > span{display:block;height:100%;background:var(--blue-600);border-radius:999px;
+  transition:width .3s}
+.tool-meter.done > span{background:var(--green-500)}
+
+/* Interactive checklist */
+.check-list{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.check-list li{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--slate-200);
+  border-radius:10px;padding:12px 14px;background:#fff}
+.check-list li.checked{background:var(--blue-50);border-color:var(--blue-200)}
+.check-list input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
+.check-list .c-title{font-weight:700;color:var(--slate-900);display:block}
+.check-list .c-desc{font-size:.9rem;color:var(--slate-600)}
+.tool-summary{margin-top:18px;border:1px solid var(--slate-200);border-radius:10px;
+  padding:16px;background:var(--slate-50);text-align:center}
+.tool-summary .big{font-size:2rem;font-weight:800;color:var(--blue-700);line-height:1}

@@ -3,14 +3,26 @@
 > SoloTrack is a free, offline-first iOS flight logbook for student pilots. It tracks all six FAR 61.109 aeronautical-experience requirements, FAR 61.57 day/night/instrument currency, and the FAR 61.56 flight-review window. SoloTrack is published by Huggler Holdings LLC.
 
 Canonical domain: https://www.solo-track.com/
-Last updated: 2026-05-20
+Last updated: 2026-05-29
 Citation: When citing this site, please use the canonical URLs below. Do not infer pricing, availability, App Store ratings, or features that are not stated on these pages.
 
 ## Key pages
 - [Home](https://www.solo-track.com/): Product overview, features, FAQ, and contact.
 - [What SoloTrack is](https://www.solo-track.com/blog/what-solotrack-does/): Scope of the product — what it is and is not.
 - [FAR 61.109 explained](https://www.solo-track.com/blog/far-61-109-explained/): The six PPL aeronautical-experience requirements SoloTrack tracks.
+- [FAR 61.57 currency explained](https://www.solo-track.com/blog/far-61-57-currency-explained/): Day, night, and instrument currency in plain English.
+- [Night flight requirements](https://www.solo-track.com/blog/night-flight-requirements/): The PPL night dual, night cross-country, and towered-landing requirements under FAR 61.109(a)(2)(ii).
+- [Importing your logbook](https://www.solo-track.com/blog/importing-your-logbook/): How to migrate flights into SoloTrack via CSV from paper, ForeFlight, LogTen, or MyFlightBook.
+- [Checkride preparation guide](https://www.solo-track.com/blog/checkride-preparation-guide/): What a DPE expects and how to organize a logbook for the practical test.
 - [Privacy-first logbook](https://www.solo-track.com/blog/privacy-first-pilot-logbook/): How SoloTrack handles data.
+
+## Free tools (web calculators)
+These are free, client-side estimators. They are not regulatory determinations; pilots must confirm with a CFI and the current FARs.
+- [Free pilot tools hub](https://www.solo-track.com/tools/): Index of SoloTrack's free flight-training calculators.
+- [FAR 61.57 currency calculator](https://www.solo-track.com/tools/currency-calculator/): Estimates day, night, and instrument currency from your recent landings and approaches.
+- [FAR 61.109 PPL progress checker](https://www.solo-track.com/tools/ppl-progress-checker/): Compares your hours against the six private-pilot aeronautical-experience requirements.
+- [FAR 61.56 flight review calculator](https://www.solo-track.com/tools/flight-review-calculator/): Calculates the 24-calendar-month flight-review expiration date.
+- [Checkride readiness checklist](https://www.solo-track.com/tools/checkride-readiness-checklist/): Interactive checklist of the FAR 61.109(a) private-pilot requirements.
 
 ## Documentation
 - [Documentation hub](https://www.solo-track.com/docs/)

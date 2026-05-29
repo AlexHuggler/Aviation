@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to import your logbook into SoloTrack (CSV from paper, ForeFlight, LogTen, MyFlightBook) — SoloTrack Blog</title>
+<meta name="description" content="Step-by-step guide to migrating your flight logbook into SoloTrack: export to CSV from ForeFlight, LogTen, or MyFlightBook (or backfill paper entries), then import with duplicate detection.">
+<meta name="theme-color" content="#1d4ed8">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://www.solo-track.com/blog/importing-your-logbook/">
+<link rel="icon" type="image/png" href="/App%20Icon.png">
+<link rel="apple-touch-icon" href="/App%20Icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SoloTrack">
+<meta property="og:title" content="How to import your logbook into SoloTrack">
+<meta property="og:description" content="Migrate from paper, ForeFlight, LogTen, or MyFlightBook via CSV — with duplicate detection.">
+<meta property="og:url" content="https://www.solo-track.com/blog/importing-your-logbook/">
+<meta property="og:image" content="https://www.solo-track.com/App%20Icon.png">
+<meta property="article:published_time" content="2026-05-29">
+<meta property="article:modified_time" content="2026-05-29">
+<meta property="article:author" content="SoloTrack Team">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to import your logbook into SoloTrack">
+<meta name="twitter:description" content="Migrate your flights via CSV with duplicate detection.">
+<meta name="twitter:image" content="https://www.solo-track.com/App%20Icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/page.css">
+
+<script type="application/ld+json">
+{
+ "@context":"https://schema.org","@type":"BlogPosting",
+ "headline":"How to import your logbook into SoloTrack (CSV from paper, ForeFlight, LogTen, MyFlightBook)",
+ "description":"Step-by-step guide to migrating your flight logbook into SoloTrack: export to CSV from ForeFlight, LogTen, or MyFlightBook, then import with duplicate detection.",
+ "author":{"@type":"Organization","name":"SoloTrack Team","url":"https://www.solo-track.com/"},
+ "publisher":{"@type":"Organization","name":"Huggler Holdings LLC","url":"https://www.solo-track.com/","logo":{"@type":"ImageObject","url":"https://www.solo-track.com/App%20Icon.png"}},
+ "datePublished":"2026-05-29","dateModified":"2026-05-29",
+ "mainEntityOfPage":{"@type":"WebPage","@id":"https://www.solo-track.com/blog/importing-your-logbook/"},
+ "image":"https://www.solo-track.com/App%20Icon.png",
+ "inLanguage":"en-US",
+ "keywords":"import flight logbook, logbook migration, CSV import, ForeFlight export, LogTen export, MyFlightBook export, backfill paper logbook"
+}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+  {"@type":"ListItem","position":1,"name":"Home","item":"https://www.solo-track.com/"},
+  {"@type":"ListItem","position":2,"name":"Blog","item":"https://www.solo-track.com/blog/"},
+  {"@type":"ListItem","position":3,"name":"Importing your logbook","item":"https://www.solo-track.com/blog/importing-your-logbook/"}
+]}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<nav class="site-nav" aria-label="Primary"><div class="nav-inner">
+  <a href="/" class="nav-logo" aria-label="SoloTrack home"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#1d4ed8"/><path d="M10 28L20 12L30 28H10Z" fill="white" opacity="0.3"/><path d="M8 24L20 14L32 24" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 14V8" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M20 8L24 12" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>SoloTrack</a>
+  <div class="nav-links"><a href="/#features">Features</a><a href="/tools/">Tools</a><a href="/blog/" aria-current="page">Blog</a><a href="/docs/">Docs</a><a href="/contact/" class="nav-cta">Contact</a></div>
+</div></nav>
+
+<header class="page-hero"><div class="page-hero-inner">
+  <h1>How to import your logbook into SoloTrack</h1>
+  <p class="lead">Moving from paper, ForeFlight, LogTen, or MyFlightBook? Here is how to bring your flights across cleanly using CSV — without creating duplicates.</p>
+  <p class="meta">Published May 29, 2026 &middot; SoloTrack Team</p>
+</div></header>
+
+<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>›</span><a href="/blog/">Blog</a><span>›</span>Importing your logbook</nav>
+
+<main id="main" class="prose">
+  <p>Switching logbooks should not mean retyping years of flights. SoloTrack imports from CSV and ships with presets for the most common formats, plus duplicate detection so a re-import does not double your hours. Here is the whole process.</p>
+
+  <h2>Step 1 — Export a CSV from your current logbook</h2>
+  <p>SoloTrack reads CSV files. Get one out of wherever your flights live now:</p>
+  <ul>
+    <li><strong>ForeFlight:</strong> export your logbook to a CSV/file from the Logbook section and save it where your iPhone or iPad can reach it (Files, iCloud Drive, or email to yourself).</li>
+    <li><strong>LogTen:</strong> export your entries to CSV.</li>
+    <li><strong>MyFlightBook:</strong> download your flights as CSV.</li>
+    <li><strong>A spreadsheet:</strong> save your sheet as CSV (one flight per row, a header row on top).</li>
+    <li><strong>Paper:</strong> there is nothing to export — skip to Step 3 and use Quick Entry templates to backfill, or type your past flights into a spreadsheet first and export that as CSV.</li>
+  </ul>
+
+  <h2>Step 2 — Open Import in SoloTrack</h2>
+  <p>In the app, open <strong>Import / Export</strong> and choose your CSV file. SoloTrack supports <strong>Auto Detect</strong> plus presets for SoloTrack CSV, ForeFlight-style, LogTen-style, MyFlightBook-style, and Generic CSV. Start with Auto Detect; if a column lands in the wrong place, pick the matching preset.</p>
+
+  <h2>Step 3 — Map columns and review</h2>
+  <p>SoloTrack parses your file and shows how it read each column — date, route, Hobbs/Tach, day and night landings, and category toggles like Solo, Dual Received, Cross-Country, and Simulated Instrument. Review the preview before you commit so the categories that feed your <a href="/tools/ppl-progress-checker/">FAR 61.109 progress</a> and <a href="/tools/currency-calculator/">61.57 currency</a> are correct.</p>
+
+  <h2>Step 4 — Let duplicate detection do its job</h2>
+  <p>SoloTrack flags likely duplicates so importing the same file twice — or importing a CSV that overlaps flights you already entered — does not inflate your totals. If you ever re-export and re-import after fixing something, the duplicate check has your back.</p>
+
+  <h2>Step 5 — Verify your totals</h2>
+  <p>After importing, glance at your dashboard. Do total time, dual, solo, cross-country, night, and instrument look right? If a category reads low, it usually means a column in the source CSV was not mapped — re-run the import with the right preset, and duplicate detection will keep things clean.</p>
+
+  <div class="callout"><strong>A note on accuracy:</strong> your imported totals are only as good as the source data. SoloTrack is a logbook tool, not a regulator — confirm your hours and requirements with your CFI and the current FARs.</div>
+
+  <h2>Already importing? Here is the payoff</h2>
+  <p>Once your history is in, SoloTrack keeps your <a href="/docs/currency-tracking/">currency and PPL progress</a> current automatically, captures CFI signatures digitally, and exports a clean CSV (22 columns) or a printable PDF whenever you need to hand records to a CFI or DPE. For first-time setup, see <a href="/docs/getting-started/">Getting started with SoloTrack</a>.</p>
+  <p style="margin-top:24px"><a class="btn-primary" href="https://apps.apple.com/us/app/solotrack/id6762449244" rel="noopener">Download SoloTrack on the App Store</a></p>
+
+  <h2>What to read next</h2>
+  <ul>
+    <li><a href="/docs/getting-started/">Getting started with SoloTrack</a></li>
+    <li><a href="/blog/what-solotrack-does/">What SoloTrack does (and what it does not)</a></li>
+    <li><a href="/blog/checkride-preparation-guide/">Checkride preparation: what your DPE expects</a></li>
+  </ul>
+
+  <hr>
+  <p class="meta">This post summarizes how SoloTrack handles logbook import. It is not a substitute for the current FARs or the guidance of your certified flight instructor.</p>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div><span class="footer-brand">SoloTrack</span><p>The free iOS flight logbook for student pilots.</p><p style="margin-top:8px"><a href="https://apps.apple.com/us/app/solotrack/id6762449244" rel="noopener" style="color:var(--sky-400);font-weight:600;text-decoration:none">Download on the App Store &#8599;</a></p></div>
+    <div><h4>Product</h4><ul><li><a href="/#features">Features</a></li><li><a href="/tools/">Free tools</a></li><li><a href="/blog/">Blog</a></li><li><a href="/docs/">Documentation</a></li><li><a href="/#faq">FAQ</a></li></ul></div>
+    <div><h4>Support</h4><ul><li><a href="/contact/">Contact</a></li><li><a href="/support/">Support</a></li><li><a href="mailto:Contact@solo-track.com">Email us</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a href="/privacy/">Privacy Policy</a></li><li><a href="/terms/">Terms of Use</a></li><li><a href="/sitemap.xml">Sitemap</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">&copy; 2026 Huggler Holdings LLC &middot; iOS and Apple are trademarks of Apple Inc.</div>
+</footer>
+</body>
+</html>
