@@ -110,3 +110,74 @@ describe("FLY8MA partner explainer", () => {
     expect(sitemap).not.toContain("/partners/fly8ma/");
   });
 });
+
+describe("SEO tools and new content", () => {
+  const toolPages = [
+    "tools/index.html",
+    "tools/currency-calculator/index.html",
+    "tools/ppl-progress-checker/index.html",
+    "tools/flight-review-calculator/index.html",
+    "tools/checkride-readiness-checklist/index.html"
+  ];
+  const blogPages = [
+    "blog/far-61-57-currency-explained/index.html",
+    "blog/night-flight-requirements/index.html",
+    "blog/importing-your-logbook/index.html",
+    "blog/checkride-preparation-guide/index.html"
+  ];
+
+  it("each tool page is indexable, canonical, disclaimed, and converts", async () => {
+    for (const path of toolPages) {
+      const html = await readSiteFile(path);
+      expect(html, path).toContain('rel="canonical"');
+      expect(html, path).toContain("https://www.solo-track.com/tools/");
+      expect(html, path).toMatch(/index,follow/);
+      expect(html, path).toContain("not a regulator");
+      expect(html, path).toContain("https://apps.apple.com/us/app/solotrack/id6762449244");
+    }
+  });
+
+  it("each new blog post has BlogPosting schema, canonical, and a download CTA", async () => {
+    for (const path of blogPages) {
+      const html = await readSiteFile(path);
+      expect(html, path).toContain('"@type":"BlogPosting"');
+      expect(html, path).toContain('rel="canonical"');
+      expect(html, path).toContain("https://apps.apple.com/us/app/solotrack/id6762449244");
+    }
+  });
+
+  it("lists the new tools and posts in the sitemap", async () => {
+    const sitemap = await readSiteFile("sitemap.xml");
+    for (const url of [
+      "https://www.solo-track.com/tools/",
+      "https://www.solo-track.com/tools/currency-calculator/",
+      "https://www.solo-track.com/tools/ppl-progress-checker/",
+      "https://www.solo-track.com/tools/flight-review-calculator/",
+      "https://www.solo-track.com/tools/checkride-readiness-checklist/",
+      "https://www.solo-track.com/blog/far-61-57-currency-explained/",
+      "https://www.solo-track.com/blog/night-flight-requirements/",
+      "https://www.solo-track.com/blog/importing-your-logbook/",
+      "https://www.solo-track.com/blog/checkride-preparation-guide/"
+    ]) {
+      expect(sitemap, url).toContain(url);
+    }
+  });
+
+  it("normalizes RSS feed GUIDs to the www host", async () => {
+    const feed = await readSiteFile("feed.xml");
+    expect(feed).not.toContain('isPermaLink="false">https://solo-track.com/');
+    expect(feed).toContain('https://www.solo-track.com/blog/far-61-57-currency-explained/');
+  });
+
+  it("upgrades the docs index to a CollectionPage", async () => {
+    const html = await readSiteFile("docs/index.html");
+    expect(html).toContain('"@type":"CollectionPage"');
+  });
+
+  it("surfaces the tools hub in the primary navigation", async () => {
+    for (const path of ["index.html", "blog/index.html", "docs/index.html", "contact/index.html"]) {
+      const html = await readSiteFile(path);
+      expect(html, path).toContain('href="/tools/"');
+    }
+  });
+});
