@@ -17,15 +17,18 @@ describe("homepage App Store CTA", () => {
     expect(html).toContain('id="download"');
   });
 
-  it("removes the pre-launch beta application form and Launch List CTAs", async () => {
+  it("keeps a post-launch beta offer-code request path", async () => {
     const html = await readSiteFile("index.html");
 
-    expect(html).not.toContain('id="betaForm"');
-    expect(html).not.toContain('class="beta-form"');
-    expect(html).not.toContain("formsubmit.co/ajax/Contact@solo-track.com");
+    expect(html).toContain('id="beta"');
+    expect(html).toContain('id="betaForm"');
+    expect(html).toContain('class="beta-form"');
+    expect(html).toContain("formsubmit.co/ajax/Contact@solo-track.com");
+    expect(html).toContain("Request Beta Code");
+    expect(html).toContain("Aviation group or referral source");
+    expect(html).toContain("source_page");
     expect(html).not.toContain("Join Launch List");
     expect(html).not.toContain("Launch List");
-    expect(html).not.toContain('id="beta"');
   });
 
   it("marks the MobileApplication as InStock with the App Store offer URL", async () => {
