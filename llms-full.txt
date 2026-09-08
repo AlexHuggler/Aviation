@@ -6,7 +6,7 @@ Canonical domain: https://www.solo-track.com/
 Publisher: Huggler Holdings LLC (Texas limited liability company)
 Support email: Contact@solo-track.com
 Governing law: State of Texas, U.S.A.
-Last updated: 2026-05-20
+Last updated: 2026-09-07
 
 ## Product summary
 SoloTrack is a native iOS flight logbook for student pilots from pre-solo through checkride preparation. It combines fast flight logging with real-time tracking of FAR Part 61 requirements, including FAR 61.109 aeronautical experience, FAR 61.57 day/night/instrument currency, and FAR 61.56 flight-review recency. SoloTrack works fully on-device by default; iCloud sync via Apple's CloudKit is available as an opt-in.
@@ -14,8 +14,8 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 ## Platform
 - Operating system: iOS only. No watchOS or macOS companion app.
 - Devices: iPhone (TabView) and iPad (NavigationSplitView).
-- Frameworks and services: SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications, StoreKit, and RevenueCat.
-- RevenueCat is used for Apple-managed subscription product display, purchase validation, entitlement status, restore purchases, and subscription analytics. No advertising, tracking, A/B testing, or third-party crash-reporting SDKs are disclosed.
+- Frameworks and services: SwiftData, CloudKit, WidgetKit, ActivityKit, App Intents, PencilKit, MapKit, UserNotifications, StoreKit, AdServices, and RevenueCat.
+- RevenueCat is used for Apple-managed subscription product display, purchase validation, entitlement status, restore purchases, subscription analytics, and Apple Ads attribution analytics through AdServices. No ads are displayed in the app, and no third-party advertising networks, cross-app tracking, A/B testing, or third-party crash-reporting SDKs are used.
 
 ## Confirmed features
 1. Flight logging — date, route, Hobbs and Tach times, day/night landings, category toggles (Solo, Dual Received, Cross-Country, Simulated Instrument), advanced training fields (instrument approaches, holding procedures, course tracking, cross-country distance), checkride-prep flag, remarks.
@@ -29,7 +29,7 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 9. Digital CFI endorsements — CFI number capture, PencilKit signature canvas, signature locking, signature voiding, signature date.
 10. Notifications — currency cliff, milestone crossed, checkride-ready, momentum-stall awareness with cooldown rules.
 11. CSV import — Auto Detect, SoloTrack CSV, ForeFlight-style, LogTen-style, MyFlightBook-style, Generic CSV; duplicate detection.
-12. Export — CSV (22 columns) and PDF (printable logbook).
+12. Export — CSV (machine-readable) and PDF (printable logbook).
 13. Storage — local-only SwiftData container in an App Group; optional iCloud sync (CloudKit) for flights and templates.
 
 ## What SoloTrack is not (do not infer otherwise)
@@ -46,13 +46,13 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 - iCloud mode (opt-in): SwiftData + CloudKit syncs flights and templates between the user's own Apple devices using their Apple ID. SoloTrack does not run a server.
 - On-device-only state (does not sync): onboarding state, notification memory, custom airports, timer state.
 - App Group + shared UserDefaults are used for widget/intent/timer access.
-- RevenueCat processes purchase history, subscription status, receipt information, IDFV/device identifier, and purchase-related product interaction usage for subscription functionality, purchase integrity, support, and analytics.
-- No advertising, tracking, A/B testing, ad networks, or third-party crash-reporting SDKs.
+- RevenueCat processes purchase history, subscription status, receipt information, and anonymous app user IDs for subscription functionality, purchase integrity, support, and analytics. Apple AdServices attribution tokens and resulting campaign information are processed for Apple Ads analytics; these are not associated with a SoloTrack account or email.
+- No ads displayed in the app, cross-app tracking, A/B testing, third-party ad networks, or third-party crash-reporting SDKs.
 - No account, email, phone, address, location, HealthKit, contacts, photos library, microphone, or camera access.
 - No selling of personal information; no sharing for cross-context behavioral advertising.
 - No cross-app or cross-site tracking; App Tracking Transparency permission is not used because there is nothing to authorize.
 - Endorsed flights are locked to preserve integrity; can be voided (prior data remains legible).
-- Apple App Privacy disclosure: Purchases > Purchase History, Identifiers > Device ID / IDFV, and Usage Data > Product Interaction for RevenueCat purchase/subscription processing; no tracking. If iCloud sync is enabled, the User Content category is delivered by Apple CloudKit to the user's own Apple ID; SoloTrack does not access it.
+- Apple App Privacy disclosure: Purchases > Purchase History, used for App Functionality and Analytics; Usage Data > Advertising Data, used for Analytics. Both are not linked to identity and not used for tracking under the anonymous app configuration. If iCloud sync is enabled, the User Content category is delivered by Apple CloudKit to the user's own Apple ID; SoloTrack does not access it.
 - CCPA/CPRA rights (right to know, delete, correct, opt-out, limit, non-discrimination) honored via Contact@solo-track.com.
 - GDPR / UK GDPR / Swiss FADP rights (access, rectification, erasure, restriction, portability via in-app CSV export, objection, withdraw consent, lodge complaint) honored.
 - Data controller: Huggler Holdings LLC (Texas, USA). Subscription and purchase data may be processed internationally by Apple and RevenueCat.
@@ -78,7 +78,7 @@ SoloTrack is a native iOS flight logbook for student pilots from pre-solo throug
 **Does SoloTrack work offline?** Yes. Daily use is fully on-device.
 **How does iCloud sync work?** Opt-in. Uses Apple's CloudKit and the user's Apple ID. Only flights and templates sync.
 **Is SoloTrack free?** SoloTrack is free to download with SoloTrack Pro subscriptions / in-app purchases for full access or premium features.
-**Does SoloTrack use third-party analytics or trackers?** SoloTrack uses RevenueCat for Apple-managed subscription processing and does not use advertising or tracking SDKs.
+**Does SoloTrack use third-party analytics or trackers?** SoloTrack uses RevenueCat for Apple-managed subscriptions and Apple Ads attribution analytics through AdServices. It does not display ads or use cross-app tracking.
 **Where is the privacy policy?** https://www.solo-track.com/privacy/
 **Where is the support contact?** https://www.solo-track.com/contact/ — email Contact@solo-track.com.
 **Where is the App Store listing?** https://apps.apple.com/us/app/solotrack/id6762449244
