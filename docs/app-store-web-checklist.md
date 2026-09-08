@@ -2,7 +2,7 @@
 
 Use this page when filling out App Store Connect for SoloTrack. Every URL below resolves on the live site at <https://www.solo-track.com/>.
 
-_Last updated: 2026-05-20_
+_Last updated: 2026-09-07_
 
 ## URLs to paste into App Store Connect
 
@@ -24,11 +24,12 @@ _Last updated: 2026-05-20_
 - Support email: `Contact@solo-track.com`
 - Mailing address: no public postal address is published on the website; provide the business mailing address privately in App Store Connect or to regulators if Apple requests it
 
-## App Privacy Nutrition Label — proposed disclosures
+## App Privacy Nutrition Label — current disclosure checkpoint
 
-Based on the published product documentation, the current build should disclose:
+App Store Connect was reviewed on September 7, 2026 alongside the app's anonymous RevenueCat configuration and enabled AdServices token collection. The current labels disclose Purchase History and Advertising Data, both not linked to identity and not used for tracking:
 
 - **Purchases → Purchase History** — used for App Functionality and Analytics. RevenueCat and Apple process purchase, trial, renewal, cancellation, and restore status for SoloTrack Pro subscriptions. If SoloTrack continues using anonymous RevenueCat app user IDs and does not map them to an app account, email, or custom user ID, mark Purchase History **not linked to user identity**.
+- **Usage Data → Advertising Data** — used for Analytics, not linked to identity, and not used for tracking. RevenueCat processes Apple AdServices attribution tokens and resulting Apple Ads campaign information without a SoloTrack account or email.
 - **Identifiers → User ID / Device ID** — add only if the final build or RevenueCat configuration uses custom app user IDs, IDFA, or another identifier Apple/RevenueCat requires disclosed.
 - **Usage Data → Product Interaction** — add only if the final RevenueCat configuration or app instrumentation records purchase-related product interactions that Apple/RevenueCat requires disclosed.
 - **iCloud / CloudKit** — If the user enables iCloud sync, flights and templates are stored in the user's own iCloud account via Apple's CloudKit. This is not data collected by the developer; Apple operates the storage.
@@ -54,9 +55,10 @@ Apple frameworks and RevenueCat:
 - MapKit
 - UserNotifications
 - StoreKit / App Store purchase APIs
+- AdServices / Apple Ads attribution tokens
 - RevenueCat
 
-RevenueCat is the only disclosed non-Apple SDK in the app. No advertising, tracking, A/B testing, Firebase/Supabase, Superwall, or third-party crash-reporting SDKs are disclosed.
+RevenueCat is the only disclosed non-Apple SDK in the app. The app uses Apple AdServices attribution through RevenueCat. It does not display ads or use third-party advertising networks, cross-app tracking, A/B testing, Firebase/Supabase, Superwall, or third-party crash-reporting SDKs.
 
 ## Data practices summary
 
@@ -66,7 +68,7 @@ RevenueCat is the only disclosed non-Apple SDK in the app. No advertising, track
 - No SoloTrack-operated server.
 - No selling of personal information.
 - No cross-app or cross-site tracking.
-- RevenueCat purchase history for subscription functionality and analytics, without cross-app/cross-site tracking.
+- RevenueCat purchase history for subscription functionality and analytics, plus Apple AdServices token and campaign information for Apple Ads attribution analytics, without cross-app/cross-site tracking.
 - Endorsed flights are locked to preserve integrity; can be voided.
 
 ## Outstanding TODOs
@@ -75,7 +77,7 @@ RevenueCat is the only disclosed non-Apple SDK in the app. No advertising, track
 - [ ] Confirm Apple Standard EULA vs custom EULA decision with legal counsel.
 - [x] Replace TODO App Store URL once the App is published.
 - [ ] Re-verify before each App Store submission that third-party SDK disclosures match the shipped build.
-- [ ] Confirm App Store Connect App Privacy includes RevenueCat Purchase History and only includes Identifiers/Product Interaction if the final build or RevenueCat configuration requires them.
+- [ ] Confirm App Store Connect App Privacy includes Purchase History and Advertising Data, and only includes Identifiers/Product Interaction if the final build or RevenueCat configuration requires them.
 
 ## Validation checklist
 
